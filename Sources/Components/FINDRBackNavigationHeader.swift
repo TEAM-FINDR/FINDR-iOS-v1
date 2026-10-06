@@ -38,6 +38,7 @@ struct FINDRBackNavigationHeader: View {
             .frame(width: 64, height: 24, alignment: .trailing)
         }
         .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.vertical, FINDRSpacing.small)
+        .padding(.top, FINDRSpacing.small + 6)
+        .padding(.bottom, FINDRSpacing.small)
     }
 }
