@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ExploreView: View {
     let onOpenOpportunity: (Opportunity) -> Void
+    let onOpenNotifications: () -> Void
 
     @State private var query = ""
     @State private var selectedCategory = "전체"
@@ -99,7 +100,7 @@ struct ExploreView: View {
             title: "기회 탐색",
             trailingIcon: FINDRAssetName.bell,
             trailingLabel: "알림",
-            action: {},
+            action: onOpenNotifications,
             titleKerning: -0.44,
             trailingTint: FINDRColor.primaryText
         )

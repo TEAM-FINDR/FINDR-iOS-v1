@@ -4,7 +4,8 @@ struct ContentView: View {
     @AppStorage("FINDR.isDarkMode") private var isDarkMode = false
     @AppStorage("FINDR.didCompleteOnboarding") private var didCompleteOnboarding = false
     @State private var selectedTab: FINDRTab = .home
-    @State private var navigationPath: [Opportunity] = []
+    @State private var navigationPath: [FINDRNavigationDestination] = []
+    @State private var notifications = FINDRNotification.samples
     @State private var savedIDs: Set<String> = [
         "app-dev-hackathon", "gwangju-ai-camp", "youth-startup-contest", "ai-sw-program", "design-bootcamp"
     ]
@@ -25,10 +26,21 @@ struct ContentView: View {
     private var mainExperience: some View {
         NavigationStack(path: $navigationPath) {
             selectedScreen
-                .navigationDestination(for: Opportunity.self) { opportunity in
-                    OpportunityDetailView(opportunity: opportunity, savedIDs: $savedIDs) {
-                        selectedTab = .path
-                        navigationPath.removeAll()
+                .navigationDestination(for: FINDRNavigationDestination.self) { destination in
+                    switch destination {
+                    case .opportunity(let opportunity):
+                        OpportunityDetailView(opportunity: opportunity, savedIDs: $savedIDs) {
+                            selectedTab = .path
+                            navigationPath.removeAll()
+                        }
+                    case .notifications:
+                        NotificationCenterView(
+                            notifications: $notifications,
+                            onOpenSettings: openNotificationSettings,
+                            onSelectDestination: openNotificationDestination
+                        )
+                    case .notificationSettings:
+                        NotificationSettingsView()
                     }
                 }
         }
@@ -45,20 +57,47 @@ struct ContentView: View {
     private var selectedScreen: some View {
         switch selectedTab {
         case .home:
-            HomeView(onOpenOpportunity: open, onSeeAll: { selectedTab = .explore })
+            HomeView(
+                onOpenOpportunity: open,
+                onSeeAll: { selectedTab = .explore },
+                onOpenNotifications: openNotificationCenter
+            )
         case .explore:
-            ExploreView(onOpenOpportunity: open)
+            ExploreView(onOpenOpportunity: open, onOpenNotifications: openNotificationCenter)
         case .path:
             APathView()
         case .saved:
-            SavedView(savedIDs: $savedIDs, onOpenOpportunity: open)
+            SavedView(
+                savedIDs: $savedIDs,
+                onOpenOpportunity: open,
+                onOpenNotifications: openNotificationCenter
+            )
         case .my:
-            MyView(isDarkMode: $isDarkMode)
+            MyView(isDarkMode: $isDarkMode, onOpenNotificationSettings: openNotificationSettings)
         }
     }
 
     private func open(_ opportunity: Opportunity) {
-        navigationPath.append(opportunity)
+        navigationPath.append(.opportunity(opportunity))
+    }
+
+    private func openNotificationCenter() {
+        navigationPath.append(.notifications)
+    }
+
+    private func openNotificationSettings() {
+        navigationPath.append(.notificationSettings)
+    }
+
+    private func openNotificationDestination(_ destination: FINDRNotificationDestination) {
+        switch destination {
+        case .opportunity(let id):
+            guard let opportunity = Opportunity.samples.first(where: { $0.id == id }) else { return }
+            open(opportunity)
+        case .tab(let tab):
+            selectedTab = tab
+            navigationPath.removeAll()
+        }
     }
 }
 

@@ -3,6 +3,7 @@ import SwiftUI
 struct SavedView: View {
     @Binding var savedIDs: Set<String>
     let onOpenOpportunity: (Opportunity) -> Void
+    let onOpenNotifications: () -> Void
 
     @State private var selectedFilter = "전체"
     @State private var remindersEnabled = true
@@ -69,7 +70,7 @@ struct SavedView: View {
             title: "저장한 기회",
             trailingIcon: FINDRAssetName.bell,
             trailingLabel: "알림",
-            action: {}
+            action: onOpenNotifications
         )
     }
 
