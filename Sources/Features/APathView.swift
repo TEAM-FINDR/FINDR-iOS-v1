@@ -125,23 +125,17 @@ struct APathView: View {
     }
 
     private var categoryTabs: some View {
-        HStack(spacing: 18) {
-            ForEach(categories, id: \.self) { category in
-                Button { selectedCategory = category } label: {
-                    VStack(spacing: 8) {
-                        Text(category)
-                            .font(selectedCategory == category ? FINDRFont.bold(13) : FINDRFont.regular(13))
-                            .foregroundStyle(selectedCategory == category ? FINDRColor.primaryText : FINDRColor.secondaryText)
-                        Rectangle()
-                            .fill(selectedCategory == category ? FINDRColor.primaryText : .clear)
-                            .frame(height: 2)
-                    }
-                }
-                .buttonStyle(.plain)
-            }
-            Spacer(minLength: 0)
-        }
-        .overlay(alignment: .bottom) { FINDRColor.divider.frame(height: 1).offset(y: 1) }
+        FINDRUnderlineTabs(
+            titles: categories,
+            selection: $selectedCategory,
+            fontSize: 13,
+            itemSpacing: 18,
+            indicatorSpacing: 8,
+            equalWidth: false,
+            unselectedTextColor: FINDRColor.secondaryText,
+            unselectedIndicatorColor: .clear,
+            showsBottomDivider: true
+        )
     }
 
     private func actionCard(_ item: PathAction) -> some View {

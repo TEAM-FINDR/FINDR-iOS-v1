@@ -95,24 +95,7 @@ struct OpportunityDetailView: View {
     }
 
     private var sectionSelector: some View {
-        HStack(spacing: 0) {
-            ForEach(sections, id: \.self) { section in
-                Button {
-                    selectedSection = section
-                } label: {
-                    VStack(spacing: 9) {
-                        Text(section)
-                            .font(selectedSection == section ? FINDRFont.bold(14) : FINDRFont.regular(14))
-                            .foregroundStyle(selectedSection == section ? FINDRColor.primaryText : FINDRColor.tertiaryText)
-                            .frame(maxWidth: .infinity)
-                        Rectangle()
-                            .fill(selectedSection == section ? FINDRColor.primaryText : FINDRColor.divider)
-                            .frame(height: 2)
-                    }
-                }
-                .buttonStyle(.plain)
-            }
-        }
+        FINDRUnderlineTabs(titles: sections, selection: $selectedSection)
     }
 
     @ViewBuilder
