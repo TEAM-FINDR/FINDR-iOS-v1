@@ -112,7 +112,7 @@ private struct NotificationSettingRow: View {
     @Binding var isEnabled: Bool
 
     var body: some View {
-        Toggle(isOn: $isEnabled) {
+        HStack(spacing: FINDRSpacing.medium) {
             HStack(spacing: FINDRSpacing.medium) {
                 FINDRIcon(name: iconName, size: 20, tint: FINDRColor.secondaryText)
                 Text(title)
@@ -120,10 +120,17 @@ private struct NotificationSettingRow: View {
                     .kerning(-0.28)
                     .foregroundStyle(FINDRColor.primaryText)
             }
+            Spacer(minLength: FINDRSpacing.small)
+            Toggle("", isOn: $isEnabled)
+                .labelsHidden()
+                .tint(FINDRColor.brandButton)
+                .scaleEffect(0.84, anchor: .trailing)
+                .frame(width: 51, height: 31)
+                .accessibilityLabel(title)
+                .accessibilityValue(isEnabled ? "켜짐" : "꺼짐")
+                .accessibilityIdentifier("notification-setting-\(title)")
         }
-        .tint(FINDRColor.brandButton)
         .padding(.horizontal, FINDRSpacing.large)
         .padding(.vertical, FINDRSpacing.medium)
-        .accessibilityIdentifier("notification-setting-\(title)")
     }
 }
