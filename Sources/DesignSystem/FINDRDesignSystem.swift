@@ -239,18 +239,33 @@ struct FINDRTag: View {
     let title: String
     var tone: FINDRTagTone = .neutral
     var font: Font = FINDRFont.label
+    var kerning: CGFloat = -0.2
+    var textHeight: CGFloat? = nil
     var horizontalPadding: CGFloat = 8
     var verticalPadding: CGFloat = 4
 
     var body: some View {
-        Text(title)
-            .font(font)
-            .kerning(-0.2)
-            .foregroundStyle(tone.foreground)
+        tagLabel
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
             .background(tone.background, in: RoundedRectangle(cornerRadius: FINDRRadius.small, style: .continuous))
             .fixedSize()
+    }
+
+    @ViewBuilder
+    private var tagLabel: some View {
+        if let textHeight {
+            Text(title)
+                .font(font)
+                .kerning(kerning)
+                .foregroundStyle(tone.foreground)
+                .frame(height: textHeight)
+        } else {
+            Text(title)
+                .font(font)
+                .kerning(kerning)
+                .foregroundStyle(tone.foreground)
+        }
     }
 }
 
@@ -266,6 +281,7 @@ struct FINDRPill: View {
                 .font(isSelected ? FINDRFont.bold(13) : FINDRFont.regular(13))
                 .kerning(-0.26)
                 .foregroundStyle(isSelected ? Color.white : FINDRColor.secondaryText)
+                .frame(height: 18)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(isSelected ? FINDRColor.brandButton : FINDRColor.subtle, in: Capsule())
@@ -332,6 +348,7 @@ enum FINDRButtonKind: Equatable {
 struct FINDRButton: View {
     let title: String
     var kind: FINDRButtonKind = .primary
+    var height: CGFloat = 54
     var action: () -> Void = {}
 
     var body: some View {
@@ -341,7 +358,7 @@ struct FINDRButton: View {
                 .kerning(-0.3)
                 .foregroundStyle(foreground)
                 .frame(maxWidth: .infinity)
-                .frame(height: 54)
+                .frame(height: height)
                 .background(background, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay {
                     if kind == .outline {
@@ -367,6 +384,30 @@ struct FINDRButton: View {
         case .secondary: FINDRColor.inverse
         case .outline: FINDRColor.surface
         }
+    }
+}
+
+struct FINDRBottomCTA: View {
+    let title: String
+    var isEnabled = true
+    let action: () -> Void
+
+    var body: some View {
+        VStack(spacing: FINDRSpacing.large) {
+            FINDRButton(title: title, height: 53, action: action)
+                .disabled(!isEnabled)
+                .opacity(isEnabled ? 1 : 0.45)
+
+            Capsule()
+                .fill(FINDRColor.primaryText)
+                .frame(width: 134, height: 5)
+        }
+        .padding(.horizontal, FINDRSpacing.screen)
+        .padding(.top, FINDRSpacing.medium)
+        .padding(.bottom, FINDRSpacing.small)
+        .frame(maxWidth: .infinity)
+        .background(FINDRColor.surface)
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 
@@ -400,28 +441,39 @@ struct FINDRTabBar: View {
     @Binding var selection: FINDRTab
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(FINDRTab.allCases) { tab in
-                Button {
-                    selection = tab
-                } label: {
-                    VStack(spacing: 2) {
-                        FINDRIcon(name: tab.iconName, size: 24, tint: selection == tab ? FINDRColor.brandButton : FINDRColor.inactiveIcon)
-                        Text(tab.title)
-                            .font(selection == tab ? FINDRFont.bold(10) : FINDRFont.medium(10))
-                            .foregroundStyle(selection == tab ? FINDRColor.brandButton : FINDRColor.tertiaryText)
+        VStack(spacing: FINDRSpacing.medium) {
+            HStack(spacing: 0) {
+                ForEach(FINDRTab.allCases) { tab in
+                    Button {
+                        selection = tab
+                    } label: {
+                        VStack(spacing: FINDRSpacing.xSmall) {
+                            FINDRIcon(name: tab.iconName, size: 24, tint: selection == tab ? FINDRColor.brandButton : FINDRColor.inactiveIcon)
+                            Text(tab.title)
+                                .font(selection == tab ? FINDRFont.bold(10) : FINDRFont.medium(10))
+                                .foregroundStyle(selection == tab ? FINDRColor.brandButton : FINDRColor.tertiaryText)
+                                .frame(height: 14)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 42)
+                        .contentShape(Rectangle())
                     }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 54)
-                    .contentShape(Rectangle())
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(tab.title)
+                    .accessibilityAddTraits(selection == tab ? .isSelected : [])
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(tab.title)
-                .accessibilityAddTraits(selection == tab ? .isSelected : [])
             }
+            .padding(.horizontal, FINDRSpacing.small)
+
+            Capsule()
+                .fill(FINDRColor.primaryText)
+                .frame(width: 134, height: 5)
         }
-        .padding(.top, 5)
+        .padding(.top, 11)
+        .padding(.bottom, 14)
+        .frame(height: 84)
         .background(FINDRColor.surface.ignoresSafeArea(edges: .bottom))
         .overlay(alignment: .top) { FINDRColor.divider.frame(height: 1) }
+        .ignoresSafeArea(edges: .bottom)
     }
 }

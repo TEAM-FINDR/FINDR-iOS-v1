@@ -2,10 +2,10 @@ import SwiftUI
 import UserNotifications
 
 struct OnboardingFlowView: View {
+    @Binding var profile: FINDROnboardingProfile
     let onComplete: () -> Void
 
     @State private var step: FINDROnboardingFlowStep = .splash
-    @State private var profile = FINDROnboardingProfile()
 
     var body: some View {
         Group {

@@ -10,6 +10,7 @@ final class FINDRTests: XCTestCase {
         XCTAssertEqual(profile.status, "고등학생")
         XCTAssertEqual(profile.interests, ["개발", "디자인", "창업"])
         XCTAssertEqual(profile.opportunityTypes, ["교육", "공모전", "창업"])
+        XCTAssertEqual(profile.conditions, [.certification, .education, .project])
     }
 
     func testProfileAgeUsesBirthYear() {
@@ -24,7 +25,7 @@ final class FINDRTests: XCTestCase {
         var profile = FINDROnboardingProfile()
         profile.interests = ["창업", "미등록 관심 분야", "개발", "AI·데이터"]
 
-        XCTAssertEqual(profile.orderedInterests, ["개발", "AI·데이터", "창업"])
+        XCTAssertEqual(profile.orderedInterests, ["개발", "창업", "AI·데이터"])
     }
 
     func testPersonalInformationValidationRejectsInvalidBirthYearOrRegion() {
@@ -61,5 +62,66 @@ final class FINDRTests: XCTestCase {
         XCTAssertFalse(profile.canContinue(on: 4))
         profile.opportunityTypes = ["교육"]
         XCTAssertTrue(profile.canContinue(on: 4))
+    }
+
+    func testInterestsCanBeToggledUpToFive() {
+        var profile = FINDROnboardingProfile()
+        profile.interests = ["개발", "디자인", "창업", "AI·데이터", "과학"]
+
+        profile.toggleInterest("환경")
+        XCTAssertEqual(profile.interests.count, 5)
+        XCTAssertFalse(profile.interests.contains("환경"))
+
+        profile.toggleInterest("개발")
+        XCTAssertEqual(profile.interests.count, 4)
+        XCTAssertFalse(profile.interests.contains("개발"))
+    }
+
+    func testProfileSaveValidationRequiresValidBasicInformationAndSelections() {
+        var profile = FINDROnboardingProfile()
+        profile.birthYear = String(Calendar.current.component(.year, from: .now) - 17)
+        XCTAssertTrue(profile.isValidForSaving)
+
+        profile.name = "  \n"
+        XCTAssertFalse(profile.isValidForSaving)
+        profile.name = "이시우"
+
+        profile.region = "  "
+        XCTAssertFalse(profile.isValidForSaving)
+        profile.region = "광주광역시"
+
+        profile.status = ""
+        XCTAssertFalse(profile.isValidForSaving)
+        profile.status = "고등학생"
+
+        profile.interests = []
+        XCTAssertFalse(profile.isValidForSaving)
+        profile.interests = ["개발"]
+
+        profile.opportunityTypes = []
+        XCTAssertFalse(profile.isValidForSaving)
+    }
+
+    func testProfileStoreRoundTripsProfile() {
+        let suiteName = "FINDRProfileStoreTests-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        var profile = FINDROnboardingProfile()
+        profile.name = "테스트 사용자"
+        profile.conditions = [.education, .portfolio, .career]
+        profile.profilePhotoPath = "profiles/avatar.jpg"
+        FINDRProfileStore.save(profile, to: defaults)
+
+        XCTAssertEqual(FINDRProfileStore.load(from: defaults), profile)
+    }
+
+    func testProfileStoreFallsBackWhenStoredDataIsInvalid() {
+        let suiteName = "FINDRProfileStoreTests-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        defaults.set(Data("not-json".utf8), forKey: FINDRProfileStore.key)
+
+        XCTAssertEqual(FINDRProfileStore.load(from: defaults), FINDROnboardingProfile())
     }
 }
