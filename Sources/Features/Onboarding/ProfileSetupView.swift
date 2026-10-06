@@ -32,29 +32,17 @@ struct FINDRProfileSetupView: View {
     private var pageContent: some View {
         switch page {
         case 2:
-            statusChoices
+            FINDRProfileSetupStatusSelectionView(status: $profile.status)
         case 3:
-            interestChoices
+            FINDRProfileSetupInterestsView(selection: $profile.interests)
         case 4:
-            opportunityChoices
+            FINDRProfileSetupOpportunityTypesView(selection: $profile.opportunityTypes)
         default:
             FINDRProfileSetupPersonalInformationView(
                 birthYear: $profile.birthYear,
                 region: $profile.region
             )
         }
-    }
-
-    private var statusChoices: some View {
-        FINDRProfileSetupStatusSelectionView(status: $profile.status)
-    }
-
-    private var interestChoices: some View {
-        FINDRProfileSetupInterestsView(selection: $profile.interests)
-    }
-
-    private var opportunityChoices: some View {
-        FINDRProfileSetupOpportunityTypesView(selection: $profile.opportunityTypes)
     }
 
     private var title: String {
@@ -93,51 +81,4 @@ struct FINDRProfileSetupView: View {
     private func continueIfValid() {
         guard canContinue else { return }
         onContinue()
-    }
-
-}
-
-private struct FINDRChipFlowLayout: Layout {
-    var horizontalSpacing: CGFloat
-    var verticalSpacing: CGFloat
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let width = proposal.width ?? subviews.reduce(CGFloat.zero) { $0 + $1.sizeThatFits(.unspecified).width + horizontalSpacing }
-        let frames = itemFrames(width: width, subviews: subviews)
-        let contentHeight = frames.map(\.maxY).max() ?? 0
-        return CGSize(width: proposal.width ?? width, height: contentHeight)
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let frames = itemFrames(width: bounds.width, subviews: subviews)
-        for (index, subview) in subviews.enumerated() {
-            let frame = frames[index]
-            subview.place(
-                at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY),
-                anchor: .topLeading,
-                proposal: ProposedViewSize(width: frame.width, height: frame.height)
-            )
-        }
-    }
-
-    private func itemFrames(width: CGFloat, subviews: Subviews) -> [CGRect] {
-        var frames: [CGRect] = []
-        var x: CGFloat = 0
-        var y: CGFloat = 0
-        var rowHeight: CGFloat = 0
-
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-            if x > 0 && x + size.width > width {
-                x = 0
-                y += rowHeight + verticalSpacing
-                rowHeight = 0
-            }
-            frames.append(CGRect(origin: CGPoint(x: x, y: y), size: size))
-            x += size.width + horizontalSpacing
-            rowHeight = max(rowHeight, size.height)
-        }
-
-        return frames
-    }
 }
