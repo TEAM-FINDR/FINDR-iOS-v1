@@ -51,15 +51,15 @@ private extension UIColor {
 
 enum FINDRFont {
     static func regular(_ size: CGFloat) -> Font {
-        .custom("NotoSansKR-Regular", fixedSize: size)
+        .custom("NotoSansKR-Thin_Regular", fixedSize: size)
     }
 
     static func medium(_ size: CGFloat) -> Font {
-        .custom("NotoSansKR-Medium", fixedSize: size)
+        .custom("NotoSansKR-Thin_Medium", fixedSize: size)
     }
 
     static func bold(_ size: CGFloat) -> Font {
-        .custom("NotoSansKR-Bold", fixedSize: size)
+        .custom("NotoSansKR-Thin_Bold", fixedSize: size)
     }
 
     static let titleLarge = bold(26)
