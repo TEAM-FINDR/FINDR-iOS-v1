@@ -15,4 +15,20 @@ struct FINDROnboardingProfile {
     var orderedInterests: [String] {
         FINDROnboardingProfileOptions.interests.filter(interests.contains)
     }
+
+    func canContinue(on page: Int, currentYear: Int = Calendar.current.component(.year, from: .now)) -> Bool {
+        switch page {
+        case 1:
+            guard let year = Int(birthYear) else { return false }
+            let hasValidYear = (1900...currentYear).contains(year)
+            let hasRegion = !region.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return hasValidYear && hasRegion
+        case 3:
+            return !interests.isEmpty
+        case 4:
+            return !opportunityTypes.isEmpty
+        default:
+            return !status.isEmpty
+        }
+    }
 }
