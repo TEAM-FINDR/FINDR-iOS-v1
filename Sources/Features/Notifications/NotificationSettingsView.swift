@@ -1,9 +1,8 @@
 import SwiftUI
 
 struct NotificationSettingsView: View {
-    private let figmaBodyTopInset: CGFloat = 12.5
-    private let figmaSectionSpacing: CGFloat = 22
-    private let figmaHintTopAdjustment: CGFloat = -5
+    private let figmaSectionSpacing: CGFloat = 21
+    private let figmaHintTopAdjustment: CGFloat = 1
     @AppStorage("FINDR.notifications.newOpportunities") private var newOpportunitiesEnabled = true
     @AppStorage("FINDR.notifications.eligibleOpportunities") private var eligibleOpportunitiesEnabled = true
     @AppStorage("FINDR.notifications.savedOpportunityChanges") private var savedOpportunityChangesEnabled = true
@@ -33,7 +32,7 @@ struct NotificationSettingsView: View {
                         .padding(.bottom, FINDRSpacing.large)
                 }
                 .padding(.horizontal, FINDRSpacing.screen)
-                .padding(.top, figmaBodyTopInset)
+                .padding(.top, FINDRSpacing.small)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
