@@ -8,6 +8,19 @@ struct HomeView: View {
     private let opportunities = Opportunity.samples
     private let filters = ["지금 가능 4", "거의 가능 7", "마감 임박 5"]
 
+    private var featuredOpportunity: Opportunity {
+        let matches: [Opportunity]
+        switch selectedFilter {
+        case "거의 가능 7":
+            matches = opportunities.filter { $0.status == .nearlyEligible }
+        case "마감 임박 5":
+            matches = opportunities.filter { (Int($0.deadline.dropFirst(2)) ?? 99) <= 7 }
+        default:
+            matches = opportunities.filter { $0.status == .eligible }
+        }
+        return matches.first ?? opportunities[0]
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
@@ -23,8 +36,8 @@ struct HomeView: View {
                     .padding(.horizontal, FINDRSpacing.screen)
                 }
                 .contentMargins(.zero)
-                FeaturedOpportunityCard(opportunity: opportunities[0]) {
-                    onOpenOpportunity(opportunities[0])
+                FeaturedOpportunityCard(opportunity: featuredOpportunity) {
+                    onOpenOpportunity(featuredOpportunity)
                 }
                 .padding(.horizontal, FINDRSpacing.screen)
 
