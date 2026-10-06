@@ -14,6 +14,9 @@ let project = Project(
                     "UILaunchScreen": [
                         "UIColorName": "",
                         "UIImageName": ""
+                    ],
+                    "UIAppFonts": [
+                        "Fonts/NotoSansKR[wght].ttf"
                     ]
                 ]
             ),
