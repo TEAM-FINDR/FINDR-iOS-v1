@@ -28,7 +28,6 @@ struct FINDRProfileSetupView: View {
         "환경", "사회공헌", "금융", "글쓰기", "음악·예술", "창업"
     ]
 
-    private let statusOptions = ["중학생", "고등학생", "대학생", "취업 준비", "직장인", "기타"]
     private let opportunityOptions = ["교육", "공모전", "대외활동", "장학금", "지원사업", "창업", "인턴", "행사"]
 
     var body: some View {
@@ -71,34 +70,7 @@ struct FINDRProfileSetupView: View {
     }
 
     private var statusChoices: some View {
-        VStack(spacing: FINDRSpacing.small) {
-            ForEach(statusOptions, id: \.self) { status in
-                let isSelected = profile.status == status
-                Button {
-                    profile.status = status
-                } label: {
-                    HStack {
-                        Text(status)
-                            .font(FINDRFont.medium(14))
-                            .foregroundStyle(isSelected ? FINDRColor.brandButton : FINDRColor.primaryText)
-                        Spacer()
-                        radioIndicator(isSelected: isSelected)
-                    }
-                    .padding(.horizontal, FINDRSpacing.large)
-                    .frame(height: 56)
-                    .background(
-                        isSelected ? FINDRColor.brandSubtle : Color.white,
-                        in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous)
-                    )
-                    .overlay {
-                        RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous)
-                            .stroke(isSelected ? FINDRColor.brandButton : FINDRColor.border, lineWidth: isSelected ? 1.5 : 1)
-                    }
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(isSelected ? .isSelected : [])
-            }
-        }
+        FINDRProfileSetupStatusSelectionView(status: $profile.status)
     }
 
     private var interestChoices: some View {
@@ -139,20 +111,6 @@ struct FINDRProfileSetupView: View {
                 .foregroundStyle(FINDRColor.brand)
                 .accessibilityLabel("관심 기회 종류 \(profile.opportunityTypes.count)개 선택됨")
         }
-    }
-
-    private func radioIndicator(isSelected: Bool) -> some View {
-        Circle()
-            .stroke(isSelected ? FINDRColor.brandButton : FINDRColor.borderStrong, lineWidth: isSelected ? 6 : 1.5)
-            .frame(width: 20, height: 20)
-            .overlay {
-                if isSelected {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 6, height: 6)
-                }
-            }
-            .accessibilityHidden(true)
     }
 
     private var title: String {
