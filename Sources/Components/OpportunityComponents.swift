@@ -94,23 +94,34 @@ struct FeaturedOpportunityCard: View {
                             .font(FINDRFont.regular(11))
                             .foregroundStyle(FINDRColor.tertiaryText)
                     }
-                    HStack(spacing: 5) {
+                    HStack(spacing: 4) {
                         ForEach(opportunity.categories.prefix(3), id: \.self) { category in
-                            FINDRTag(title: category, tone: .neutral, font: FINDRFont.regular(11), horizontalPadding: 7, verticalPadding: 4)
+                            FINDRTag(
+                                title: category,
+                                tone: .neutral,
+                                font: FINDRFont.regular(12),
+                                kerning: -0.24,
+                                horizontalPadding: 8,
+                                verticalPadding: 4
+                            )
                         }
                     }
+                    .frame(height: 25)
                     HStack(spacing: 6) {
                         FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 4)
+                            .frame(width: 120)
                         Text("\(opportunity.completedConditions)/\(opportunity.totalConditions) 조건 충족")
-                            .font(FINDRFont.bold(10))
+                            .font(FINDRFont.bold(11))
                             .foregroundStyle(opportunity.status.tone.foreground)
                             .fixedSize()
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                OpportunityArtworkTile(artwork: opportunity.artwork, size: 78, iconSize: 28)
+                OpportunityArtworkTile(artwork: opportunity.artwork, size: 84, iconSize: 32)
             }
             .padding(16)
+            .frame(maxWidth: .infinity)
+            .frame(height: 143)
             .background(FINDRColor.surface)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
@@ -129,28 +140,33 @@ struct CompactOpportunityCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 7) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(opportunity.title)
                     .font(FINDRFont.bold(14))
                     .kerning(-0.28)
                     .foregroundStyle(FINDRColor.primaryText)
-                    .lineLimit(2)
-                    .frame(height: 38, alignment: .topLeading)
+                    .lineLimit(2, reservesSpace: true)
+                    .lineSpacing(-2)
+                    .frame(height: 39, alignment: .topLeading)
                 Text(opportunity.deadline)
                     .font(FINDRFont.bold(12))
                     .foregroundStyle(opportunity.status == .missing ? FINDRColor.danger : FINDRColor.brand)
+                    .frame(height: 17, alignment: .leading)
                 HStack(spacing: 4) {
                     Text("\(opportunity.completedConditions)/\(opportunity.totalConditions)")
                         .font(FINDRFont.bold(12))
                         .foregroundStyle(opportunity.status.tone.foreground)
                     Text("조건 충족")
-                        .font(FINDRFont.regular(11))
+                        .font(FINDRFont.regular(12))
                         .foregroundStyle(FINDRColor.secondaryText)
+                        .kerning(-0.24)
+                    Spacer(minLength: 0)
                 }
+                .frame(height: 17)
                 FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 4)
             }
             .padding(14)
-            .frame(width: 160, height: 126, alignment: .leading)
+            .frame(width: 170.5, height: 130, alignment: .leading)
             .background(FINDRColor.surface)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
