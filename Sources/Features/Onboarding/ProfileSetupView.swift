@@ -28,8 +28,6 @@ struct FINDRProfileSetupView: View {
         "환경", "사회공헌", "금융", "글쓰기", "음악·예술", "창업"
     ]
 
-    private let opportunityOptions = ["교육", "공모전", "대외활동", "장학금", "지원사업", "창업", "인턴", "행사"]
-
     var body: some View {
         VStack(spacing: 0) {
             FINDRProfileSetupNavigationBarView(onBack: onBack)
@@ -78,23 +76,7 @@ struct FINDRProfileSetupView: View {
     }
 
     private var opportunityChoices: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
-            FINDRChipFlowLayout(horizontalSpacing: FINDRSpacing.small, verticalSpacing: FINDRSpacing.small) {
-                ForEach(opportunityOptions, id: \.self) { opportunityType in
-                    FINDRPill(
-                        title: opportunityType,
-                        isSelected: profile.opportunityTypes.contains(opportunityType)
-                    ) {
-                        toggle(opportunityType, in: &profile.opportunityTypes)
-                    }
-                }
-            }
-
-            Text("\(profile.opportunityTypes.count)개 선택됨")
-                .font(FINDRFont.medium(12))
-                .foregroundStyle(FINDRColor.brand)
-                .accessibilityLabel("관심 기회 종류 \(profile.opportunityTypes.count)개 선택됨")
-        }
+        FINDRProfileSetupOpportunityTypesView(selection: $profile.opportunityTypes)
     }
 
     private var title: String {
@@ -135,13 +117,6 @@ struct FINDRProfileSetupView: View {
         onContinue()
     }
 
-    private func toggle(_ value: String, in selection: inout Set<String>) {
-        if selection.contains(value) {
-            selection.remove(value)
-        } else {
-            selection.insert(value)
-        }
-    }
 }
 
 private struct FINDRChipFlowLayout: Layout {
