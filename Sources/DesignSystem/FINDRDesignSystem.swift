@@ -92,6 +92,11 @@ enum FINDRRadius {
 }
 
 enum FINDRAssetName {
+    static let logo = "FINDRLogo"
+    static let loginLogo = "FINDRLoginLogo"
+    static let sparkles = "FINDRSparkles"
+    static let appleLogo = "FINDRAppleLogo"
+    static let kakaoLogo = "FINDRKakaoLogo"
     static let unlock = "Figma_a1402"
     static let bell = "Figma_87021"
     static let cpu = "Figma_d3e89"

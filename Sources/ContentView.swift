@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @AppStorage("FINDR.isDarkMode") private var isDarkMode = false
+    @AppStorage("FINDR.didCompleteOnboarding") private var didCompleteOnboarding = false
     @State private var selectedTab: FINDRTab = .home
     @State private var navigationPath: [Opportunity] = []
     @State private var savedIDs: Set<String> = [
@@ -9,6 +10,19 @@ struct ContentView: View {
     ]
 
     var body: some View {
+        Group {
+            if didCompleteOnboarding {
+                mainExperience
+                    .preferredColorScheme(isDarkMode ? .dark : .light)
+            } else {
+                OnboardingFlowView {
+                    didCompleteOnboarding = true
+                }
+            }
+        }
+    }
+
+    private var mainExperience: some View {
         NavigationStack(path: $navigationPath) {
             selectedScreen
                 .navigationDestination(for: Opportunity.self) { opportunity in
@@ -25,7 +39,6 @@ struct ContentView: View {
             }
         }
         .background(FINDRColor.canvas)
-        .preferredColorScheme(isDarkMode ? .dark : .light)
     }
 
     @ViewBuilder
