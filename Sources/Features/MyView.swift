@@ -15,17 +15,21 @@ struct MyView: View {
     @State private var selectedAction = ""
     @State private var showActionNotice = false
     @State private var activeEditor: MYEditorDestination?
+    @State private var isConditionSheetPresented = false
     @State private var shouldShowProfileSaveConfirmation = false
     @State private var isProfileSaveConfirmationVisible = false
 
     private var conditions: [String] {
-        var profileConditions = profile.conditions
-        if completedAPathActions.contains(.portfolio) {
-            profileConditions.insert(.portfolio)
-        }
         return FINDRProfileCondition.allCases
-            .filter(profileConditions.contains)
+            .filter(ownedConditions.contains)
             .map(\.title)
+    }
+    private var ownedConditions: Set<FINDRProfileCondition> {
+        var values = profile.conditions
+        if completedAPathActions.contains(.portfolio) {
+            values.insert(.portfolio)
+        }
+        return values
     }
     private let menuItems: [(String, String)] = [
         ("활동 기록", FINDRAssetName.clock),
@@ -46,7 +50,13 @@ struct MyView: View {
                     onEdit: { activeEditor = .interests },
                     onAdd: { activeEditor = .interests }
                 )
-                selectionCard(title: "보유 조건", values: conditions, addLabel: "추가")
+                selectionCard(
+                    title: "보유 조건",
+                    values: conditions,
+                    addLabel: "추가",
+                    onEdit: { isConditionSheetPresented = true },
+                    onAdd: { isConditionSheetPresented = true }
+                )
                 menuCard
                     .padding(.top, 1)
                 Text("버전 1.0.0")
@@ -71,6 +81,16 @@ struct MyView: View {
                     shouldShowProfileSaveConfirmation = true
                 }
             }
+        }
+        .sheet(isPresented: $isConditionSheetPresented) {
+            MyConditionAddSheet(ownedConditions: ownedConditions) { condition in
+                profile.conditions.insert(condition)
+                FINDRProfileStore.save(profile)
+                isConditionSheetPresented = false
+            }
+            .presentationDetents([.height(560), .large])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(24)
         }
         .overlay {
             if isProfileSaveConfirmationVisible {
