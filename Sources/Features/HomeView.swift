@@ -110,12 +110,14 @@ struct HomeView: View {
                 }
             }
             Spacer()
-            Button {} label: {
-                FINDRIcon(name: FINDRAssetName.bell, size: 24, tint: FINDRColor.primaryText)
-                    .padding(.top, 2)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("알림")
+            FINDRIconButton(
+                iconName: FINDRAssetName.bell,
+                accessibilityLabel: "알림",
+                action: {},
+                size: 24,
+                tint: FINDRColor.primaryText
+            )
+            .padding(.top, 2)
         }
         .padding(.horizontal, FINDRSpacing.screen)
     }

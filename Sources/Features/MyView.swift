@@ -42,19 +42,12 @@ struct MyView: View {
     }
 
     private var header: some View {
-        HStack {
-            Text("MY")
-                .font(FINDRFont.title)
-                .foregroundStyle(FINDRColor.primaryText)
-            Spacer()
-            Button {
-                isDarkMode.toggle()
-            } label: {
-                FINDRIcon(name: FINDRAssetName.settings, size: 22, tint: FINDRColor.secondaryText)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(isDarkMode ? "라이트 모드로 변경" : "다크 모드로 변경")
-        }
+        FINDRPageHeader(
+            title: "MY",
+            trailingIcon: FINDRAssetName.settings,
+            trailingLabel: isDarkMode ? "라이트 모드로 변경" : "다크 모드로 변경",
+            action: { isDarkMode.toggle() }
+        )
     }
 
     private var profileCard: some View {

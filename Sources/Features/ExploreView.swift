@@ -95,18 +95,14 @@ struct ExploreView: View {
     }
 
     private var header: some View {
-        HStack {
-            Text("기회 탐색")
-                .font(FINDRFont.title)
-                .kerning(-0.44)
-                .foregroundStyle(FINDRColor.primaryText)
-            Spacer()
-            Button {} label: {
-                FINDRIcon(name: FINDRAssetName.bell, size: 22, tint: FINDRColor.primaryText)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("알림")
-        }
+        FINDRPageHeader(
+            title: "기회 탐색",
+            trailingIcon: FINDRAssetName.bell,
+            trailingLabel: "알림",
+            action: {},
+            titleKerning: -0.44,
+            trailingTint: FINDRColor.primaryText
+        )
     }
 
     private var searchField: some View {

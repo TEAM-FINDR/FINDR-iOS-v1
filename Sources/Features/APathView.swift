@@ -63,17 +63,13 @@ struct APathView: View {
     }
 
     private var header: some View {
-        HStack {
-            Text("A-Path")
-                .font(FINDRFont.title)
-                .foregroundStyle(FINDRColor.primaryText)
-            Spacer()
-            Button { showHelp = true } label: {
-                FINDRIcon(name: FINDRAssetName.help, size: 21, tint: FINDRColor.secondaryText)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("A-Path 도움말")
-        }
+        FINDRPageHeader(
+            title: "A-Path",
+            trailingIcon: FINDRAssetName.help,
+            trailingLabel: "A-Path 도움말",
+            action: { showHelp = true },
+            trailingSize: 21
+        )
     }
 
     private var whatIfCard: some View {

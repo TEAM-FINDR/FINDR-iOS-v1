@@ -40,20 +40,21 @@ struct OpportunityDetailView: View {
 
     private var navigationHeader: some View {
         HStack {
-            Button { dismiss() } label: {
-                FINDRIcon(name: FINDRAssetName.back, size: 24, tint: FINDRColor.primaryText)
-                    .frame(width: 28, height: 32, alignment: .leading)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("뒤로")
+            FINDRIconButton(
+                iconName: FINDRAssetName.back,
+                accessibilityLabel: "뒤로",
+                action: { dismiss() },
+                size: 24,
+                tint: FINDRColor.primaryText
+            )
+            .frame(width: 28, height: 32, alignment: .leading)
             Spacer()
-            Button {
-                toggleSaved()
-            } label: {
-                FINDRIcon(name: FINDRAssetName.bookmark, size: 22, tint: isSaved ? FINDRColor.brand : FINDRColor.primaryText)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(isSaved ? "저장 취소" : "저장")
+            FINDRIconButton(
+                iconName: FINDRAssetName.bookmark,
+                accessibilityLabel: isSaved ? "저장 취소" : "저장",
+                action: toggleSaved,
+                tint: isSaved ? FINDRColor.brand : FINDRColor.primaryText
+            )
             ShareLink(item: opportunity.title) {
                 FINDRIcon(name: FINDRAssetName.share, size: 22, tint: FINDRColor.primaryText)
                     .frame(width: 24, height: 32)

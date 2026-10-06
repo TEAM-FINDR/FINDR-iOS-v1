@@ -65,15 +65,12 @@ struct SavedView: View {
     }
 
     private var header: some View {
-        HStack {
-            Text("저장한 기회")
-                .font(FINDRFont.title)
-                .foregroundStyle(FINDRColor.primaryText)
-            Spacer()
-            Button {} label: { FINDRIcon(name: FINDRAssetName.bell, size: 22, tint: FINDRColor.secondaryText) }
-                .buttonStyle(.plain)
-                .accessibilityLabel("알림")
-        }
+        FINDRPageHeader(
+            title: "저장한 기회",
+            trailingIcon: FINDRAssetName.bell,
+            trailingLabel: "알림",
+            action: {}
+        )
     }
 
     private var filterBar: some View {
