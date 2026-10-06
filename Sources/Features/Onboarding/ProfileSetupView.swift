@@ -81,4 +81,5 @@ struct FINDRProfileSetupView: View {
     private func continueIfValid() {
         guard canContinue else { return }
         onContinue()
+    }
 }
