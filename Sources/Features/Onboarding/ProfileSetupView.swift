@@ -64,18 +64,7 @@ struct FINDRProfileSetupView: View {
     }
 
     private var canContinue: Bool {
-        switch page {
-        case 1:
-            guard let year = Int(profile.birthYear) else { return false }
-            let currentYear = Calendar.current.component(.year, from: .now)
-            return (1900...currentYear).contains(year) && !profile.region.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        case 3:
-            return !profile.interests.isEmpty
-        case 4:
-            return !profile.opportunityTypes.isEmpty
-        default:
-            return !profile.status.isEmpty
-        }
+        profile.canContinue(on: page)
     }
 
     private func continueIfValid() {
