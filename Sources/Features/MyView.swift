@@ -33,8 +33,8 @@ struct MyView: View {
     }
     private let menuItems: [(String, String)] = [
         ("활동 기록", FINDRAssetName.clock),
-        ("알림 설정", FINDRAssetName.bell),
-        ("도움말", FINDRAssetName.help),
+        ("알림 설정", FINDRAssetName.myNotificationSettings),
+        ("도움말", FINDRAssetName.myHelp),
         ("로그아웃", FINDRAssetName.logout)
     ]
 
@@ -61,12 +61,6 @@ struct MyView: View {
                     onAdd: onPresentConditionSheet
                 )
                 menuCard
-                Text("버전 1.0.0")
-                    .font(FINDRFont.regular(10))
-                    .foregroundStyle(FINDRColor.tertiaryText)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 2)
-                    .padding(.bottom, 16)
             }
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, 26)
@@ -104,14 +98,15 @@ struct MyView: View {
             title: "MY",
             trailingIcon: FINDRAssetName.settings,
             trailingLabel: isDarkMode ? "라이트 모드로 변경" : "다크 모드로 변경",
-            action: { isDarkMode.toggle() }
+            action: { isDarkMode.toggle() },
+            titleKerning: -0.44
         )
     }
 
     private var profileCard: some View {
-        FINDRCard(padding: 17, hasShadow: true) {
+        FINDRCard(padding: 16, hasShadow: true) {
             VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 12) {
+                HStack(spacing: 14) {
                     FINDRProfileAvatar(
                         photoPath: profile.profilePhotoPath,
                         size: 60,
@@ -133,7 +128,7 @@ struct MyView: View {
                             HStack(spacing: 3) {
                                 Text("프로필 수정")
                                     .font(FINDRFont.medium(12))
-                                FINDRIcon(name: FINDRAssetName.chevronRight, size: 14, tint: FINDRColor.brand)
+                                FINDRIcon(name: FINDRAssetName.myProfileChevron, size: 14, tint: FINDRColor.brand)
                             }
                             .foregroundStyle(FINDRColor.brand)
                             .frame(height: 17, alignment: .leading)
@@ -176,7 +171,7 @@ struct MyView: View {
         onEdit: (() -> Void)? = nil,
         onAdd: (() -> Void)? = nil
     ) -> some View {
-        FINDRCard(padding: 17) {
+        FINDRCard(padding: 16, hasShadow: true) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text(title)
@@ -190,7 +185,7 @@ struct MyView: View {
                             Text("수정")
                                 .font(FINDRFont.regular(12))
                                 .kerning(-0.24)
-                            FINDRIcon(name: FINDRAssetName.chevronRight, size: 14, tint: FINDRColor.tertiaryText)
+                            FINDRIcon(name: FINDRAssetName.mySectionChevron, size: 14, tint: FINDRColor.tertiaryText)
                         }
                         .foregroundStyle(FINDRColor.tertiaryText)
                         .frame(height: 17)
@@ -222,8 +217,9 @@ struct MyView: View {
                             .foregroundStyle(FINDRColor.primaryText)
                             .frame(height: 20, alignment: .leading)
                         Spacer()
-                        FINDRIcon(name: FINDRAssetName.chevronRight, size: 16, tint: FINDRColor.inactiveIcon)
+                        FINDRIcon(name: FINDRAssetName.myMenuChevron, size: 16, tint: FINDRColor.inactiveIcon)
                     }
+                    .padding(.vertical, 12)
                     .frame(height: index == menuItems.count - 1 ? 44 : 45)
                     .contentShape(Rectangle())
                 }
@@ -232,13 +228,12 @@ struct MyView: View {
                     if index < menuItems.count - 1 {
                         FINDRColor.divider
                             .frame(height: 1)
-                            .padding(.leading, 28)
                     }
                 }
             }
         }
-        .padding(.horizontal, 17)
-        .padding(.vertical, 5)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 4)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(FINDRColor.surface)
         .clipShape(RoundedRectangle(cornerRadius: FINDRRadius.card, style: .continuous))
@@ -246,7 +241,7 @@ struct MyView: View {
             RoundedRectangle(cornerRadius: FINDRRadius.card, style: .continuous)
                 .stroke(FINDRColor.border, lineWidth: 1)
         }
-        .shadow(color: .black.opacity(0.06), radius: 18, x: 0, y: 4)
+        .shadow(color: FINDRShadow.card, radius: 18, x: 0, y: 4)
     }
 
     private func showAction(_ action: String) {
@@ -301,8 +296,8 @@ private struct FlowTags: View {
             }
             .foregroundStyle(FINDRColor.secondaryText)
             .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .frame(height: 29)
+            .padding(.vertical, 5)
+            .frame(height: 30)
             .overlay {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                     .strokeBorder(FINDRColor.borderStrong, style: StrokeStyle(lineWidth: 1, dash: [3, 2]))

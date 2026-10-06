@@ -157,6 +157,11 @@ enum FINDRAssetName {
     static let more = "Figma_4aa7b"
     static let settings = "Figma_5385d"
     static let profile = "Figma_7b592"
+    static let myProfileChevron = "Figma_68411"
+    static let mySectionChevron = "Figma_806b6"
+    static let myMenuChevron = "Figma_7950b"
+    static let myNotificationSettings = "Figma_24ece"
+    static let myHelp = "Figma_c22b7"
     static let plus = "Figma_cc713"
     static let clock = "Figma_00ade"
     static let logout = "Figma_ef8b8"
@@ -212,7 +217,7 @@ struct FINDRCard<Content: View>: View {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .stroke(FINDRColor.border, lineWidth: 1)
             }
-            .shadow(color: .black.opacity(hasShadow ? 0.06 : 0), radius: 18, x: 0, y: 4)
+            .shadow(color: hasShadow ? FINDRShadow.card : .clear, radius: 18, x: 0, y: 4)
     }
 }
 
