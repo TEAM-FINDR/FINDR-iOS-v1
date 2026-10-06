@@ -1,29 +1,10 @@
 import SwiftUI
 
-struct FINDROnboardingProfile {
-    var birthYear = "2009"
-    var region = "광주광역시"
-    var status = "고등학생"
-    var interests: Set<String> = ["개발", "디자인", "창업"]
-    var opportunityTypes: Set<String> = ["교육", "공모전", "창업"]
-
-    var age: Int {
-        let currentYear = Calendar.current.component(.year, from: .now)
-        return max(0, currentYear - (Int(birthYear) ?? currentYear))
-    }
-
-    var orderedInterests: [String] {
-        FINDRProfileSetupView.interestOptions.filter(interests.contains)
-    }
-}
-
 struct FINDRProfileSetupView: View {
     let page: Int
     @Binding var profile: FINDROnboardingProfile
     let onBack: () -> Void
     let onContinue: () -> Void
-
-    static let interestOptions = FINDROnboardingProfileOptions.interests
 
     var body: some View {
         VStack(spacing: 0) {
