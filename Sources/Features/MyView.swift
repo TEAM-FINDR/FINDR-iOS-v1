@@ -2,12 +2,19 @@ import SwiftUI
 
 struct MyView: View {
     @Binding var isDarkMode: Bool
+    let completedAPathActions: Set<APathActionID>
     let onOpenNotificationSettings: () -> Void
     @State private var selectedAction = ""
     @State private var showActionNotice = false
 
     private let interests = ["개발", "디자인", "창업"]
-    private let conditions = ["정보처리 관련 자격증 1개", "교육 이수 2개", "프로젝트 1개"]
+    private var conditions: [String] {
+        var values = ["정보처리 관련 자격증 1개", "교육 이수 2개", "프로젝트 1개"]
+        if completedAPathActions.contains(.portfolio) {
+            values.insert("포트폴리오", at: 0)
+        }
+        return values
+    }
     private let menuItems: [(String, String)] = [
         ("활동 기록", FINDRAssetName.clock),
         ("알림 설정", FINDRAssetName.bell),

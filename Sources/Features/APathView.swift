@@ -1,41 +1,47 @@
 import SwiftUI
 
 struct APathView: View {
-    @State private var selectedCategory = "추천 행동"
+    let completedActions: Set<APathActionID>
+    let onOpenSimulator: () -> Void
+    let onOpenAction: (APathActionID) -> Void
+
+    @State private var selectedCategory = APathCategory.recommended.rawValue
     @State private var showHelp = false
 
-    private let categories = ["추천 행동", "자격증", "교육", "경험"]
-    private let actions = [
-        PathAction(
-            title: "포트폴리오 만들기", subtitle: "IT·개발 분야 기회가 열려요",
-            icon: FINDRAssetName.file, category: "경험",
-            background: FINDRColor.brandSubtle, tint: FINDRColor.brand, opportunityCount: 12
-        ),
-        PathAction(
-            title: "컴퓨터활용능력 2급 취득", subtitle: "공공기관·대외활동 기회가 열려요",
-            icon: FINDRAssetName.monitor, category: "자격증",
-            background: FINDRColor.successSubtle, tint: FINDRColor.successStatus, opportunityCount: 8
-        ),
-        PathAction(
-            title: "AI 관련 교육 수료", subtitle: "교육·해커톤 기회가 열려요",
-            icon: FINDRAssetName.cpu, category: "교육",
-            background: FINDRColor.warningSubtle, tint: FINDRColor.warningStatus, opportunityCount: 5
-        ),
-        PathAction(
-            title: "프로젝트 경험 쌓기", subtitle: "공모전 기회가 열려요",
-            icon: FINDRAssetName.rocket, category: "경험",
-            background: FINDRColor.accentSubtle, tint: FINDRColor.brand, opportunityCount: 4
-        )
-    ]
+    private var selectedAPathCategory: APathCategory {
+        APathCategory(rawValue: selectedCategory) ?? .recommended
+    }
 
-    private var visibleActions: [PathAction] {
-        guard selectedCategory != "추천 행동" else { return actions }
-        return actions.filter { $0.category == selectedCategory }
+    private var visibleActions: [APathActionID] {
+        APathActionID.actions(for: selectedAPathCategory)
+    }
+
+    private var previewAction: APathActionID {
+        completedActions.contains(.portfolio) ? .computerLiteracy : .portfolio
+    }
+
+    private var whatIfConditions: Set<APathConditionID> {
+        var conditions = Set(completedActions.compactMap(\.conditionID))
+        if let condition = previewAction.conditionID {
+            conditions.insert(condition)
+        }
+        return conditions
+    }
+
+    private var currentOpportunityCount: Int {
+        APathOpportunityProjection.currentCount(completedActions: completedActions)
+    }
+
+    private var projectedOpportunityCount: Int {
+        APathOpportunityProjection.projectedCount(
+            selectedConditions: whatIfConditions,
+            completedActions: completedActions
+        )
     }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
                 header
                 whatIfCard
                 Text("지금 할 수 있는 활동이 새로운 기회를 만들어요.")
@@ -44,28 +50,29 @@ struct APathView: View {
                     .foregroundStyle(FINDRColor.secondaryText)
                     .padding(.top, 2)
                 categoryTabs
-                VStack(spacing: 8) {
-                    ForEach(visibleActions) { action in
-                        actionCard(action)
+                VStack(spacing: FINDRSpacing.small) {
+                    ForEach(visibleActions, id: \.self) { actionID in
+                        actionCard(actionID)
                     }
                 }
-                .padding(.bottom, 12)
+                .padding(.bottom, FINDRSpacing.medium)
             }
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, 14)
         }
         .background(FINDRColor.canvas)
-        .alert("A-Path 안내", isPresented: $showHelp) {
-            Button("확인", role: .cancel) {}
-        } message: {
-            Text("추천 행동을 완료하면 지원 가능한 기회가 늘어납니다.")
+        .sheet(isPresented: $showHelp) {
+            APathHelpSheet(onClose: { showHelp = false })
+                .presentationDetents([.height(330)])
+                .presentationDragIndicator(.hidden)
+                .presentationCornerRadius(36)
         }
     }
 
     private var header: some View {
         FINDRPageHeader(
             title: "A-Path",
-            trailingIcon: FINDRAssetName.help,
+            trailingIcon: FINDRAssetName.aPathHelp,
             trailingLabel: "A-Path 도움말",
             action: { showHelp = true },
             trailingSize: 21
@@ -73,44 +80,65 @@ struct APathView: View {
     }
 
     private var whatIfCard: some View {
-        VStack(spacing: 12) {
-            Text("What-if")
-                .font(FINDRFont.bold(10))
-                .foregroundStyle(FINDRColor.brand)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 5)
-                .background(FINDRColor.surface, in: Capsule())
-            Text("포트폴리오를 만든다면?")
-                .font(FINDRFont.bold(16))
-                .kerning(-0.32)
-                .foregroundStyle(FINDRColor.primaryText)
-            HStack(spacing: 16) {
-                VStack(spacing: 2) {
-                    Text("현재").font(FINDRFont.regular(11)).foregroundStyle(FINDRColor.secondaryText)
-                    Text("29개").font(FINDRFont.bold(28)).foregroundStyle(FINDRColor.primaryText)
+        Button(action: onOpenSimulator) {
+            VStack(spacing: FINDRSpacing.medium) {
+                Text("What-if")
+                    .font(FINDRFont.bold(10))
+                    .foregroundStyle(FINDRColor.brand)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 5)
+                    .background(FINDRColor.surface, in: Capsule())
+
+                Text(previewTitle)
+                    .font(FINDRFont.bold(16))
+                    .kerning(-0.32)
+                    .foregroundStyle(FINDRColor.primaryText)
+
+                HStack(spacing: 16) {
+                    VStack(spacing: 2) {
+                        Text("현재")
+                            .font(FINDRFont.regular(11))
+                            .foregroundStyle(FINDRColor.secondaryText)
+                        Text("\(currentOpportunityCount)개")
+                            .font(FINDRFont.bold(28))
+                            .foregroundStyle(FINDRColor.primaryText)
+                    }
+                    FINDRIcon(name: FINDRAssetName.pathArrow, size: 18, tint: FINDRColor.inactiveIcon)
+                    VStack(spacing: 2) {
+                        Text("완료 후")
+                            .font(FINDRFont.regular(11))
+                            .foregroundStyle(FINDRColor.brand)
+                        Text("\(projectedOpportunityCount)개")
+                            .font(FINDRFont.bold(28))
+                            .foregroundStyle(FINDRColor.brand)
+                    }
                 }
-                FINDRIcon(name: FINDRAssetName.pathArrow, size: 18, tint: FINDRColor.inactiveIcon)
-                VStack(spacing: 2) {
-                    Text("완료 후").font(FINDRFont.regular(11)).foregroundStyle(FINDRColor.brand)
-                    Text("41개").font(FINDRFont.bold(28)).foregroundStyle(FINDRColor.brand)
+
+                Text("+\(projectedOpportunityCount - currentOpportunityCount)개의 새로운 기회")
+                    .font(FINDRFont.bold(12))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 7)
+                    .background(FINDRColor.brandButton, in: Capsule())
+
+                HStack(spacing: 6) {
+                    ForEach(previewAction.breakdown) { item in
+                        breakdown(item.category, "+\(item.count)")
+                    }
                 }
             }
-            Text("+12개의 새로운 기회")
-                .font(FINDRFont.bold(12))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 7)
-                .background(FINDRColor.brandButton, in: Capsule())
-            HStack(spacing: 6) {
-                breakdown("교육", "+4")
-                breakdown("공모전", "+3")
-                breakdown("인턴", "+3")
-                breakdown("지원", "+2")
-            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, FINDRSpacing.large)
+            .background(FINDRColor.brandSubtle, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
-        .background(FINDRColor.brandSubtle, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .buttonStyle(.plain)
+        .accessibilityLabel("What-if 시뮬레이터, \(currentOpportunityCount)개에서 \(projectedOpportunityCount)개")
+        .accessibilityIdentifier("apath-open-simulator")
+    }
+
+    private var previewTitle: String {
+        previewAction == .portfolio ? "포트폴리오를 만든다면?" : "컴퓨터활용능력 2급을 취득한다면?"
     }
 
     private func breakdown(_ category: String, _ count: String) -> some View {
@@ -122,11 +150,12 @@ struct APathView: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
         .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .fixedSize()
     }
 
     private var categoryTabs: some View {
         FINDRUnderlineTabs(
-            titles: categories,
+            titles: APathCategory.allCases.map(\.rawValue),
             selection: $selectedCategory,
             fontSize: 13,
             itemSpacing: 18,
@@ -138,48 +167,110 @@ struct APathView: View {
         )
     }
 
-    private func actionCard(_ item: PathAction) -> some View {
-        HStack(spacing: 12) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12, style: .continuous).fill(item.background).frame(width: 44, height: 44)
-                FINDRIcon(name: item.icon, size: 20, tint: item.tint)
+    private func actionCard(_ actionID: APathActionID) -> some View {
+        Button {
+            onOpenAction(actionID)
+        } label: {
+            HStack(spacing: FINDRSpacing.medium) {
+                FINDRIcon(name: actionID.iconName, size: 20, tint: actionID.iconTint)
+                    .frame(width: 44, height: 44)
+                    .background(actionID.iconBackground, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(selectedAPathCategory == .certificate ? actionID.categoryTitle : actionID.title)
+                        .font(FINDRFont.bold(14))
+                        .foregroundStyle(FINDRColor.primaryText)
+                        .lineLimit(1)
+                    Text(actionID.subtitle)
+                        .font(FINDRFont.regular(11))
+                        .foregroundStyle(FINDRColor.tertiaryText)
+                        .lineLimit(1)
+                }
+
+                Spacer(minLength: FINDRSpacing.small)
+
+                VStack(alignment: .trailing, spacing: 0) {
+                    if completedActions.contains(actionID) {
+                        Text("완료")
+                            .font(FINDRFont.bold(12))
+                            .foregroundStyle(FINDRColor.success)
+                    } else {
+                        Text("+\(actionID.opportunityCount)개")
+                            .font(FINDRFont.bold(14))
+                            .foregroundStyle(FINDRColor.brand)
+                    }
+                    Text("기회")
+                        .font(FINDRFont.regular(10))
+                        .foregroundStyle(FINDRColor.tertiaryText)
+                }
             }
-            VStack(alignment: .leading, spacing: 2) {
-                Text(item.title)
-                    .font(FINDRFont.bold(14))
-                    .foregroundStyle(FINDRColor.primaryText)
-                    .lineLimit(1)
-                Text(item.subtitle)
-                    .font(FINDRFont.regular(11))
-                    .foregroundStyle(FINDRColor.tertiaryText)
-                    .lineLimit(1)
+            .padding(14)
+            .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(FINDRColor.border, lineWidth: 1)
             }
-            Spacer(minLength: 4)
-            VStack(alignment: .trailing, spacing: 0) {
-                Text("+\(item.opportunityCount)개")
-                    .font(FINDRFont.bold(14))
-                    .foregroundStyle(FINDRColor.brand)
-                Text("기회")
-                    .font(FINDRFont.regular(10))
-                    .foregroundStyle(FINDRColor.tertiaryText)
-            }
+            .contentShape(Rectangle())
         }
-        .padding(14)
-        .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(FINDRColor.border, lineWidth: 1)
-        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("apath-action-\(actionID.id)")
     }
 }
 
-private struct PathAction: Identifiable {
-    let title: String
-    let subtitle: String
-    let icon: String
-    let category: String
-    let background: Color
-    let tint: Color
-    let opportunityCount: Int
+private struct APathHelpSheet: View {
+    let onClose: () -> Void
 
-    var id: String { title }
+    private let instructions = [
+        ("지금 가능한 기회를 계산해요", "프로필 조건과 1,200개 기회의 지원 조건을 비교해요."),
+        ("부족한 조건을 찾아요", "지원하지 못하는 기회에서 부족한 조건을 모아요."),
+        ("다음 행동을 추천해요", "가장 많은 기회를 여는 행동부터 순서대로 보여드려요.")
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
+            HStack {
+                Text("A-Path는 이렇게 작동해요")
+                    .font(FINDRFont.bold(17))
+                    .kerning(-0.34)
+                    .foregroundStyle(FINDRColor.primaryText)
+                Spacer()
+                Button(action: onClose) {
+                    FINDRIcon(name: FINDRAssetName.aPathClose, size: 22, tint: FINDRColor.secondaryText)
+                        .frame(width: 24, height: 24)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("닫기")
+            }
+
+            VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
+                ForEach(instructions.indices, id: \.self) { index in
+                    HStack(alignment: .top, spacing: FINDRSpacing.medium) {
+                        Text("\(index + 1)")
+                            .font(FINDRFont.bold(12))
+                            .foregroundStyle(FINDRColor.brand)
+                            .frame(width: 28, height: 28)
+                            .background(FINDRColor.brandSubtle, in: Circle())
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(instructions[index].0)
+                                .font(FINDRFont.bold(13))
+                                .foregroundStyle(FINDRColor.primaryText)
+                            Text(instructions[index].1)
+                                .font(FINDRFont.regular(11))
+                                .foregroundStyle(FINDRColor.secondaryText)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+            }
+
+            FINDRButton(title: "알겠어요", action: onClose)
+                .padding(.top, FINDRSpacing.xSmall)
+        }
+        .padding(.horizontal, FINDRSpacing.screen)
+        .padding(.top, FINDRSpacing.large)
+        .padding(.bottom, FINDRSpacing.medium)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(FINDRColor.surface.ignoresSafeArea())
+    }
 }
