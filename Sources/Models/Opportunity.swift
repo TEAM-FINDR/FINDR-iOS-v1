@@ -89,7 +89,7 @@ struct Opportunity: Identifiable, Hashable {
     static let samples: [Opportunity] = [
         Opportunity(
             id: "gwangju-ai-camp", title: "광주 청소년 AI 캠프", organization: "광주광역시교육청", location: "광주",
-            deadline: "D-7", dateRange: "2026.10.01 ~ 2026.10.08", categories: ["교육", "광주", "청소년"],
+            deadline: "D-7", dateRange: "2026.10.01 ~ 2026.10.08", categories: ["교육", "광주", "오프라인"],
             artwork: .cpu, status: .eligible, completedConditions: 4, totalConditions: 4,
             conditionNames: ["나이 조건 (만 14세 ~ 19세)", "지역 조건 (광주광역시 거주 또는 재학)", "학생 조건 (중·고등학생)", "관심 분야 (AI, SW 관련)"], missingCondition: nil
         ),

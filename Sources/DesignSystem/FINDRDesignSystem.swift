@@ -362,6 +362,7 @@ struct FINDRSectionHeader: View {
 
 enum FINDRButtonKind: Equatable {
     case primary, secondary, outline
+    case inverse
 }
 
 struct FINDRButton: View {
@@ -391,9 +392,8 @@ struct FINDRButton: View {
 
     private var foreground: Color {
         switch kind {
-        case .primary: .white
-        case .secondary: FINDRColor.primaryText
-        case .outline: FINDRColor.primaryText
+        case .primary, .inverse: .white
+        case .secondary, .outline: FINDRColor.primaryText
         }
     }
 
@@ -402,6 +402,7 @@ struct FINDRButton: View {
         case .primary: FINDRColor.brandButton
         case .secondary: FINDRColor.inverse
         case .outline: FINDRColor.surface
+        case .inverse: FINDRColor.inverse
         }
     }
 }

@@ -17,12 +17,12 @@ struct OpportunityDetailView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 0) {
                 navigationHeader
-                    .padding(.bottom, 22)
+                    .padding(.bottom, 12)
                 overview
                 sectionSelector
-                    .padding(.top, 20)
+                    .padding(.top, 15)
                 sectionContent
-                    .padding(.top, 16)
+                    .padding(.top, 17)
             }
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, 4)
@@ -64,38 +64,49 @@ struct OpportunityDetailView: View {
     }
 
     private var overview: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            FINDRTag(title: opportunity.deadline, tone: .danger, font: FINDRFont.bold(11), horizontalPadding: 8, verticalPadding: 4)
+        VStack(alignment: .leading, spacing: 0) {
+            FINDRTag(title: opportunity.deadline, tone: .danger, font: FINDRFont.bold(12), kerning: 0, textHeight: 17, horizontalPadding: 8, verticalPadding: 4)
             Text(opportunity.title)
-                .font(FINDRFont.bold(22))
-                .kerning(-0.44)
+                .font(FINDRFont.bold(24))
+                .kerning(-0.48)
                 .foregroundStyle(FINDRColor.primaryText)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 14)
             HStack(spacing: 6) {
                 ForEach(opportunity.categories.prefix(3), id: \.self) { category in
-                    FINDRTag(title: category, tone: .brand, font: FINDRFont.regular(11), horizontalPadding: 8, verticalPadding: 4)
+                    FINDRTag(title: category, tone: .brand, font: FINDRFont.regular(12), kerning: -0.24, textHeight: 17, horizontalPadding: 8, verticalPadding: 4)
                 }
             }
-            VStack(alignment: .leading, spacing: 5) {
-                HStack(spacing: 8) {
-                    FINDRIcon(name: FINDRAssetName.building, size: 15, tint: FINDRColor.tertiaryText)
+            .padding(.top, 12)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    FINDRIcon(name: FINDRAssetName.building, size: 16, tint: FINDRColor.tertiaryText)
                     Text(opportunity.organization)
-                        .font(FINDRFont.regular(12))
+                        .font(FINDRFont.regular(13))
+                        .kerning(-0.26)
                         .foregroundStyle(FINDRColor.secondaryText)
                 }
-                HStack(spacing: 8) {
-                    FINDRIcon(name: FINDRAssetName.calendar, size: 15, tint: FINDRColor.tertiaryText)
+                HStack(spacing: 6) {
+                    FINDRIcon(name: FINDRAssetName.calendar, size: 16, tint: FINDRColor.tertiaryText)
                     Text(opportunity.dateRange)
-                        .font(FINDRFont.regular(12))
+                        .font(FINDRFont.regular(13))
+                        .kerning(-0.26)
                         .foregroundStyle(FINDRColor.secondaryText)
                 }
             }
-            .padding(.top, 2)
+            .padding(.top, 9)
         }
     }
 
     private var sectionSelector: some View {
-        FINDRUnderlineTabs(titles: sections, selection: $selectedSection)
+        FINDRUnderlineTabs(
+            titles: sections,
+            selection: $selectedSection,
+            fontSize: 14,
+            selectedFont: FINDRFont.bold(14),
+            unselectedFont: FINDRFont.medium(14),
+            textKerning: -0.28
+        )
     }
 
     @ViewBuilder
@@ -125,7 +136,7 @@ struct OpportunityDetailView: View {
     }
 
     private var eligibilitySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 13) {
             statusCard
             VStack(spacing: 0) {
                 ForEach(Array(opportunity.conditionNames.enumerated()), id: \.offset) { index, condition in
@@ -148,7 +159,7 @@ struct OpportunityDetailView: View {
         let title = isEligible ? "지금, 이 기회에 지원할 수 있어요!" : (opportunity.status == .nearlyEligible ? "조금만 더 준비하면 지원 가능해요" : "포트폴리오만 준비하면 지원 가능해요")
         let tone = isEligible ? FINDRTagTone.success : (opportunity.status == .nearlyEligible ? FINDRTagTone.warning : .warning)
         let iconName = isEligible ? FINDRAssetName.checkCircle : FINDRAssetName.alert
-        return VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 10) {
                 ZStack {
                     Circle().fill(FINDRColor.surface).frame(width: 36, height: 36)
@@ -156,28 +167,31 @@ struct OpportunityDetailView: View {
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(FINDRFont.bold(14))
+                        .font(FINDRFont.bold(15))
+                        .kerning(-0.3)
                         .foregroundStyle(tone.foreground)
                     Text("\(opportunity.completedConditions)/\(opportunity.totalConditions) 조건 충족 · \(Int(opportunity.progress * 100))%")
-                        .font(FINDRFont.regular(12))
+                        .font(FINDRFont.medium(13))
+                        .kerning(-0.26)
                         .foregroundStyle(FINDRColor.secondaryText)
                 }
             }
             FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 6)
         }
-        .padding(16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14.5)
         .background(tone.background, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     private func conditionRow(_ title: String, isMissing: Bool) -> some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
             ZStack {
                 Circle().fill(isMissing ? FINDRColor.dangerSubtle : FINDRColor.brandSubtle).frame(width: 22, height: 22)
-                FINDRIcon(name: isMissing ? FINDRAssetName.missing : FINDRAssetName.check, size: 13, tint: isMissing ? FINDRColor.danger : FINDRColor.brand)
+                FINDRIcon(name: isMissing ? FINDRAssetName.missing : FINDRAssetName.check, size: 14, tint: isMissing ? FINDRColor.danger : FINDRColor.brand)
             }
             Text(title)
-                .font(FINDRFont.regular(13))
-                .kerning(-0.26)
+                .font(FINDRFont.regular(14))
+                .kerning(-0.28)
                 .foregroundStyle(isMissing ? FINDRColor.danger : FINDRColor.primaryText)
                 .lineLimit(2)
             Spacer(minLength: 4)
@@ -190,9 +204,10 @@ struct OpportunityDetailView: View {
 
     private func benefitTag(icon: String, title: String) -> some View {
         HStack(spacing: 6) {
-            FINDRIcon(name: icon, size: 15, tint: FINDRColor.brand)
+            FINDRIcon(name: icon, size: 16, tint: FINDRColor.brand)
             Text(title)
-                .font(FINDRFont.medium(12))
+                .font(FINDRFont.medium(13))
+                .kerning(-0.26)
                 .foregroundStyle(FINDRColor.primaryText)
         }
         .padding(.horizontal, 12)
@@ -229,14 +244,16 @@ struct OpportunityDetailView: View {
             FINDRButton(title: isSaved ? "저장됨" : "저장하기", kind: .outline) {
                 toggleSaved()
             }
+            .frame(height: 55)
             .frame(maxWidth: 116)
-            FINDRButton(title: isMissing ? "A-Path에서 준비하기" : "신청하러 가기", kind: isMissing ? .primary : .secondary) {
+            FINDRButton(title: isMissing ? "A-Path에서 준비하기" : "신청하러 가기", kind: isMissing ? .primary : .inverse) {
                 if isMissing { onPrepareWithPath() } else { showApplyNotice = true }
             }
+            .frame(height: 53)
         }
         .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.top, 12)
-        .padding(.bottom, 8)
+        .padding(.top, 13)
+        .padding(.bottom, -4)
         .background(FINDRColor.surface.overlay(alignment: .top) { FINDRColor.divider.frame(height: 1) }.ignoresSafeArea(edges: .bottom))
     }
 
