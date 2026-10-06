@@ -1,19 +1,10 @@
 import SwiftUI
 import UserNotifications
 
-private enum OnboardingStep: Equatable {
-    case splash
-    case introduction(Int)
-    case login
-    case profile(Int)
-    case analyzing
-    case result
-}
-
 struct OnboardingFlowView: View {
     let onComplete: () -> Void
 
-    @State private var step: OnboardingStep = .splash
+    @State private var step: FINDROnboardingFlowStep = .splash
     @State private var profile = FINDROnboardingProfile()
 
     var body: some View {
@@ -25,7 +16,7 @@ struct OnboardingFlowView: View {
                 FINDROnboardingIntroView(
                     page: page,
                     onSkip: { step = .login },
-                    onContinue: advanceIntroduction
+                    onContinue: { step = step.advancingIntroduction() }
                 )
             case .login:
                 FINDROnboardingLoginView {
@@ -35,8 +26,8 @@ struct OnboardingFlowView: View {
                 FINDRProfileSetupView(
                     page: page,
                     profile: $profile,
-                    onBack: goBackFromProfile,
-                    onContinue: advanceProfile
+                    onBack: { step = step.goingBackFromProfile() },
+                    onContinue: { step = step.advancingProfile() }
                 )
             case .analyzing:
                 FINDRAnalyzingView()
@@ -65,21 +56,6 @@ struct OnboardingFlowView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: step)
-    }
-
-    private func advanceIntroduction() {
-        guard case .introduction(let page) = step else { return }
-        step = page < 3 ? .introduction(page + 1) : .login
-    }
-
-    private func advanceProfile() {
-        guard case .profile(let page) = step else { return }
-        step = page < 4 ? .profile(page + 1) : .analyzing
-    }
-
-    private func goBackFromProfile() {
-        guard case .profile(let page) = step else { return }
-        step = page > 1 ? .profile(page - 1) : .login
     }
 
     private func requestNotificationPermission() {
