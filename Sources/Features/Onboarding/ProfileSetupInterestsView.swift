@@ -25,7 +25,7 @@ struct FINDRProfileSetupInterestsView: View {
     private func toggle(_ option: String) {
         if selection.contains(option) {
             selection.remove(option)
-        } else {
+        } else if selection.count < 5 {
             selection.insert(option)
         }
     }

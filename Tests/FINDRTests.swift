@@ -10,6 +10,7 @@ final class FINDRTests: XCTestCase {
         XCTAssertEqual(profile.status, "고등학생")
         XCTAssertEqual(profile.interests, ["개발", "디자인", "창업"])
         XCTAssertEqual(profile.opportunityTypes, ["교육", "공모전", "창업"])
+        XCTAssertEqual(profile.conditions, [.certification, .education, .project])
     }
 
     func testProfileAgeUsesBirthYear() {
@@ -61,5 +62,41 @@ final class FINDRTests: XCTestCase {
         XCTAssertFalse(profile.canContinue(on: 4))
         profile.opportunityTypes = ["교육"]
         XCTAssertTrue(profile.canContinue(on: 4))
+    }
+
+    func testInterestsCanBeToggledUpToFive() {
+        var profile = FINDROnboardingProfile()
+        profile.interests = ["개발", "디자인", "창업", "AI·데이터", "과학"]
+
+        profile.toggleInterest("환경")
+        XCTAssertEqual(profile.interests.count, 5)
+        XCTAssertFalse(profile.interests.contains("환경"))
+
+        profile.toggleInterest("개발")
+        XCTAssertEqual(profile.interests.count, 4)
+        XCTAssertFalse(profile.interests.contains("개발"))
+    }
+
+    func testProfileStoreRoundTripsProfile() {
+        let suiteName = "FINDRProfileStoreTests-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        var profile = FINDROnboardingProfile()
+        profile.name = "테스트 사용자"
+        profile.conditions = [.education, .portfolio, .career]
+        profile.profilePhotoPath = "profiles/avatar.jpg"
+        FINDRProfileStore.save(profile, to: defaults)
+
+        XCTAssertEqual(FINDRProfileStore.load(from: defaults), profile)
+    }
+
+    func testProfileStoreFallsBackWhenStoredDataIsInvalid() {
+        let suiteName = "FINDRProfileStoreTests-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        defaults.set(Data("not-json".utf8), forKey: FINDRProfileStore.key)
+
+        XCTAssertEqual(FINDRProfileStore.load(from: defaults), FINDROnboardingProfile())
     }
 }
