@@ -13,6 +13,7 @@ struct MyProfileEditorView: View {
     @State private var isLoadingPhoto = false
     @State private var showPhotoError = false
     @State private var photoErrorMessage = ""
+    @State private var isSaveConfirmationVisible = false
 
     init(profile: Binding<FINDROnboardingProfile>, onSave: @escaping () -> Void) {
         _profile = profile
@@ -25,11 +26,14 @@ struct MyProfileEditorView: View {
             FINDRBackNavigationHeader(title: "프로필 수정", onBack: { dismiss() })
 
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: FINDRSpacing.section) {
+                VStack(alignment: .leading, spacing: FINDRSpacing.large) {
                     photoPicker
-                    FINDRProfileSetupTitleView(title: "기본 정보를\n수정해주세요", subtitle: "프로필 정보는 맞춤 기회를 찾는 데 사용돼요.")
                     personalInformation
-                    statusSelection
+                    Text("현재 상태")
+                        .font(FINDRFont.medium(12))
+                        .foregroundStyle(FINDRColor.secondaryText)
+                        .frame(height: 17, alignment: .leading)
+                    statusOptions
                     if !draft.isValidForSaving {
                         Text(validationMessage)
                             .font(FINDRFont.regular(12))
@@ -38,20 +42,18 @@ struct MyProfileEditorView: View {
                     }
                 }
                 .padding(.horizontal, FINDRSpacing.screen)
-                .padding(.top, FINDRSpacing.medium)
+                .padding(.top, FINDRSpacing.small)
                 .padding(.bottom, FINDRSpacing.large)
             }
             .scrollDismissesKeyboard(.interactively)
         }
-        .background(FINDRColor.canvas.ignoresSafeArea())
+        .background(FINDRColor.surface.ignoresSafeArea())
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            FINDRButton(title: "저장", action: save)
-                .disabled(!draft.isValidForSaving || isLoadingPhoto)
-                .opacity(draft.isValidForSaving && !isLoadingPhoto ? 1 : 0.45)
-                .padding(.horizontal, FINDRSpacing.screen)
-                .padding(.top, FINDRSpacing.small)
-                .padding(.bottom, FINDRSpacing.small)
-                .background(FINDRColor.canvas)
+            FINDRBottomCTA(
+                title: "저장하기",
+                isEnabled: draft.isValidForSaving && !isLoadingPhoto,
+                action: save
+            )
         }
         .onChange(of: selectedPhoto) { _, photo in
             guard let photo else { return }
@@ -62,6 +64,17 @@ struct MyProfileEditorView: View {
         } message: {
             Text(photoErrorMessage)
         }
+        .overlay {
+            if isSaveConfirmationVisible {
+                MyProfileSaveConfirmationView {
+                    isSaveConfirmationVisible = false
+                    dismiss()
+                }
+                    .transition(.opacity)
+                    .zIndex(2)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isSaveConfirmationVisible)
     }
 
     private var photoPicker: some View {
@@ -69,59 +82,42 @@ struct MyProfileEditorView: View {
             FINDRProfileAvatar(
                 photoPath: draft.profilePhotoPath,
                 overridePhoto: pendingPhotoData.flatMap(UIImage.init(data:)),
-                size: 84
+                size: 72
             )
             PhotosPicker(selection: $selectedPhoto, matching: .images) {
-                HStack(spacing: 5) {
-                    FINDRIcon(name: FINDRAssetName.profile, size: 14, tint: FINDRColor.brand)
-                    Text(isLoadingPhoto ? "사진 불러오는 중" : "사진 변경")
-                        .font(FINDRFont.medium(12))
-                        .foregroundStyle(FINDRColor.brand)
-                }
+                Text(isLoadingPhoto ? "사진 불러오는 중" : "사진 변경")
+                    .font(FINDRFont.bold(12))
+                    .foregroundStyle(FINDRColor.brand)
+                    .frame(height: 17)
             }
             .disabled(isLoadingPhoto)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, FINDRSpacing.small)
     }
 
     private var personalInformation: some View {
         VStack(alignment: .leading, spacing: FINDRSpacing.large) {
-            Text("기본 정보")
-                .font(FINDRFont.bold(16))
-                .foregroundStyle(FINDRColor.primaryText)
-
             FINDRProfileSetupInputFieldView(
                 title: "이름",
-                helper: "기회 추천에 표시할 이름이에요",
                 text: $draft.name
             )
             FINDRProfileSetupInputFieldView(
                 title: "출생연도",
-                helper: "만 나이 계산에만 사용돼요",
                 text: $draft.birthYear,
                 keyboard: .numberPad
             )
             FINDRProfileSetupInputFieldView(
                 title: "거주 지역",
-                helper: "지역 조건이 있는 기회에 사용돼요",
                 text: $draft.region
             )
         }
-        .padding(FINDRSpacing.large)
-        .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: FINDRRadius.card, style: .continuous))
     }
 
-    private var statusSelection: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
-            Text("현재 상태")
-                .font(FINDRFont.bold(16))
-                .foregroundStyle(FINDRColor.primaryText)
-            FINDRProfileChipFlowLayout(horizontalSpacing: FINDRSpacing.small, verticalSpacing: FINDRSpacing.small) {
-                ForEach(FINDROnboardingProfileOptions.statuses, id: \.self) { status in
-                    FINDRPill(title: status, isSelected: draft.status == status) {
-                        draft.status = status
-                    }
+    private var statusOptions: some View {
+        FINDRProfileChipFlowLayout(horizontalSpacing: FINDRSpacing.small, verticalSpacing: FINDRSpacing.small) {
+            ForEach(FINDROnboardingProfileOptions.myProfileStatuses, id: \.self) { status in
+                FINDRPill(title: status, isSelected: draft.status == status) {
+                    draft.status = status
                 }
             }
         }
@@ -170,7 +166,7 @@ struct MyProfileEditorView: View {
         profile = updatedProfile
         FINDRProfileStore.save(updatedProfile)
         onSave()
-        dismiss()
+        isSaveConfirmationVisible = true
     }
 
     private enum PhotoError: Error {
@@ -182,10 +178,15 @@ struct FINDRProfileAvatar: View {
     let photoPath: String?
     var overridePhoto: UIImage? = nil
     var size: CGFloat = 60
+    var gradientStart = Color(hex: 0xA8C2FF)
+    var gradientEnd = Color(hex: 0x2B61E8)
 
     var body: some View {
         Circle()
-            .fill(LinearGradient(colors: [Color(hex: 0x7DA5FF), Color(hex: 0x2B62E9)], startPoint: .topLeading, endPoint: .bottomTrailing))
+            .fill(LinearGradient(stops: [
+                .init(color: gradientStart, location: 0),
+                .init(color: gradientEnd, location: 0.71429)
+            ], startPoint: .topLeading, endPoint: .bottomTrailing))
             .frame(width: size, height: size)
             .overlay {
                 if let image = overridePhoto ?? savedPhoto {
