@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @AppStorage("FINDR.isDarkMode") private var isDarkMode = false
     @AppStorage("FINDR.didCompleteOnboarding") private var didCompleteOnboarding = false
+    @AppStorage("FINDR.aPath.completedActionIDs") private var completedAPathActionIDsStorage = ""
     @State private var selectedTab: FINDRTab = .home
     @State private var navigationPath: [FINDRNavigationDestination] = []
     @State private var notifications = FINDRNotification.samples
@@ -33,6 +34,30 @@ struct ContentView: View {
                             selectedTab = .path
                             navigationPath.removeAll()
                         }
+                    case .aPathSimulator:
+                        APathSimulatorView(
+                            completedActions: completedAPathActions,
+                            onStartPortfolio: { openAPathAction(.portfolio) }
+                        )
+                    case .aPathAction(let actionID):
+                        APathActionDetailView(
+                            actionID: actionID,
+                            isCompleted: completedAPathActions.contains(actionID),
+                            onComplete: { completeAPathAction(actionID) }
+                        )
+                    case .aPathUnlocked(let actionID):
+                        APathUnlockView(
+                            actionID: actionID,
+                            onOpenOpportunity: open,
+                            onGoHome: {
+                                selectedTab = .home
+                                navigationPath.removeAll()
+                            },
+                            onViewOpportunities: {
+                                selectedTab = .explore
+                                navigationPath.removeAll()
+                            }
+                        )
                     case .notifications:
                         NotificationCenterView(
                             notifications: $notifications,
@@ -65,7 +90,11 @@ struct ContentView: View {
         case .explore:
             ExploreView(onOpenOpportunity: open, onOpenNotifications: openNotificationCenter)
         case .path:
-            APathView()
+            APathView(
+                completedActions: completedAPathActions,
+                onOpenSimulator: { navigationPath.append(.aPathSimulator) },
+                onOpenAction: openAPathAction
+            )
         case .saved:
             SavedView(
                 savedIDs: $savedIDs,
@@ -73,7 +102,11 @@ struct ContentView: View {
                 onOpenNotifications: openNotificationCenter
             )
         case .my:
-            MyView(isDarkMode: $isDarkMode, onOpenNotificationSettings: openNotificationSettings)
+            MyView(
+                isDarkMode: $isDarkMode,
+                completedAPathActions: completedAPathActions,
+                onOpenNotificationSettings: openNotificationSettings
+            )
         }
     }
 
@@ -83,6 +116,32 @@ struct ContentView: View {
 
     private func openNotificationCenter() {
         navigationPath.append(.notifications)
+    }
+
+    private var completedAPathActions: Set<APathActionID> {
+        Set(
+            completedAPathActionIDsStorage
+                .split(separator: ",")
+                .compactMap { APathActionID(rawValue: String($0)) }
+        )
+    }
+
+    private func openAPathAction(_ actionID: APathActionID) {
+        navigationPath.append(.aPathAction(actionID))
+    }
+
+    private func completeAPathAction(_ actionID: APathActionID) {
+        var completedActions = completedAPathActions
+        completedActions.insert(actionID)
+        completedAPathActionIDsStorage = completedActions
+            .map(\.rawValue)
+            .sorted()
+            .joined(separator: ",")
+
+        if !navigationPath.isEmpty {
+            navigationPath.removeLast()
+        }
+        navigationPath.append(.aPathUnlocked(actionID))
     }
 
     private func openNotificationSettings() {
