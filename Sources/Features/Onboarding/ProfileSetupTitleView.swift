@@ -10,7 +10,7 @@ struct FINDRProfileSetupTitleView: View {
                 .font(FINDRFont.titleLarge)
                 .tracking(-0.52)
                 .lineSpacing(0)
-                .foregroundStyle(Color(hex: 0x0E1A3A))
+                .foregroundStyle(FINDRColor.primaryText)
                 .fixedSize(horizontal: false, vertical: true)
 
             if let subtitle {

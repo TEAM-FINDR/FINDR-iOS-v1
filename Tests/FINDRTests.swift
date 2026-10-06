@@ -77,6 +77,31 @@ final class FINDRTests: XCTestCase {
         XCTAssertFalse(profile.interests.contains("개발"))
     }
 
+    func testProfileSaveValidationRequiresValidBasicInformationAndSelections() {
+        var profile = FINDROnboardingProfile()
+        profile.birthYear = String(Calendar.current.component(.year, from: .now) - 17)
+        XCTAssertTrue(profile.isValidForSaving)
+
+        profile.name = "  \n"
+        XCTAssertFalse(profile.isValidForSaving)
+        profile.name = "이시우"
+
+        profile.region = "  "
+        XCTAssertFalse(profile.isValidForSaving)
+        profile.region = "광주광역시"
+
+        profile.status = ""
+        XCTAssertFalse(profile.isValidForSaving)
+        profile.status = "고등학생"
+
+        profile.interests = []
+        XCTAssertFalse(profile.isValidForSaving)
+        profile.interests = ["개발"]
+
+        profile.opportunityTypes = []
+        XCTAssertFalse(profile.isValidForSaving)
+    }
+
     func testProfileStoreRoundTripsProfile() {
         let suiteName = "FINDRProfileStoreTests-\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suiteName)!

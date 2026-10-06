@@ -11,7 +11,8 @@ struct MyProfileEditorView: View {
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var pendingPhotoData: Data?
     @State private var isLoadingPhoto = false
-    @State private var showPhotoSaveError = false
+    @State private var showPhotoError = false
+    @State private var photoErrorMessage = ""
 
     init(profile: Binding<FINDROnboardingProfile>, onSave: @escaping () -> Void) {
         _profile = profile
@@ -56,10 +57,10 @@ struct MyProfileEditorView: View {
             guard let photo else { return }
             Task { await loadPhoto(photo) }
         }
-        .alert("사진을 저장하지 못했어요", isPresented: $showPhotoSaveError) {
+        .alert("사진을 처리하지 못했어요", isPresented: $showPhotoError) {
             Button("확인", role: .cancel) {}
         } message: {
-            Text("다시 선택한 뒤 저장해주세요.")
+            Text(photoErrorMessage)
         }
     }
 
@@ -142,8 +143,17 @@ struct MyProfileEditorView: View {
     @MainActor
     private func loadPhoto(_ photo: PhotosPickerItem) async {
         isLoadingPhoto = true
+        pendingPhotoData = nil
         defer { isLoadingPhoto = false }
-        pendingPhotoData = try? await photo.loadTransferable(type: Data.self)
+        do {
+            guard let data = try await photo.loadTransferable(type: Data.self), UIImage(data: data) != nil else {
+                throw PhotoError.invalidImage
+            }
+            pendingPhotoData = data
+        } catch {
+            photoErrorMessage = "다른 사진을 선택한 뒤 다시 시도해주세요."
+            showPhotoError = true
+        }
     }
 
     private func save() {
@@ -151,7 +161,8 @@ struct MyProfileEditorView: View {
         var updatedProfile = draft
         if let pendingPhotoData {
             guard let photoPath = FINDRProfileStore.saveProfilePhoto(pendingPhotoData) else {
-                showPhotoSaveError = true
+                photoErrorMessage = "사진을 저장하지 못했어요. 다시 시도해주세요."
+                showPhotoError = true
                 return
             }
             updatedProfile.profilePhotoPath = photoPath
@@ -160,6 +171,10 @@ struct MyProfileEditorView: View {
         FINDRProfileStore.save(updatedProfile)
         onSave()
         dismiss()
+    }
+
+    private enum PhotoError: Error {
+        case invalidImage
     }
 }
 

@@ -34,7 +34,7 @@ struct FINDRProfileSetupView: View {
         case 2:
             FINDRProfileSetupStatusSelectionView(status: $profile.status)
         case 3:
-            FINDRProfileSetupInterestsView(selection: $profile.interests)
+            FINDRProfileSetupInterestsView(profile: $profile)
         case 4:
             FINDRProfileSetupOpportunityTypesView(selection: $profile.opportunityTypes)
         default:

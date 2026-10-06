@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FINDRProfileSetupInterestsView: View {
-    @Binding var selection: Set<String>
+    @Binding var profile: FINDROnboardingProfile
 
     private let options = FINDROnboardingProfileOptions.interests
 
@@ -9,24 +9,20 @@ struct FINDRProfileSetupInterestsView: View {
         VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
             FINDRProfileChipFlowLayout(horizontalSpacing: FINDRSpacing.small, verticalSpacing: FINDRSpacing.small) {
                 ForEach(options, id: \.self) { option in
-                    FINDRPill(title: option, isSelected: selection.contains(option)) {
+                    FINDRPill(title: option, isSelected: profile.interests.contains(option)) {
                         toggle(option)
                     }
                 }
             }
 
-            Text("\(selection.count)개 선택됨")
+            Text("\(profile.interests.count)개 선택됨")
                 .font(FINDRFont.medium(12))
                 .foregroundStyle(FINDRColor.brand)
-                .accessibilityLabel("관심 분야 \(selection.count)개 선택됨")
+                .accessibilityLabel("관심 분야 \(profile.interests.count)개 선택됨")
         }
     }
 
     private func toggle(_ option: String) {
-        if selection.contains(option) {
-            selection.remove(option)
-        } else if selection.count < 5 {
-            selection.insert(option)
-        }
+        profile.toggleInterest(option)
     }
 }

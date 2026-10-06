@@ -20,7 +20,7 @@ struct FINDRProfileSetupInputFieldView: View {
                 .keyboardType(keyboard)
                 .padding(.horizontal, FINDRSpacing.large)
                 .frame(height: 48)
-                .background(Color.white, in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous))
+                .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous)
                         .stroke(isAccent ? FINDRColor.brandButton : FINDRColor.borderStrong, lineWidth: isAccent ? 1.5 : 1)
