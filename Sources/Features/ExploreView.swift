@@ -151,7 +151,7 @@ struct ExploreView: View {
     private func filterMenu(key: String, title: String, options: [String]) -> some View {
         let selectedOption = selectedFilters[key]
         let label = selectedOption == options.first ? title : (selectedOption ?? title)
-        Menu {
+        return Menu {
             ForEach(options, id: \.self) { option in
                 Button(option) {
                     if option == options.first {
