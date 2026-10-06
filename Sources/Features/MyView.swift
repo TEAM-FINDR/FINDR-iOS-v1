@@ -2,6 +2,7 @@ import SwiftUI
 
 private enum MYEditorDestination: String, Identifiable {
     case profile
+    case interests
 
     var id: String { rawValue }
 }
@@ -38,7 +39,13 @@ struct MyView: View {
             VStack(alignment: .leading, spacing: 12) {
                 header
                 profileCard
-                selectionCard(title: "관심 분야", values: profile.orderedInterests, addLabel: "추가")
+                selectionCard(
+                    title: "관심 분야",
+                    values: profile.orderedInterests,
+                    addLabel: "추가",
+                    onEdit: { activeEditor = .interests },
+                    onAdd: { activeEditor = .interests }
+                )
                 selectionCard(title: "보유 조건", values: conditions, addLabel: "추가")
                 menuCard
                     .padding(.top, 1)
@@ -57,6 +64,10 @@ struct MyView: View {
             switch destination {
             case .profile:
                 MyProfileEditorView(profile: $profile) {
+                    shouldShowProfileSaveConfirmation = true
+                }
+            case .interests:
+                MyInterestsEditorView(profile: $profile) {
                     shouldShowProfileSaveConfirmation = true
                 }
             }
@@ -128,7 +139,13 @@ struct MyView: View {
         }
     }
 
-    private func selectionCard(title: String, values: [String], addLabel: String) -> some View {
+    private func selectionCard(
+        title: String,
+        values: [String],
+        addLabel: String,
+        onEdit: (() -> Void)? = nil,
+        onAdd: (() -> Void)? = nil
+    ) -> some View {
         FINDRCard(padding: 16) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
@@ -136,7 +153,7 @@ struct MyView: View {
                         .font(FINDRFont.bold(14))
                         .foregroundStyle(FINDRColor.primaryText)
                     Spacer()
-                    Button { showAction("\(title) 수정") } label: {
+                    Button { (onEdit ?? { showAction("\(title) 수정") })() } label: {
                         HStack(spacing: 3) {
                             Text("수정")
                             FINDRIcon(name: FINDRAssetName.chevronRight, size: 13, tint: FINDRColor.tertiaryText)
@@ -147,7 +164,7 @@ struct MyView: View {
                     .buttonStyle(.plain)
                 }
                 FlowTags(values: values, dashedAddLabel: addLabel) {
-                    showAction("\(title) 추가")
+                    (onAdd ?? { showAction("\(title) 추가") })()
                 }
             }
         }
