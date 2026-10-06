@@ -21,12 +21,24 @@ enum FINDRProfileCondition: String, CaseIterable, Codable, Hashable, Identifiabl
         }
     }
 
+    var shortTitle: String {
+        switch self {
+        case .certification: "자격증"
+        case .education: "교육 이수"
+        case .project: "프로젝트"
+        case .portfolio: "포트폴리오"
+        case .award: "수상·활동 경험"
+        case .career: "경력"
+        }
+    }
+
     var iconName: String {
         switch self {
-        case .certification, .award: FINDRAssetName.award
+        case .certification: FINDRAssetName.award
         case .education: FINDRAssetName.graduation
         case .project: FINDRAssetName.rocket
         case .portfolio: FINDRAssetName.file
+        case .award: FINDRAssetName.aPathOpportunityTrophy
         case .career: FINDRAssetName.building
         }
     }

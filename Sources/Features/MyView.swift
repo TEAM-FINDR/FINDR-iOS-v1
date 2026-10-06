@@ -42,11 +42,13 @@ struct MyView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 12) {
                 header
+                    .frame(height: 41)
                 profileCard
                 selectionCard(
                     title: "관심 분야",
                     values: profile.orderedInterests,
                     addLabel: "추가",
+                    tagTone: .brand,
                     onEdit: { activeEditor = .interests },
                     onAdd: { activeEditor = .interests }
                 )
@@ -54,11 +56,11 @@ struct MyView: View {
                     title: "보유 조건",
                     values: conditions,
                     addLabel: "추가",
+                    tagTone: .neutral,
                     onEdit: { isConditionSheetPresented = true },
                     onAdd: { isConditionSheetPresented = true }
                 )
                 menuCard
-                    .padding(.top, 1)
                 Text("버전 1.0.0")
                     .font(FINDRFont.regular(10))
                     .foregroundStyle(FINDRColor.tertiaryText)
@@ -67,15 +69,13 @@ struct MyView: View {
                     .padding(.bottom, 16)
             }
             .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.top, 14)
+            .padding(.top, 26)
         }
         .background(FINDRColor.canvas)
         .fullScreenCover(item: $activeEditor, onDismiss: presentSaveConfirmationIfNeeded) { destination in
             switch destination {
             case .profile:
-                MyProfileEditorView(profile: $profile) {
-                    shouldShowProfileSaveConfirmation = true
-                }
+                MyProfileEditorView(profile: $profile) {}
             case .interests:
                 MyInterestsEditorView(profile: $profile) {
                     shouldShowProfileSaveConfirmation = true
@@ -88,13 +88,16 @@ struct MyView: View {
                 FINDRProfileStore.save(profile)
                 isConditionSheetPresented = false
             }
-            .presentationDetents([.height(560), .large])
-            .presentationDragIndicator(.visible)
-            .presentationCornerRadius(24)
+            .presentationDetents([.height(343)])
+            .presentationDragIndicator(.hidden)
+            .presentationCornerRadius(20)
+            .presentationBackground(FINDRColor.surface)
         }
         .overlay {
             if isProfileSaveConfirmationVisible {
-                profileSaveConfirmation
+                MyProfileSaveConfirmationView {
+                    isProfileSaveConfirmationVisible = false
+                }
                     .transition(.opacity)
                     .zIndex(2)
             }
@@ -117,43 +120,60 @@ struct MyView: View {
     }
 
     private var profileCard: some View {
-        FINDRCard(padding: 16, hasShadow: true) {
-            VStack(alignment: .leading, spacing: 14) {
+        FINDRCard(padding: 17, hasShadow: true) {
+            VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 12) {
-                    FINDRProfileAvatar(photoPath: profile.profilePhotoPath, size: 60)
+                    FINDRProfileAvatar(
+                        photoPath: profile.profilePhotoPath,
+                        size: 60,
+                        gradientStart: Color(hex: 0xA9C3FF),
+                        gradientEnd: Color(hex: 0x2F6BFF)
+                    )
                     VStack(alignment: .leading, spacing: 2) {
                         Text(profile.name)
                             .font(FINDRFont.bold(18))
+                            .kerning(-0.36)
                             .foregroundStyle(FINDRColor.primaryText)
+                            .frame(height: 25, alignment: .leading)
                         Text(profileSummary)
-                            .font(FINDRFont.regular(12))
+                            .font(FINDRFont.regular(13))
+                            .kerning(-0.26)
                             .foregroundStyle(FINDRColor.secondaryText)
+                            .frame(height: 18, alignment: .leading)
                         Button { activeEditor = .profile } label: {
                             HStack(spacing: 3) {
                                 Text("프로필 수정")
-                                FINDRIcon(name: FINDRAssetName.chevronRight, size: 12, tint: FINDRColor.brand)
+                                    .font(FINDRFont.medium(12))
+                                FINDRIcon(name: FINDRAssetName.chevronRight, size: 14, tint: FINDRColor.brand)
                             }
-                            .font(FINDRFont.medium(11))
                             .foregroundStyle(FINDRColor.brand)
+                            .frame(height: 17, alignment: .leading)
                         }
                         .buttonStyle(.plain)
                     }
                     Spacer()
                 }
-                VStack(alignment: .leading, spacing: 7) {
+                .frame(height: 64)
+                VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("프로필 완성도")
-                            .font(FINDRFont.medium(11))
+                            .font(FINDRFont.medium(13))
+                            .kerning(-0.26)
                             .foregroundStyle(FINDRColor.secondaryText)
                         Spacer()
                         Text("70%")
-                            .font(FINDRFont.bold(12))
+                            .font(FINDRFont.bold(13))
+                            .kerning(-0.26)
                             .foregroundStyle(FINDRColor.brand)
                     }
+                    .frame(height: 18)
                     FINDRProgressBar(progress: 0.7, color: FINDRColor.brandButton, height: 6)
+                        .frame(width: 289)
                     Text("보유 조건을 추가하면 더 정확하게 추천해드려요")
-                        .font(FINDRFont.regular(11))
+                        .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
+                        .frame(height: 17, alignment: .leading)
                 }
             }
         }
@@ -163,27 +183,32 @@ struct MyView: View {
         title: String,
         values: [String],
         addLabel: String,
+        tagTone: FINDRTagTone,
         onEdit: (() -> Void)? = nil,
         onAdd: (() -> Void)? = nil
     ) -> some View {
-        FINDRCard(padding: 16) {
+        FINDRCard(padding: 17) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text(title)
-                        .font(FINDRFont.bold(14))
+                        .font(FINDRFont.bold(15))
+                        .kerning(-0.3)
                         .foregroundStyle(FINDRColor.primaryText)
+                        .frame(height: 21, alignment: .leading)
                     Spacer()
                     Button { (onEdit ?? { showAction("\(title) 수정") })() } label: {
                         HStack(spacing: 3) {
                             Text("수정")
-                            FINDRIcon(name: FINDRAssetName.chevronRight, size: 13, tint: FINDRColor.tertiaryText)
+                                .font(FINDRFont.regular(12))
+                                .kerning(-0.24)
+                            FINDRIcon(name: FINDRAssetName.chevronRight, size: 14, tint: FINDRColor.tertiaryText)
                         }
-                        .font(FINDRFont.regular(11))
                         .foregroundStyle(FINDRColor.tertiaryText)
+                        .frame(height: 17)
                     }
                     .buttonStyle(.plain)
                 }
-                FlowTags(values: values, dashedAddLabel: addLabel) {
+                FlowTags(values: values, tone: tagTone, dashedAddLabel: addLabel) {
                     (onAdd ?? { showAction("\(title) 추가") })()
                 }
             }
@@ -191,35 +216,48 @@ struct MyView: View {
     }
 
     private var menuCard: some View {
-        FINDRCard(padding: 10) {
-            VStack(spacing: 0) {
-                ForEach(Array(menuItems.enumerated()), id: \.offset) { index, item in
-                    Button {
-                        if item.0 == "알림 설정" {
-                            onOpenNotificationSettings()
-                        } else {
-                            showAction(item.0)
-                        }
-                    } label: {
-                        HStack(spacing: 10) {
-                            FINDRIcon(name: item.1, size: 18, tint: FINDRColor.secondaryText)
-                            Text(item.0)
-                                .font(FINDRFont.medium(14))
-                                .foregroundStyle(FINDRColor.primaryText)
-                            Spacer()
-                            FINDRIcon(name: FINDRAssetName.chevronRight, size: 15, tint: FINDRColor.inactiveIcon)
-                        }
-                        .padding(.horizontal, 6)
-                        .frame(height: 44)
-                        .contentShape(Rectangle())
+        VStack(spacing: 0) {
+            ForEach(Array(menuItems.enumerated()), id: \.offset) { index, item in
+                Button {
+                    if item.0 == "알림 설정" {
+                        onOpenNotificationSettings()
+                    } else {
+                        showAction(item.0)
                     }
-                    .buttonStyle(.plain)
+                } label: {
+                    HStack(spacing: 10) {
+                        FINDRIcon(name: item.1, size: 18, tint: FINDRColor.secondaryText)
+                        Text(item.0)
+                            .font(FINDRFont.medium(14))
+                            .kerning(-0.28)
+                            .foregroundStyle(FINDRColor.primaryText)
+                            .frame(height: 20, alignment: .leading)
+                        Spacer()
+                        FINDRIcon(name: FINDRAssetName.chevronRight, size: 16, tint: FINDRColor.inactiveIcon)
+                    }
+                    .frame(height: index == menuItems.count - 1 ? 44 : 45)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .overlay(alignment: .bottom) {
                     if index < menuItems.count - 1 {
-                        FINDRColor.divider.frame(height: 1).padding(.leading, 30)
+                        FINDRColor.divider
+                            .frame(height: 1)
+                            .padding(.leading, 28)
                     }
                 }
             }
         }
+        .padding(.horizontal, 17)
+        .padding(.vertical, 5)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(FINDRColor.surface)
+        .clipShape(RoundedRectangle(cornerRadius: FINDRRadius.card, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: FINDRRadius.card, style: .continuous)
+                .stroke(FINDRColor.border, lineWidth: 1)
+        }
+        .shadow(color: .black.opacity(0.06), radius: 18, x: 0, y: 4)
     }
 
     private func showAction(_ action: String) {
@@ -233,35 +271,6 @@ struct MyView: View {
         isProfileSaveConfirmationVisible = true
     }
 
-    private var profileSaveConfirmation: some View {
-        ZStack {
-            Color.black.opacity(0.38)
-                .ignoresSafeArea()
-                .onTapGesture { isProfileSaveConfirmationVisible = false }
-
-            VStack(spacing: FINDRSpacing.medium) {
-                FINDRIcon(name: FINDRAssetName.checkCircle, size: 42, tint: FINDRColor.success)
-                Text("프로필이 저장되었어요")
-                    .font(FINDRFont.bold(18))
-                    .foregroundStyle(FINDRColor.primaryText)
-                Text("변경된 조건으로 기회를 다시 계산했어요.\n새로 지원 가능한 기회가 2개 생겼어요.")
-                    .font(FINDRFont.regular(13))
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(FINDRColor.secondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-                FINDRButton(title: "확인") {
-                    isProfileSaveConfirmationVisible = false
-                }
-                .padding(.top, FINDRSpacing.small)
-            }
-            .padding(24)
-            .frame(maxWidth: .infinity)
-            .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .padding(.horizontal, 32)
-        }
-        .accessibilityAddTraits(.isModal)
-    }
-
     private var profileSummary: String {
         let region = profile.region
             .replacingOccurrences(of: "광주광역시", with: "광주")
@@ -273,34 +282,38 @@ struct MyView: View {
 
 private struct FlowTags: View {
     let values: [String]
+    let tone: FINDRTagTone
     let dashedAddLabel: String
     let onAdd: () -> Void
 
     var body: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: 6) {
-                ForEach(values, id: \.self) { value in FINDRTag(title: value, tone: .brand, font: FINDRFont.regular(11)) }
-                addButton
+        FINDRProfileChipFlowLayout(horizontalSpacing: 6, verticalSpacing: 6) {
+            ForEach(values, id: \.self) { value in
+                FINDRTag(
+                    title: value,
+                    tone: tone,
+                    font: FINDRFont.regular(12),
+                    kerning: -0.24,
+                    textHeight: 17,
+                    horizontalPadding: 8,
+                    verticalPadding: 4
+                )
             }
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 6) {
-                    ForEach(values, id: \.self) { value in FINDRTag(title: value, tone: .neutral, font: FINDRFont.regular(11)) }
-                }
-                addButton
-            }
+            addButton
         }
     }
 
     private var addButton: some View {
         Button(action: onAdd) {
-            HStack(spacing: 4) {
-                Text("+")
+            HStack(spacing: 2) {
+                FINDRIcon(name: FINDRAssetName.plus, size: 12, tint: FINDRColor.tertiaryText)
                 Text(dashedAddLabel)
+                    .font(FINDRFont.medium(12))
             }
-            .font(FINDRFont.regular(11))
             .foregroundStyle(FINDRColor.secondaryText)
             .padding(.horizontal, 10)
-            .padding(.vertical, 5)
+            .padding(.vertical, 6)
+            .frame(height: 29)
             .overlay {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                     .strokeBorder(FINDRColor.borderStrong, style: StrokeStyle(lineWidth: 1, dash: [3, 2]))

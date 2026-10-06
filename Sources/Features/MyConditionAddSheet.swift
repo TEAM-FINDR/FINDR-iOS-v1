@@ -5,46 +5,69 @@ struct MyConditionAddSheet: View {
     let ownedConditions: Set<FINDRProfileCondition>
     let onAdd: (FINDRProfileCondition) -> Void
 
-    private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
-
     var body: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.large) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: FINDRSpacing.xSmall) {
-                    Text("보유 조건 추가")
-                        .font(FINDRFont.bold(20))
-                        .foregroundStyle(FINDRColor.primaryText)
-                    Text("보유한 조건을 선택해주세요")
-                        .font(FINDRFont.regular(13))
-                        .foregroundStyle(FINDRColor.secondaryText)
+        VStack(spacing: 0) {
+            sheetHeader
+
+            Text("추가한 조건은 지원 가능 여부 계산에 바로 반영돼요.")
+                .font(FINDRFont.regular(13))
+                .kerning(-0.26)
+                .foregroundStyle(FINDRColor.secondaryText)
+                .lineLimit(1)
+                .frame(height: 18, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, FINDRSpacing.screen)
+                .padding(.bottom, FINDRSpacing.small)
+
+            VStack(spacing: 0) {
+                ForEach(FINDRProfileCondition.allCases) { condition in
+                    conditionRow(condition)
                 }
-                Spacer()
+            }
+
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(FINDRColor.surface.ignoresSafeArea())
+        .ignoresSafeArea(edges: .bottom)
+        .overlay(alignment: .bottom) {
+            Capsule()
+                .fill(FINDRColor.primaryText)
+                .frame(width: 134, height: 5)
+                .padding(.bottom, 8)
+                .ignoresSafeArea(edges: .bottom)
+        }
+    }
+
+    private var sheetHeader: some View {
+        ZStack(alignment: .top) {
+            HStack {
+                Text("보유 조건 추가")
+                    .font(FINDRFont.bold(17))
+                    .kerning(-0.34)
+                    .foregroundStyle(FINDRColor.primaryText)
+                Spacer(minLength: 0)
+
                 Button { dismiss() } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(FINDRColor.secondaryText)
-                        .frame(width: 32, height: 32)
-                        .background(FINDRColor.subtle, in: Circle())
+                    FINDRIcon(name: FINDRAssetName.aPathClose, size: 22, tint: FINDRColor.primaryText)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("닫기")
             }
+            .frame(height: 24)
+            .padding(.top, 25)
 
-            LazyVGrid(columns: columns, spacing: FINDRSpacing.small) {
-                ForEach(FINDRProfileCondition.allCases) { condition in
-                    conditionButton(condition)
-                }
-            }
-            Spacer(minLength: 0)
+            Capsule()
+                .fill(FINDRColor.track)
+                .frame(width: 36, height: 5)
+                .frame(maxWidth: .infinity)
+                .padding(.top, FINDRSpacing.small)
         }
         .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.top, 28)
-        .padding(.bottom, FINDRSpacing.large)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(FINDRColor.surface.ignoresSafeArea())
+        .padding(.bottom, FINDRSpacing.medium)
+        .frame(height: 61, alignment: .top)
     }
 
-    private func conditionButton(_ condition: FINDRProfileCondition) -> some View {
+    private func conditionRow(_ condition: FINDRProfileCondition) -> some View {
         let isOwned = ownedConditions.contains(condition)
 
         return Button {
@@ -52,36 +75,22 @@ struct MyConditionAddSheet: View {
             onAdd(condition)
             dismiss()
         } label: {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    FINDRIcon(
-                        name: condition.iconName,
-                        size: 24,
-                        tint: isOwned ? FINDRColor.tertiaryText : FINDRColor.brand
-                    )
-                    Spacer()
-                    FINDRIcon(
-                        name: isOwned ? FINDRAssetName.checkCircle : FINDRAssetName.plus,
-                        size: 18,
-                        tint: isOwned ? FINDRColor.success : FINDRColor.brand
-                    )
-                }
-                Text(condition.title)
-                    .font(FINDRFont.medium(12))
-                    .foregroundStyle(isOwned ? FINDRColor.tertiaryText : FINDRColor.primaryText)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: FINDRSpacing.medium) {
+                FINDRIcon(name: condition.iconName, size: 20, tint: FINDRColor.secondaryText)
+                Text(condition.shortTitle)
+                    .font(FINDRFont.medium(14))
+                    .kerning(-0.28)
+                    .foregroundStyle(FINDRColor.primaryText)
+                Spacer(minLength: 0)
+                FINDRIcon(name: FINDRAssetName.chevronRight, size: 16, tint: FINDRColor.inactiveIcon)
             }
-            .padding(14)
-            .frame(maxWidth: .infinity, minHeight: 104, alignment: .topLeading)
-            .background(isOwned ? FINDRColor.subtle : FINDRColor.canvas, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(isOwned ? FINDRColor.border : FINDRColor.borderStrong, lineWidth: 1)
-            }
+            .padding(.horizontal, FINDRSpacing.large)
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .disabled(isOwned)
-        .accessibilityLabel("\(condition.title), \(isOwned ? "보유 중" : "추가")")
+        .accessibilityLabel("\(condition.shortTitle), \(isOwned ? "보유 중" : "추가")")
+        .accessibilityHint(isOwned ? "이미 보유 중인 조건입니다." : "보유 조건에 추가합니다.")
     }
 }
