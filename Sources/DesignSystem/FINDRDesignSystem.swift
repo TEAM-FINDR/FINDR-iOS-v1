@@ -348,7 +348,7 @@ struct FINDRButton: View {
     }
 }
 
-enum FINDRTab: String, CaseIterable, Identifiable {
+enum FINDRTab: String, CaseIterable, Identifiable, Hashable {
     case home, explore, path, saved, my
 
     var id: String { rawValue }
