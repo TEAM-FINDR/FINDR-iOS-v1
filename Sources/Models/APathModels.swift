@@ -99,6 +99,18 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
         }
     }
 
+    var completionConfirmationTitle: String {
+        switch self {
+        case .portfolio: "포트폴리오 만들기를 완료로 표시할까요?"
+        case .computerLiteracy: "컴퓨터활용능력 2급 취득을 완료로 표시할까요?"
+        case .aiEducation: "AI 관련 교육 수료를 완료로 표시할까요?"
+        case .projectExperience: "프로젝트 경험 쌓기를 완료로 표시할까요?"
+        case .dataProcessing: "정보처리기능사 취득을 완료로 표시할까요?"
+        case .gtq: "GTQ 그래픽기술자격 취득을 완료로 표시할까요?"
+        case .koreanHistory: "한국사능력검정 3급 취득을 완료로 표시할까요?"
+        }
+    }
+
     var subtitle: String {
         switch self {
         case .portfolio: "IT·개발 분야 기회가 열려요"
@@ -125,10 +137,10 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
 
     var iconName: String {
         switch self {
-        case .portfolio, .computerLiteracy: FINDRAssetName.aPathPortfolio
-        case .aiEducation, .gtq: FINDRAssetName.aPathEducation
+        case .portfolio, .computerLiteracy: FINDRAssetName.file
+        case .dataProcessing: FINDRAssetName.aPathListMonitor
+        case .aiEducation, .gtq: FINDRAssetName.aPathListCPU
         case .projectExperience, .koreanHistory: FINDRAssetName.rocket
-        case .dataProcessing: FINDRAssetName.monitor
         }
     }
 
@@ -162,22 +174,22 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
         }
     }
 
-    var breakdown: [(String, Int)] {
+    var breakdown: [APathOpportunityBreakdown] {
         switch self {
         case .portfolio:
-            [("교육", 4), ("공모전", 3), ("인턴", 3), ("지원", 2)]
+            [.init(category: "교육", count: 4), .init(category: "공모전", count: 3), .init(category: "인턴", count: 3), .init(category: "지원", count: 2)]
         case .computerLiteracy:
-            [("공공", 4), ("대외활동", 4)]
+            [.init(category: "공공", count: 4), .init(category: "대외활동", count: 4)]
         case .aiEducation:
-            [("교육", 3), ("해커톤", 2)]
+            [.init(category: "교육", count: 3), .init(category: "해커톤", count: 2)]
         case .projectExperience:
-            [("공모전", 4)]
+            [.init(category: "공모전", count: 4)]
         case .dataProcessing:
-            [("IT 인턴", 3), ("교육", 3)]
+            [.init(category: "IT 인턴", count: 3), .init(category: "교육", count: 3)]
         case .gtq:
-            [("디자인", 4)]
+            [.init(category: "디자인", count: 4)]
         case .koreanHistory:
-            [("장학금", 2), ("교육", 1)]
+            [.init(category: "장학금", count: 2), .init(category: "교육", count: 1)]
         }
     }
 
@@ -229,6 +241,13 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
         case .projectExperience, .dataProcessing, .gtq, .koreanHistory: nil
         }
     }
+}
+
+struct APathOpportunityBreakdown: Identifiable, Hashable {
+    let category: String
+    let count: Int
+
+    var id: String { category }
 }
 
 enum APathOpportunityProjection {
