@@ -106,16 +106,7 @@ struct ExploreView: View {
     }
 
     private var searchField: some View {
-        HStack(spacing: 8) {
-            FINDRIcon(name: FINDRAssetName.search, size: 17, tint: FINDRColor.inactiveIcon)
-            TextField("공고명, 기관명, 분야로 검색해보세요", text: $query)
-                .font(FINDRFont.regular(13))
-                .foregroundStyle(FINDRColor.primaryText)
-                .tint(FINDRColor.brand)
-        }
-        .padding(.horizontal, 14)
-        .frame(height: 46)
-        .background(FINDRColor.subtle, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        FINDRSearchField(text: $query, placeholder: "공고명, 기관명, 분야로 검색해보세요")
     }
 
     private var categoryFilters: some View {
@@ -145,30 +136,18 @@ struct ExploreView: View {
     }
 
     private func filterMenu(key: String, title: String, options: [String]) -> some View {
-        let selectedOption = selectedFilters[key]
-        let label = selectedOption == options.first ? title : (selectedOption ?? title)
-        return Menu {
-            ForEach(options, id: \.self) { option in
-                Button(option) {
-                    if option == options.first {
-                        selectedFilters.removeValue(forKey: key)
-                    } else {
-                        selectedFilters[key] = option
-                    }
-                }
+        FINDRFilterMenu(
+            title: title,
+            selectedOption: selectedFilters[key],
+            resetOption: options[0],
+            options: options
+        ) { option in
+            if option == options[0] {
+                selectedFilters.removeValue(forKey: key)
+            } else {
+                selectedFilters[key] = option
             }
-        } label: {
-            HStack(spacing: 3) {
-                Text(label)
-                    .font(FINDRFont.regular(11))
-                FINDRIcon(name: FINDRAssetName.chevronDown, size: 12, tint: FINDRColor.secondaryText)
-            }
-            .foregroundStyle(FINDRColor.secondaryText)
-            .padding(.horizontal, 9)
-            .frame(height: 32)
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(FINDRColor.borderStrong, lineWidth: 1))
         }
-        .menuStyle(.borderlessButton)
     }
 
     private func matchesTarget(_ target: String, opportunity: Opportunity) -> Bool {
