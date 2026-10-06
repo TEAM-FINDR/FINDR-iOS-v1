@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct FINDROnboardingProfile {
     var birthYear = "2009"
@@ -24,8 +23,6 @@ struct FINDRProfileSetupView: View {
     let onBack: () -> Void
     let onContinue: () -> Void
 
-    @FocusState private var focusedField: ProfileField?
-
     fileprivate static let interestOptions = [
         "개발", "디자인", "AI·데이터", "마케팅", "영상·미디어", "과학",
         "환경", "사회공헌", "금융", "글쓰기", "음악·예술", "창업"
@@ -33,11 +30,6 @@ struct FINDRProfileSetupView: View {
 
     private let statusOptions = ["중학생", "고등학생", "대학생", "취업 준비", "직장인", "기타"]
     private let opportunityOptions = ["교육", "공모전", "대외활동", "장학금", "지원사업", "창업", "인턴", "행사"]
-
-    private enum ProfileField: Hashable {
-        case birthYear
-        case region
-    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -71,60 +63,10 @@ struct FINDRProfileSetupView: View {
         case 4:
             opportunityChoices
         default:
-            personalInformationFields
-        }
-    }
-
-    private var personalInformationFields: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.large) {
-            profileField(
-                title: "출생연도",
-                helper: "만 나이 계산에만 사용돼요",
-                text: $profile.birthYear,
-                field: .birthYear,
-                keyboard: .numberPad,
-                isAccent: false
+            FINDRProfileSetupPersonalInformationView(
+                birthYear: $profile.birthYear,
+                region: $profile.region
             )
-            profileField(
-                title: "거주 지역",
-                helper: "지역 조건이 있는 기회에 사용돼요",
-                text: $profile.region,
-                field: .region,
-                keyboard: .default,
-                isAccent: true
-            )
-        }
-    }
-
-    private func profileField(
-        title: String,
-        helper: String,
-        text: Binding<String>,
-        field: ProfileField,
-        keyboard: UIKeyboardType,
-        isAccent: Bool
-    ) -> some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.xSmall) {
-            Text(title)
-                .font(FINDRFont.medium(12))
-                .foregroundStyle(FINDRColor.secondaryText)
-
-            TextField(title, text: text)
-                .font(FINDRFont.regular(15))
-                .foregroundStyle(FINDRColor.primaryText)
-                .keyboardType(keyboard)
-                .focused($focusedField, equals: field)
-                .padding(.horizontal, FINDRSpacing.large)
-                .frame(height: 48)
-                .background(Color.white, in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous)
-                        .stroke(isAccent ? FINDRColor.brandButton : FINDRColor.borderStrong, lineWidth: isAccent ? 1.5 : 1)
-                }
-
-            Text(helper)
-                .font(FINDRFont.regular(11))
-                .foregroundStyle(FINDRColor.tertiaryText)
         }
     }
 
@@ -248,7 +190,6 @@ struct FINDRProfileSetupView: View {
 
     private func continueIfValid() {
         guard canContinue else { return }
-        focusedField = nil
         onContinue()
     }
 
