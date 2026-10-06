@@ -3,6 +3,7 @@ import SwiftUI
 struct HomeView: View {
     let onOpenOpportunity: (Opportunity) -> Void
     let onSeeAll: () -> Void
+    let onOpenNotifications: () -> Void
 
     @State private var selectedFilter = "지금 가능 4"
     private let opportunities = Opportunity.samples
@@ -113,7 +114,7 @@ struct HomeView: View {
             FINDRIconButton(
                 iconName: FINDRAssetName.bell,
                 accessibilityLabel: "알림",
-                action: {},
+                action: onOpenNotifications,
                 size: 24,
                 tint: FINDRColor.primaryText
             )

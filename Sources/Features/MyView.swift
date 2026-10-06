@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MyView: View {
     @Binding var isDarkMode: Bool
+    let onOpenNotificationSettings: () -> Void
     @State private var selectedAction = ""
     @State private var showActionNotice = false
 
@@ -125,7 +126,13 @@ struct MyView: View {
         FINDRCard(padding: 10) {
             VStack(spacing: 0) {
                 ForEach(Array(menuItems.enumerated()), id: \.offset) { index, item in
-                    Button { showAction(item.0) } label: {
+                    Button {
+                        if item.0 == "알림 설정" {
+                            onOpenNotificationSettings()
+                        } else {
+                            showAction(item.0)
+                        }
+                    } label: {
                         HStack(spacing: 10) {
                             FINDRIcon(name: item.1, size: 18, tint: FINDRColor.secondaryText)
                             Text(item.0)
