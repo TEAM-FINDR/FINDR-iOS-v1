@@ -16,7 +16,7 @@ struct FINDROnboardingProfile: Codable, Equatable {
     }
 
     var orderedInterests: [String] {
-        FINDROnboardingProfileOptions.interests.filter(interests.contains)
+        FINDROnboardingProfileOptions.myProfileInterests.filter(interests.contains)
     }
 
     var orderedOpportunityTypes: [String] {

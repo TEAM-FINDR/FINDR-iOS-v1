@@ -25,7 +25,7 @@ final class FINDRTests: XCTestCase {
         var profile = FINDROnboardingProfile()
         profile.interests = ["창업", "미등록 관심 분야", "개발", "AI·데이터"]
 
-        XCTAssertEqual(profile.orderedInterests, ["개발", "AI·데이터", "창업"])
+        XCTAssertEqual(profile.orderedInterests, ["개발", "창업", "AI·데이터"])
     }
 
     func testPersonalInformationValidationRejectsInvalidBirthYearOrRegion() {
