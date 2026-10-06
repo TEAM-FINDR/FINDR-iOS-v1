@@ -3,7 +3,7 @@ import SwiftUI
 struct FINDRProfileSetupOpportunityTypesView: View {
     @Binding var selection: Set<String>
 
-    private let options = ["교육", "공모전", "대외활동", "장학금", "지원사업", "창업", "인턴", "행사"]
+    private let options = FINDROnboardingProfileOptions.opportunityTypes
 
     var body: some View {
         VStack(alignment: .leading, spacing: FINDRSpacing.medium) {

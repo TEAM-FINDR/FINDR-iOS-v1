@@ -23,10 +23,7 @@ struct FINDRProfileSetupView: View {
     let onBack: () -> Void
     let onContinue: () -> Void
 
-    static let interestOptions = [
-        "개발", "디자인", "AI·데이터", "마케팅", "영상·미디어", "과학",
-        "환경", "사회공헌", "금융", "글쓰기", "음악·예술", "창업"
-    ]
+    static let interestOptions = FINDROnboardingProfileOptions.interests
 
     var body: some View {
         VStack(spacing: 0) {

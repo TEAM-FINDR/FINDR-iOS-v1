@@ -3,7 +3,7 @@ import SwiftUI
 struct FINDRProfileSetupStatusSelectionView: View {
     @Binding var status: String
 
-    private let options = ["중학생", "고등학생", "대학생", "취업 준비", "직장인", "기타"]
+    private let options = FINDROnboardingProfileOptions.statuses
 
     var body: some View {
         VStack(spacing: FINDRSpacing.small) {
