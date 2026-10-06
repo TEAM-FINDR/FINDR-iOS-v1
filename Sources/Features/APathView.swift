@@ -5,12 +5,33 @@ struct APathView: View {
     @State private var showHelp = false
 
     private let categories = ["추천 행동", "자격증", "교육", "경험"]
-    private let actions: [(String, String, String, Color)] = [
-        ("포트폴리오 만들기", "IT·개발 분야 기회가 열려요", FINDRAssetName.file, Color(hex: 0xEAF1FF)),
-        ("컴퓨터활용능력 2급 취득", "공공기관·대외활동 기회가 열려요", FINDRAssetName.monitor, Color(hex: 0xE7F8EF)),
-        ("AI 관련 교육 수료", "교육·해커톤 기회가 열려요", FINDRAssetName.cpu, Color(hex: 0xFFF4E5)),
-        ("프로젝트 경험 쌓기", "공모전 기회가 열려요", FINDRAssetName.rocket, FINDRColor.accentSubtle)
+    private let actions = [
+        PathAction(
+            title: "포트폴리오 만들기", subtitle: "IT·개발 분야 기회가 열려요",
+            icon: FINDRAssetName.file, category: "경험",
+            background: FINDRColor.brandSubtle, tint: FINDRColor.brand, opportunityCount: 12
+        ),
+        PathAction(
+            title: "컴퓨터활용능력 2급 취득", subtitle: "공공기관·대외활동 기회가 열려요",
+            icon: FINDRAssetName.monitor, category: "자격증",
+            background: FINDRColor.successSubtle, tint: FINDRColor.successStatus, opportunityCount: 8
+        ),
+        PathAction(
+            title: "AI 관련 교육 수료", subtitle: "교육·해커톤 기회가 열려요",
+            icon: FINDRAssetName.cpu, category: "교육",
+            background: FINDRColor.warningSubtle, tint: FINDRColor.warningStatus, opportunityCount: 5
+        ),
+        PathAction(
+            title: "프로젝트 경험 쌓기", subtitle: "공모전 기회가 열려요",
+            icon: FINDRAssetName.rocket, category: "경험",
+            background: FINDRColor.accentSubtle, tint: FINDRColor.brand, opportunityCount: 4
+        )
     ]
+
+    private var visibleActions: [PathAction] {
+        guard selectedCategory != "추천 행동" else { return actions }
+        return actions.filter { $0.category == selectedCategory }
+    }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -24,8 +45,8 @@ struct APathView: View {
                     .padding(.top, 2)
                 categoryTabs
                 VStack(spacing: 8) {
-                    ForEach(Array(actions.enumerated()), id: \.offset) { index, item in
-                        actionCard(item, index: index)
+                    ForEach(visibleActions) { action in
+                        actionCard(action)
                     }
                 }
                 .padding(.bottom, 12)
@@ -127,25 +148,25 @@ struct APathView: View {
         .overlay(alignment: .bottom) { FINDRColor.divider.frame(height: 1).offset(y: 1) }
     }
 
-    private func actionCard(_ item: (String, String, String, Color), index: Int) -> some View {
+    private func actionCard(_ item: PathAction) -> some View {
         HStack(spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12, style: .continuous).fill(item.3).frame(width: 44, height: 44)
-                FINDRIcon(name: item.2, size: 20, tint: index == 0 ? FINDRColor.brand : (index == 1 ? FINDRColor.successStatus : (index == 2 ? FINDRColor.warningStatus : FINDRColor.brand)))
+                RoundedRectangle(cornerRadius: 12, style: .continuous).fill(item.background).frame(width: 44, height: 44)
+                FINDRIcon(name: item.icon, size: 20, tint: item.tint)
             }
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.0)
+                Text(item.title)
                     .font(FINDRFont.bold(14))
                     .foregroundStyle(FINDRColor.primaryText)
                     .lineLimit(1)
-                Text(item.1)
+                Text(item.subtitle)
                     .font(FINDRFont.regular(11))
                     .foregroundStyle(FINDRColor.tertiaryText)
                     .lineLimit(1)
             }
             Spacer(minLength: 4)
             VStack(alignment: .trailing, spacing: 0) {
-                Text(["+12개", "+8개", "+5개", "+4개"][index])
+                Text("+\(item.opportunityCount)개")
                     .font(FINDRFont.bold(14))
                     .foregroundStyle(FINDRColor.brand)
                 Text("기회")
@@ -159,4 +180,16 @@ struct APathView: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(FINDRColor.border, lineWidth: 1)
         }
     }
+}
+
+private struct PathAction: Identifiable {
+    let title: String
+    let subtitle: String
+    let icon: String
+    let category: String
+    let background: Color
+    let tint: Color
+    let opportunityCount: Int
+
+    var id: String { title }
 }
