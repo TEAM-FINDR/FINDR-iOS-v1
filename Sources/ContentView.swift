@@ -1,16 +1,51 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack(spacing: 12) {
-            Text("FINDR")
-                .font(.largeTitle)
-                .fontWeight(.bold)
+    @AppStorage("FINDR.isDarkMode") private var isDarkMode = false
+    @State private var selectedTab: FINDRTab = .home
+    @State private var navigationPath: [Opportunity] = []
+    @State private var savedIDs: Set<String> = [
+        "app-dev-hackathon", "gwangju-ai-camp", "youth-startup-contest", "ai-sw-program", "design-bootcamp"
+    ]
 
-            Text("지금의 나에게 맞는 기회를 찾다.")
-                .foregroundStyle(.secondary)
+    var body: some View {
+        NavigationStack(path: $navigationPath) {
+            selectedScreen
+                .navigationDestination(for: Opportunity.self) { opportunity in
+                    OpportunityDetailView(opportunity: opportunity, savedIDs: $savedIDs) {
+                        selectedTab = .path
+                        navigationPath.removeAll()
+                    }
+                }
         }
-        .padding()
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if navigationPath.isEmpty {
+                FINDRTabBar(selection: $selectedTab)
+            }
+        }
+        .background(FINDRColor.canvas)
+        .preferredColorScheme(isDarkMode ? .dark : .light)
+    }
+
+    @ViewBuilder
+    private var selectedScreen: some View {
+        switch selectedTab {
+        case .home:
+            HomeView(onOpenOpportunity: open, onSeeAll: { selectedTab = .explore })
+        case .explore:
+            ExploreView(onOpenOpportunity: open)
+        case .path:
+            APathView()
+        case .saved:
+            SavedView(savedIDs: $savedIDs, onOpenOpportunity: open)
+        case .my:
+            MyView(isDarkMode: $isDarkMode)
+        }
+    }
+
+    private func open(_ opportunity: Opportunity) {
+        navigationPath.append(opportunity)
     }
 }
 

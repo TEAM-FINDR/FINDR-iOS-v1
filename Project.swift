@@ -14,6 +14,9 @@ let project = Project(
                     "UILaunchScreen": [
                         "UIColorName": "",
                         "UIImageName": ""
+                    ],
+                    "UIAppFonts": [
+                        "NotoSansKR[wght].ttf"
                     ]
                 ]
             ),
@@ -21,7 +24,13 @@ let project = Project(
                 "Sources",
                 "Resources"
             ],
-            dependencies: []
+            dependencies: [],
+            settings: .settings(
+                base: [
+                    "ASSETCATALOG_COMPILER_APPICON_NAME": "",
+                    "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": ""
+                ]
+            )
         ),
         .target(
             name: "FINDRTests",
