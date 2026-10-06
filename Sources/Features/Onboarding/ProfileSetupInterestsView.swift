@@ -3,10 +3,7 @@ import SwiftUI
 struct FINDRProfileSetupInterestsView: View {
     @Binding var selection: Set<String>
 
-    private let options = [
-        "개발", "디자인", "AI·데이터", "마케팅", "영상·미디어", "과학",
-        "환경", "사회공헌", "금융", "글쓰기", "음악·예술", "창업"
-    ]
+    private let options = FINDRProfileSetupView.interestOptions
 
     var body: some View {
         VStack(alignment: .leading, spacing: FINDRSpacing.medium) {

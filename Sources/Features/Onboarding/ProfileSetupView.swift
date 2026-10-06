@@ -23,7 +23,7 @@ struct FINDRProfileSetupView: View {
     let onBack: () -> Void
     let onContinue: () -> Void
 
-    fileprivate static let interestOptions = [
+    static let interestOptions = [
         "개발", "디자인", "AI·데이터", "마케팅", "영상·미디어", "과학",
         "환경", "사회공헌", "금융", "글쓰기", "음악·예술", "창업"
     ]
@@ -74,23 +74,7 @@ struct FINDRProfileSetupView: View {
     }
 
     private var interestChoices: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
-            FINDRChipFlowLayout(horizontalSpacing: FINDRSpacing.small, verticalSpacing: FINDRSpacing.small) {
-                ForEach(Self.interestOptions, id: \.self) { interest in
-                    FINDRPill(
-                        title: interest,
-                        isSelected: profile.interests.contains(interest)
-                    ) {
-                        toggle(interest, in: &profile.interests)
-                    }
-                }
-            }
-
-            Text("\(profile.interests.count)개 선택됨")
-                .font(FINDRFont.medium(12))
-                .foregroundStyle(FINDRColor.brand)
-                .accessibilityLabel("관심 분야 \(profile.interests.count)개 선택됨")
-        }
+        FINDRProfileSetupInterestsView(selection: $profile.interests)
     }
 
     private var opportunityChoices: some View {
