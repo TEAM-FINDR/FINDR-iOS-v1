@@ -7,12 +7,17 @@ struct ContentView: View {
     @State private var selectedTab: FINDRTab = .home
     @State private var navigationPath: [FINDRNavigationDestination] = []
     @State private var profile = FINDRProfileStore.load()
+    @State private var isConditionSheetPresented = false
     @State private var notifications = FINDRNotification.samples
     @State private var savedIDs: Set<String> = [
         "app-dev-hackathon", "gwangju-ai-camp", "youth-startup-contest", "ai-sw-program", "design-bootcamp"
     ]
 
     var body: some View {
+        appContent
+    }
+
+    private var appContent: some View {
         Group {
             if didCompleteOnboarding {
                 mainExperience
@@ -78,6 +83,14 @@ struct ContentView: View {
             }
         }
         .background(FINDRColor.canvas)
+        .overlay {
+            if isConditionSheetPresented {
+                conditionSheetOverlay
+                    .transition(.opacity)
+                    .zIndex(10)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isConditionSheetPresented)
     }
 
     @ViewBuilder
@@ -108,9 +121,29 @@ struct ContentView: View {
                 isDarkMode: $isDarkMode,
                 profile: $profile,
                 completedAPathActions: completedAPathActions,
-                onOpenNotificationSettings: openNotificationSettings
+                onOpenNotificationSettings: openNotificationSettings,
+                onPresentConditionSheet: { isConditionSheetPresented = true }
             )
         }
+    }
+
+    private var conditionSheetOverlay: some View {
+        FINDRConditionSheetOverlay(
+            ownedConditions: ownedConditions,
+            onDismiss: { isConditionSheetPresented = false },
+            onAdd: { condition in
+                profile.conditions.insert(condition)
+                FINDRProfileStore.save(profile)
+            }
+        )
+    }
+
+    private var ownedConditions: Set<FINDRProfileCondition> {
+        var values = profile.conditions
+        if completedAPathActions.contains(.portfolio) {
+            values.insert(.portfolio)
+        }
+        return values
     }
 
     private func open(_ opportunity: Opportunity) {

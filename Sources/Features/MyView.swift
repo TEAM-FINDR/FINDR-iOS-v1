@@ -12,10 +12,10 @@ struct MyView: View {
     @Binding var profile: FINDROnboardingProfile
     let completedAPathActions: Set<APathActionID>
     let onOpenNotificationSettings: () -> Void
+    let onPresentConditionSheet: () -> Void
     @State private var selectedAction = ""
     @State private var showActionNotice = false
     @State private var activeEditor: MYEditorDestination?
-    @State private var isConditionSheetPresented = false
     @State private var shouldShowProfileSaveConfirmation = false
     @State private var isProfileSaveConfirmationVisible = false
 
@@ -57,8 +57,8 @@ struct MyView: View {
                     values: conditions,
                     addLabel: "추가",
                     tagTone: .neutral,
-                    onEdit: { isConditionSheetPresented = true },
-                    onAdd: { isConditionSheetPresented = true }
+                    onEdit: onPresentConditionSheet,
+                    onAdd: onPresentConditionSheet
                 )
                 menuCard
                 Text("버전 1.0.0")
@@ -81,17 +81,6 @@ struct MyView: View {
                     shouldShowProfileSaveConfirmation = true
                 }
             }
-        }
-        .sheet(isPresented: $isConditionSheetPresented) {
-            MyConditionAddSheet(ownedConditions: ownedConditions) { condition in
-                profile.conditions.insert(condition)
-                FINDRProfileStore.save(profile)
-                isConditionSheetPresented = false
-            }
-            .presentationDetents([.height(343)])
-            .presentationDragIndicator(.hidden)
-            .presentationCornerRadius(20)
-            .presentationBackground(FINDRColor.surface)
         }
         .overlay {
             if isProfileSaveConfirmationVisible {

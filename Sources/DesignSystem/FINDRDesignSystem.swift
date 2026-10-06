@@ -4,6 +4,7 @@ import UIKit
 enum FINDRColor {
     static let canvas = dynamic(light: 0xF6F7FB, dark: 0x0B1020)
     static let surface = dynamic(light: 0xFFFFFF, dark: 0x141A2C)
+    static let scrim = Color(uiColor: UIColor(rgb: 0x0B0B0F))
     static let subtle = dynamic(light: 0xF2F4F7, dark: 0x1C2338)
     static let primaryText = dynamic(light: 0x111827, dark: 0xE6E9F0)
     static let secondaryText = dynamic(light: 0x5B6474, dark: 0xB4BBCB)
