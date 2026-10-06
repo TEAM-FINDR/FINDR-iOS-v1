@@ -13,11 +13,38 @@ struct ExploreView: View {
     private let opportunities = Opportunity.samples
 
     private var filteredOpportunities: [Opportunity] {
-        let matchingQuery = opportunities.filter {
-            query.isEmpty || $0.title.localizedCaseInsensitiveContains(query) || $0.organization.localizedCaseInsensitiveContains(query)
+        let matches = opportunities
+            .filter { opportunity in
+                query.isEmpty || opportunity.title.localizedCaseInsensitiveContains(query) || opportunity.organization.localizedCaseInsensitiveContains(query)
+            }
+            .filter { opportunity in
+                selectedCategory == "전체" || opportunity.categories.contains(selectedCategory)
+            }
+            .filter { opportunity in
+                guard let region = selectedFilters["지역"], region != "전체 지역" else { return true }
+                return opportunity.location == region
+            }
+            .filter { opportunity in
+                guard let target = selectedFilters["대상"], target != "전체 대상" else { return true }
+                return matchesTarget(target, opportunity: opportunity)
+            }
+            .filter { opportunity in
+                guard let deadline = selectedFilters["마감일"], deadline != "전체" else { return true }
+                let daysRemaining = deadlineDays(for: opportunity)
+                return deadline == "7일 이내" ? daysRemaining <= 7 : daysRemaining <= 30
+            }
+            .filter { opportunity in
+                guard let mode = selectedFilters["방식"], mode != "전체" else { return true }
+                return mode == "온라인" ? opportunity.location == "온라인" : opportunity.location != "온라인"
+            }
+        guard !sortByRecommended else { return matches }
+        return matches.sorted { deadlineDays(for: $0) < deadlineDays(for: $1) }
+    }
+
+    private var hasActiveFilters: Bool {
+        !query.isEmpty || selectedCategory != "전체" || selectedFilters.values.contains { value in
+            !["전체", "전체 지역", "전체 대상"].contains(value)
         }
-        guard selectedCategory != "전체" else { return matchingQuery }
-        return matchingQuery.filter { $0.categories.contains(selectedCategory) }
     }
 
     var body: some View {
@@ -28,7 +55,7 @@ struct ExploreView: View {
                 categoryFilters
                 detailFilters
                 HStack {
-                    Text("총 \(selectedCategory == "전체" && query.isEmpty ? "312" : "\(filteredOpportunities.count)")개의 기회")
+                    Text("총 \(hasActiveFilters ? "\(filteredOpportunities.count)" : "312")개의 기회")
                         .font(FINDRFont.regular(12))
                         .foregroundStyle(FINDRColor.tertiaryText)
                     Spacer()
@@ -44,14 +71,22 @@ struct ExploreView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                LazyVStack(spacing: 0) {
-                    ForEach(filteredOpportunities) { opportunity in
-                        OpportunityListRow(opportunity: opportunity) {
-                            onOpenOpportunity(opportunity)
+                if filteredOpportunities.isEmpty {
+                    Text("조건에 맞는 기회가 없어요")
+                        .font(FINDRFont.regular(13))
+                        .foregroundStyle(FINDRColor.tertiaryText)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 48)
+                } else {
+                    LazyVStack(spacing: 0) {
+                        ForEach(filteredOpportunities) { opportunity in
+                            OpportunityListRow(opportunity: opportunity) {
+                                onOpenOpportunity(opportunity)
+                            }
                         }
                     }
+                    .padding(.bottom, 12)
                 }
-                .padding(.bottom, 12)
             }
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, 14)
@@ -106,21 +141,29 @@ struct ExploreView: View {
 
     private var detailFilters: some View {
         HStack(spacing: 6) {
-            filterMenu(title: selectedFilters["지역"] ?? "지역", options: ["전체 지역", "광주", "서울", "온라인"])
-            filterMenu(title: selectedFilters["대상"] ?? "대상", options: ["전체 대상", "중학생", "고등학생", "대학생"])
-            filterMenu(title: selectedFilters["마감일"] ?? "마감일", options: ["전체", "7일 이내", "30일 이내"])
-            filterMenu(title: selectedFilters["방식"] ?? "온/오프라인", options: ["전체", "온라인", "오프라인"])
+            filterMenu(key: "지역", title: "지역", options: ["전체 지역", "광주", "서울", "온라인"])
+            filterMenu(key: "대상", title: "대상", options: ["전체 대상", "중학생", "고등학생", "대학생"])
+            filterMenu(key: "마감일", title: "마감일", options: ["전체", "7일 이내", "30일 이내"])
+            filterMenu(key: "방식", title: "온/오프라인", options: ["전체", "온라인", "오프라인"])
         }
     }
 
-    private func filterMenu(title: String, options: [String]) -> some View {
+    private func filterMenu(key: String, title: String, options: [String]) -> some View {
+        let selectedOption = selectedFilters[key]
+        let label = selectedOption == options.first ? title : (selectedOption ?? title)
         Menu {
             ForEach(options, id: \.self) { option in
-                Button(option) { selectedFilters[title] = option }
+                Button(option) {
+                    if option == options.first {
+                        selectedFilters.removeValue(forKey: key)
+                    } else {
+                        selectedFilters[key] = option
+                    }
+                }
             }
         } label: {
             HStack(spacing: 3) {
-                Text(title)
+                Text(label)
                     .font(FINDRFont.regular(11))
                 FINDRIcon(name: FINDRAssetName.chevronDown, size: 12, tint: FINDRColor.secondaryText)
             }
@@ -130,5 +173,22 @@ struct ExploreView: View {
             .overlay(RoundedRectangle(cornerRadius: 8).stroke(FINDRColor.borderStrong, lineWidth: 1))
         }
         .menuStyle(.borderlessButton)
+    }
+
+    private func matchesTarget(_ target: String, opportunity: Opportunity) -> Bool {
+        switch target {
+        case "중학생":
+            opportunity.categories.contains("청소년") || opportunity.conditionNames.contains { $0.contains("중·고등학생") }
+        case "고등학생":
+            opportunity.categories.contains("청소년") || opportunity.conditionNames.contains { $0.contains("고등학생") || $0.contains("고등·대학생") }
+        case "대학생":
+            opportunity.conditionNames.contains { $0.contains("대학생") }
+        default:
+            true
+        }
+    }
+
+    private func deadlineDays(for opportunity: Opportunity) -> Int {
+        Int(opportunity.deadline.dropFirst(2)) ?? Int.max
     }
 }
