@@ -16,7 +16,7 @@ let project = Project(
                         "UIImageName": ""
                     ],
                     "UIAppFonts": [
-                        "Fonts/NotoSansKR[wght].ttf"
+                        "NotoSansKR[wght].ttf"
                     ]
                 ]
             ),
