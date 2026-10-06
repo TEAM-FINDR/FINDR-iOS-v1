@@ -53,4 +53,32 @@ final class APathOpportunityProjectionTests: XCTestCase {
         XCTAssertEqual(APathActionID.actions(for: .education), [.aiEducation])
         XCTAssertEqual(APathActionID.actions(for: .experience), [.portfolio, .projectExperience])
     }
+
+    func testCompletionConfirmationCopyIsNaturalForEachAction() {
+        XCTAssertEqual(
+            APathActionID.portfolio.completionConfirmationTitle,
+            "포트폴리오 만들기를 완료로 표시할까요?"
+        )
+        XCTAssertEqual(
+            APathActionID.aiEducation.completionConfirmationTitle,
+            "AI 관련 교육 수료를 완료로 표시할까요?"
+        )
+        XCTAssertEqual(
+            APathActionID.computerLiteracy.completionConfirmationTitle,
+            "컴퓨터활용능력 2급 취득을 완료로 표시할까요?"
+        )
+    }
+
+    func testCertificateActionIconsMatchFigmaE6() {
+        XCTAssertEqual(APathActionID.computerLiteracy.iconName, FINDRAssetName.file)
+        XCTAssertEqual(APathActionID.dataProcessing.iconName, FINDRAssetName.aPathListMonitor)
+        XCTAssertEqual(APathActionID.gtq.iconName, FINDRAssetName.aPathListCPU)
+        XCTAssertEqual(APathActionID.koreanHistory.iconName, FINDRAssetName.rocket)
+    }
+
+    func testPortfolioUnlockedSamplesAreNotReusedForOtherActions() {
+        XCTAssertEqual(Opportunity.aPathUnlockedSamples(for: .portfolio).count, 3)
+        XCTAssertTrue(Opportunity.aPathUnlockedSamples(for: .computerLiteracy).isEmpty)
+        XCTAssertTrue(Opportunity.aPathUnlockedSamples(for: .aiEducation).isEmpty)
+    }
 }
