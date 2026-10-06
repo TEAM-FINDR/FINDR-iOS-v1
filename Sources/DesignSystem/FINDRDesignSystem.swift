@@ -109,6 +109,8 @@ enum FINDRAssetName {
     static let aPathToggleOff = "Figma_6ebf4"
     static let aPathUniversity = "Figma_21071"
     static let aPathLocation = "Figma_8eb99"
+    static let aPathListMonitor = "Figma_b197a"
+    static let aPathListCPU = "Figma_2a18b"
     static let aPathLink = "Figma_0ce59"
     static let aPathUpload = "Figma_9152e"
     static let aPathFileBadge = "Figma_e938d"
