@@ -1,5 +1,11 @@
 import SwiftUI
 
+private enum MYEditorDestination: String, Identifiable {
+    case profile
+
+    var id: String { rawValue }
+}
+
 struct MyView: View {
     @Binding var isDarkMode: Bool
     @Binding var profile: FINDROnboardingProfile
@@ -7,6 +13,9 @@ struct MyView: View {
     let onOpenNotificationSettings: () -> Void
     @State private var selectedAction = ""
     @State private var showActionNotice = false
+    @State private var activeEditor: MYEditorDestination?
+    @State private var shouldShowProfileSaveConfirmation = false
+    @State private var isProfileSaveConfirmationVisible = false
 
     private var conditions: [String] {
         var profileConditions = profile.conditions
@@ -44,6 +53,22 @@ struct MyView: View {
             .padding(.top, 14)
         }
         .background(FINDRColor.canvas)
+        .fullScreenCover(item: $activeEditor, onDismiss: presentSaveConfirmationIfNeeded) { destination in
+            switch destination {
+            case .profile:
+                MyProfileEditorView(profile: $profile) {
+                    shouldShowProfileSaveConfirmation = true
+                }
+            }
+        }
+        .overlay {
+            if isProfileSaveConfirmationVisible {
+                profileSaveConfirmation
+                    .transition(.opacity)
+                    .zIndex(2)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isProfileSaveConfirmationVisible)
         .alert(selectedAction, isPresented: $showActionNotice) {
             Button("확인", role: .cancel) {}
         } message: {
@@ -64,10 +89,7 @@ struct MyView: View {
         FINDRCard(padding: 16, hasShadow: true) {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 12) {
-                    Circle()
-                        .fill(LinearGradient(colors: [Color(hex: 0x7DA5FF), Color(hex: 0x2B62E9)], startPoint: .topLeading, endPoint: .bottomTrailing))
-                        .frame(width: 60, height: 60)
-                        .overlay { FINDRIcon(name: FINDRAssetName.profile, size: 30, tint: .white) }
+                    FINDRProfileAvatar(photoPath: profile.profilePhotoPath, size: 60)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(profile.name)
                             .font(FINDRFont.bold(18))
@@ -75,7 +97,7 @@ struct MyView: View {
                         Text(profileSummary)
                             .font(FINDRFont.regular(12))
                             .foregroundStyle(FINDRColor.secondaryText)
-                        Button { showAction("프로필 수정") } label: {
+                        Button { activeEditor = .profile } label: {
                             HStack(spacing: 3) {
                                 Text("프로필 수정")
                                 FINDRIcon(name: FINDRAssetName.chevronRight, size: 12, tint: FINDRColor.brand)
@@ -166,6 +188,41 @@ struct MyView: View {
     private func showAction(_ action: String) {
         selectedAction = action
         showActionNotice = true
+    }
+
+    private func presentSaveConfirmationIfNeeded() {
+        guard shouldShowProfileSaveConfirmation else { return }
+        shouldShowProfileSaveConfirmation = false
+        isProfileSaveConfirmationVisible = true
+    }
+
+    private var profileSaveConfirmation: some View {
+        ZStack {
+            Color.black.opacity(0.38)
+                .ignoresSafeArea()
+                .onTapGesture { isProfileSaveConfirmationVisible = false }
+
+            VStack(spacing: FINDRSpacing.medium) {
+                FINDRIcon(name: FINDRAssetName.checkCircle, size: 42, tint: FINDRColor.success)
+                Text("프로필이 저장되었어요")
+                    .font(FINDRFont.bold(18))
+                    .foregroundStyle(FINDRColor.primaryText)
+                Text("변경된 조건으로 기회를 다시 계산했어요.\n새로 지원 가능한 기회가 2개 생겼어요.")
+                    .font(FINDRFont.regular(13))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(FINDRColor.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+                FINDRButton(title: "확인") {
+                    isProfileSaveConfirmationVisible = false
+                }
+                .padding(.top, FINDRSpacing.small)
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity)
+            .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .padding(.horizontal, 32)
+        }
+        .accessibilityAddTraits(.isModal)
     }
 
     private var profileSummary: String {
