@@ -28,7 +28,7 @@ enum FINDRColor {
     static let warningSubtle = dynamic(light: 0xFFF4E5, dark: 0x33240A)
     static let danger = dynamic(light: 0xC23742, dark: 0xF97066)
     static let dangerStatus = dynamic(light: 0xF04452, dark: 0xF97066)
-    static let dangerSubtle = dynamic(light: 0xFFEEEE, dark: 0x3A1519)
+    static let dangerSubtle = dynamic(light: 0xFFECEE, dark: 0x3A1519)
     static let accentSubtle = dynamic(light: 0xF3EEFF, dark: 0x251C47)
     static let inactiveIcon = dynamic(light: 0x98A2B3, dark: 0x7C859C)
 
@@ -37,6 +37,10 @@ enum FINDRColor {
             UIColor(rgb: traits.userInterfaceStyle == .dark ? dark : light)
         })
     }
+}
+
+enum FINDRShadow {
+    static let card = Color(uiColor: UIColor(rgb: 0x0F1733)).opacity(0.06)
 }
 
 private extension UIColor {
@@ -323,6 +327,7 @@ struct FINDRStatusBadge: View {
 struct FINDRSectionHeader: View {
     let title: String
     var actionTitle: String? = nil
+    var actionIconName: String? = nil
     var action: (() -> Void)? = nil
 
     var body: some View {
@@ -333,10 +338,18 @@ struct FINDRSectionHeader: View {
                 .foregroundStyle(FINDRColor.primaryText)
             Spacer(minLength: 8)
             if let actionTitle {
-                Button(actionTitle, action: action ?? {})
-                    .font(FINDRFont.regular(12))
-                    .foregroundStyle(FINDRColor.tertiaryText)
-                    .buttonStyle(.plain)
+                Button(action: { action?() }) {
+                    HStack(spacing: 2) {
+                        Text(actionTitle)
+                            .font(FINDRFont.regular(12))
+                            .kerning(-0.24)
+                            .foregroundStyle(FINDRColor.tertiaryText)
+                        if let actionIconName {
+                            FINDRIcon(name: actionIconName, size: 14, tint: FINDRColor.tertiaryText)
+                        }
+                    }
+                }
+                .buttonStyle(.plain)
             }
         }
     }

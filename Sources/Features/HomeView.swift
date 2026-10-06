@@ -47,7 +47,12 @@ struct HomeView: View {
                     .padding(.horizontal, FINDRSpacing.screen)
 
                     VStack(alignment: .leading, spacing: 24) {
-                        FINDRSectionHeader(title: "오늘의 추천", actionTitle: "전체보기  ›", action: onSeeAll)
+                        FINDRSectionHeader(
+                            title: "오늘의 추천",
+                            actionTitle: "전체보기",
+                            actionIconName: FINDRAssetName.chevronRight,
+                            action: onSeeAll
+                        )
                             .frame(height: 24)
                             .padding(.horizontal, FINDRSpacing.screen)
 
@@ -82,9 +87,15 @@ struct HomeView: View {
                                         .font(FINDRFont.bold(15))
                                         .kerning(-0.3)
                                         .foregroundStyle(FINDRColor.primaryText)
-                                    (Text("+12개").foregroundColor(FINDRColor.brand) + Text("의 새로운 기회").foregroundColor(FINDRColor.secondaryText))
-                                        .font(FINDRFont.regular(13))
-                                        .kerning(-0.26)
+                                    HStack(spacing: 2) {
+                                        Text("+12개")
+                                            .font(FINDRFont.bold(13))
+                                            .foregroundStyle(FINDRColor.brand)
+                                        Text("의 새로운 기회")
+                                            .font(FINDRFont.regular(13))
+                                            .foregroundStyle(FINDRColor.secondaryText)
+                                    }
+                                    .kerning(-0.26)
                                 }
                                 Spacer()
                                 FINDRIcon(name: FINDRAssetName.arrowRight, size: 20, tint: FINDRColor.primaryText)
@@ -97,6 +108,7 @@ struct HomeView: View {
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                                     .stroke(FINDRColor.border, lineWidth: 1)
                             }
+                            .shadow(color: FINDRShadow.card, radius: 18, x: 0, y: 4)
                         }
                         .buttonStyle(.plain)
                         .padding(.horizontal, FINDRSpacing.screen)

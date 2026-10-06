@@ -7,7 +7,7 @@ struct OpportunityArtworkTile: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: size > 64 ? 12 : 10, style: .continuous)
-            .fill(LinearGradient(colors: artwork.gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
+            .fill(LinearGradient(gradient: artwork.gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
             .overlay {
                 FINDRIcon(name: artwork.icon, size: iconSize, tint: .white)
             }
@@ -128,7 +128,7 @@ struct FeaturedOpportunityCard: View {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .stroke(FINDRColor.border, lineWidth: 1)
             }
-            .shadow(color: .black.opacity(0.06), radius: 18, x: 0, y: 4)
+            .shadow(color: FINDRShadow.card, radius: 18, x: 0, y: 4)
         }
         .buttonStyle(.plain)
     }
@@ -137,6 +137,23 @@ struct FeaturedOpportunityCard: View {
 struct CompactOpportunityCard: View {
     let opportunity: Opportunity
     var onTap: () -> Void = {}
+
+    private var conditionProgressTone: FINDRTagTone {
+        if opportunity.status == .eligible { return .success }
+        if opportunity.progress >= 0.75 { return .brand }
+        if opportunity.progress >= 0.5 { return .warning }
+        return .danger
+    }
+
+    private var conditionProgressColor: Color {
+        switch conditionProgressTone {
+        case .neutral: FINDRColor.secondaryText
+        case .brand: FINDRColor.brand
+        case .success: FINDRColor.successStatus
+        case .warning: FINDRColor.warningStatus
+        case .danger: FINDRColor.dangerStatus
+        }
+    }
 
     var body: some View {
         Button(action: onTap) {
@@ -155,7 +172,7 @@ struct CompactOpportunityCard: View {
                 HStack(spacing: 4) {
                     Text("\(opportunity.completedConditions)/\(opportunity.totalConditions)")
                         .font(FINDRFont.bold(12))
-                        .foregroundStyle(opportunity.status.tone.foreground)
+                        .foregroundStyle(conditionProgressTone.foreground)
                     Text("조건 충족")
                         .font(FINDRFont.regular(12))
                         .foregroundStyle(FINDRColor.secondaryText)
@@ -163,7 +180,7 @@ struct CompactOpportunityCard: View {
                     Spacer(minLength: 0)
                 }
                 .frame(height: 17)
-                FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 4)
+                FINDRProgressBar(progress: opportunity.progress, color: conditionProgressColor, height: 4)
             }
             .padding(14)
             .frame(width: 170.5, height: 130, alignment: .leading)
@@ -173,7 +190,7 @@ struct CompactOpportunityCard: View {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .stroke(FINDRColor.border, lineWidth: 1)
             }
-            .shadow(color: .black.opacity(0.035), radius: 12, x: 0, y: 3)
+            .shadow(color: FINDRShadow.card, radius: 18, x: 0, y: 4)
         }
         .buttonStyle(.plain)
     }

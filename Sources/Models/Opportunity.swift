@@ -46,15 +46,22 @@ enum OpportunityArtwork: String, Hashable {
         }
     }
 
-    var gradient: [Color] {
+    var gradient: Gradient {
         switch self {
-        case .cpu: [Color(hex: 0x4B8BFF), Color(hex: 0x183C9B)]
-        case .bulb: [Color(hex: 0xFF9D4D), Color(hex: 0xF4512C)]
-        case .monitor: [Color(hex: 0x8A70FF), Color(hex: 0x3523A8)]
-        case .graduation: [Color(hex: 0x28C9B0), Color(hex: 0x08777A)]
-        case .award: [Color(hex: 0xF278AA), Color(hex: 0xC21E67)]
+        case .cpu:
+            let start = Color(hex: 0x4F8BFF)
+            let end = Color(hex: 0x1B2F7A)
+            return Gradient(stops: [
+                .init(color: start, location: 0),
+                .init(color: end, location: 0.71429),
+                .init(color: end, location: 1)
+            ])
+        case .bulb: return Gradient(colors: [Color(hex: 0xFF9D4D), Color(hex: 0xF4512C)])
+        case .monitor: return Gradient(colors: [Color(hex: 0x8A70FF), Color(hex: 0x3523A8)])
+        case .graduation: return Gradient(colors: [Color(hex: 0x28C9B0), Color(hex: 0x08777A)])
+        case .award: return Gradient(colors: [Color(hex: 0xF278AA), Color(hex: 0xC21E67)])
         case .aPathRocket, .aPathTrophy, .aPathAward:
-            [Color(hex: 0x4B8BFF), Color(hex: 0x183C9B)]
+            return Gradient(colors: [Color(hex: 0x4B8BFF), Color(hex: 0x183C9B)])
         }
     }
 }
