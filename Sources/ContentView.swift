@@ -6,6 +6,7 @@ struct ContentView: View {
     @AppStorage("FINDR.aPath.completedActionIDs") private var completedAPathActionIDsStorage = ""
     @State private var selectedTab: FINDRTab = .home
     @State private var navigationPath: [FINDRNavigationDestination] = []
+    @State private var profile = FINDRProfileStore.load()
     @State private var notifications = FINDRNotification.samples
     @State private var savedIDs: Set<String> = [
         "app-dev-hackathon", "gwangju-ai-camp", "youth-startup-contest", "ai-sw-program", "design-bootcamp"
@@ -17,7 +18,8 @@ struct ContentView: View {
                 mainExperience
                     .preferredColorScheme(isDarkMode ? .dark : .light)
             } else {
-                OnboardingFlowView {
+                OnboardingFlowView(profile: $profile) {
+                    FINDRProfileStore.save(profile)
                     didCompleteOnboarding = true
                 }
             }
@@ -104,6 +106,7 @@ struct ContentView: View {
         case .my:
             MyView(
                 isDarkMode: $isDarkMode,
+                profile: $profile,
                 completedAPathActions: completedAPathActions,
                 onOpenNotificationSettings: openNotificationSettings
             )

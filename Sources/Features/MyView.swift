@@ -2,18 +2,20 @@ import SwiftUI
 
 struct MyView: View {
     @Binding var isDarkMode: Bool
+    @Binding var profile: FINDROnboardingProfile
     let completedAPathActions: Set<APathActionID>
     let onOpenNotificationSettings: () -> Void
     @State private var selectedAction = ""
     @State private var showActionNotice = false
 
-    private let interests = ["개발", "디자인", "창업"]
     private var conditions: [String] {
-        var values = ["정보처리 관련 자격증 1개", "교육 이수 2개", "프로젝트 1개"]
+        var profileConditions = profile.conditions
         if completedAPathActions.contains(.portfolio) {
-            values.insert("포트폴리오", at: 0)
+            profileConditions.insert(.portfolio)
         }
-        return values
+        return FINDRProfileCondition.allCases
+            .filter(profileConditions.contains)
+            .map(\.title)
     }
     private let menuItems: [(String, String)] = [
         ("활동 기록", FINDRAssetName.clock),
@@ -27,7 +29,7 @@ struct MyView: View {
             VStack(alignment: .leading, spacing: 12) {
                 header
                 profileCard
-                selectionCard(title: "관심 분야", values: interests, addLabel: "추가")
+                selectionCard(title: "관심 분야", values: profile.orderedInterests, addLabel: "추가")
                 selectionCard(title: "보유 조건", values: conditions, addLabel: "추가")
                 menuCard
                     .padding(.top, 1)
@@ -67,10 +69,10 @@ struct MyView: View {
                         .frame(width: 60, height: 60)
                         .overlay { FINDRIcon(name: FINDRAssetName.profile, size: 30, tint: .white) }
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("이시우")
+                        Text(profile.name)
                             .font(FINDRFont.bold(18))
                             .foregroundStyle(FINDRColor.primaryText)
-                        Text("17세 · 광주 · 고등학생")
+                        Text(profileSummary)
                             .font(FINDRFont.regular(12))
                             .foregroundStyle(FINDRColor.secondaryText)
                         Button { showAction("프로필 수정") } label: {
@@ -164,6 +166,14 @@ struct MyView: View {
     private func showAction(_ action: String) {
         selectedAction = action
         showActionNotice = true
+    }
+
+    private var profileSummary: String {
+        let region = profile.region
+            .replacingOccurrences(of: "광주광역시", with: "광주")
+            .replacingOccurrences(of: "서울특별시", with: "서울")
+            .replacingOccurrences(of: "부산광역시", with: "부산")
+        return "\(profile.age)세 · \(region) · \(profile.status)"
     }
 }
 
