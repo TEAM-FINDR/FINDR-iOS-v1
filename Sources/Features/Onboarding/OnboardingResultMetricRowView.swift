@@ -22,6 +22,7 @@ struct FINDROnboardingResultMetricRowView: View {
                 .foregroundStyle(valueColor)
                 .fixedSize()
         }
+        .frame(height: 38.2)
         .accessibilityElement(children: .combine)
     }
 }

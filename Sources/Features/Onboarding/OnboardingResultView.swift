@@ -11,7 +11,7 @@ struct FINDROnboardingResultView: View {
         ZStack {
             VStack(spacing: 0) {
                 ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: FINDRSpacing.large) {
+                    VStack(alignment: .leading, spacing: 20) {
                         FINDROnboardingResultHeaderView(profile: profile)
                         FINDROnboardingResultMetricsCardView()
                         FINDROnboardingResultInsightView()
