@@ -4,9 +4,10 @@ struct OpportunityArtworkTile: View {
     let artwork: OpportunityArtwork
     var size: CGFloat = 68
     var iconSize: CGFloat = 26
+    var cornerRadius: CGFloat? = nil
 
     var body: some View {
-        RoundedRectangle(cornerRadius: size > 64 ? 12 : 10, style: .continuous)
+        RoundedRectangle(cornerRadius: cornerRadius ?? (size > 64 ? 12 : 10), style: .continuous)
             .fill(LinearGradient(gradient: artwork.gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
             .overlay {
                 FINDRIcon(name: artwork.icon, size: iconSize, tint: artwork.iconTint)
@@ -21,6 +22,12 @@ struct OpportunityListRow: View {
     var asCard = false
     var showsProgress = true
     var showsLocation = true
+    var showsDivider = true
+    var rowHeight: CGFloat = 93
+    var informationSpacing: CGFloat = 3
+    var trailingSpacing: CGFloat? = nil
+    var artworkCornerRadius: CGFloat? = nil
+    var moreIconName = FINDRAssetName.more
     var onMore: (() -> Void)? = nil
     var onTap: () -> Void = {}
 
@@ -28,8 +35,13 @@ struct OpportunityListRow: View {
         HStack(spacing: 12) {
             Button(action: onTap) {
                 HStack(spacing: 12) {
-                    OpportunityArtworkTile(artwork: opportunity.artwork, size: asCard ? 68 : 64, iconSize: asCard ? 26 : 24)
-                    VStack(alignment: .leading, spacing: 3) {
+                    OpportunityArtworkTile(
+                        artwork: opportunity.artwork,
+                        size: asCard ? 68 : 64,
+                        iconSize: asCard ? 26 : 24,
+                        cornerRadius: artworkCornerRadius
+                    )
+                    VStack(alignment: .leading, spacing: informationSpacing) {
                         Text(opportunity.title)
                             .font(FINDRFont.bold(15))
                             .kerning(-0.3)
@@ -61,7 +73,7 @@ struct OpportunityListRow: View {
             .buttonStyle(.plain)
             .frame(maxWidth: .infinity)
 
-            VStack(alignment: .trailing, spacing: asCard ? 22 : 18) {
+            VStack(alignment: .trailing, spacing: trailingSpacing ?? (asCard ? 22 : 18)) {
                 if let onMore {
                     Button(action: onMore) {
                         moreIcon
@@ -79,11 +91,11 @@ struct OpportunityListRow: View {
         }
         .padding(asCard ? 14 : 0)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: asCard ? nil : 93)
+        .frame(height: asCard ? nil : rowHeight)
         .background(asCard ? FINDRColor.surface : .clear)
         .clipShape(RoundedRectangle(cornerRadius: asCard ? 16 : 0, style: .continuous))
         .overlay(alignment: .bottom) {
-            if !asCard { FINDRColor.divider.frame(height: 1).padding(.leading, 76) }
+            if !asCard && showsDivider { FINDRColor.divider.frame(height: 1).padding(.leading, 76) }
         }
         .overlay {
             if asCard {
@@ -95,7 +107,7 @@ struct OpportunityListRow: View {
     }
 
     private var moreIcon: some View {
-        FINDRIcon(name: FINDRAssetName.more, size: 18, tint: FINDRColor.inactiveIcon)
+        FINDRIcon(name: moreIconName, size: 18, tint: FINDRColor.inactiveIcon)
     }
 }
 

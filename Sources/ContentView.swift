@@ -48,13 +48,24 @@ struct ContentView: View {
                 .navigationDestination(for: FINDRNavigationDestination.self) { destination in
                     switch destination {
                     case .opportunity(let opportunity):
-                        OpportunityDetailView(opportunity: opportunity, savedIDs: $savedIDs, onOpenSaved: {
-                            selectedTab = .saved
-                            navigationPath.removeAll()
-                        }) {
-                            selectedTab = .path
-                            navigationPath.removeAll()
-                        }
+                        OpportunityDetailView(
+                            opportunity: opportunity,
+                            savedIDs: $savedIDs,
+                            onOpenSaved: {
+                                selectedTab = .saved
+                                navigationPath.removeAll()
+                            },
+                            onOpenOpportunity: open,
+                            onOpenActions: { selectedOpportunityForActions = $0 },
+                            onViewSimilarOpportunities: {
+                                selectedTab = .explore
+                                navigationPath.removeAll()
+                            },
+                            onPrepareWithPath: {
+                                selectedTab = .path
+                                navigationPath.removeAll()
+                            }
+                        )
                     case .aPathSimulator:
                         APathSimulatorView(
                             completedActions: completedAPathActions,

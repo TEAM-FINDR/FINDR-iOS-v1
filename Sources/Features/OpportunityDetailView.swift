@@ -5,6 +5,9 @@ struct OpportunityDetailView: View {
     let opportunity: Opportunity
     @Binding var savedIDs: Set<String>
     let onOpenSaved: () -> Void
+    let onOpenOpportunity: (Opportunity) -> Void
+    let onOpenActions: (Opportunity) -> Void
+    let onViewSimilarOpportunities: () -> Void
     let onPrepareWithPath: () -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -14,6 +17,7 @@ struct OpportunityDetailView: View {
     @State private var showLinkUnavailableAlert = false
     @State private var isShareSheetPresented = false
     @State private var showContactUnavailableAlert = false
+    @State private var showClosedReminderUnavailableAlert = false
     @State private var isSaveToastPresented = false
 
     private let sections = ["상세 정보", "지원 자격", "문의처"]
@@ -115,7 +119,16 @@ struct OpportunityDetailView: View {
 
     private var overview: some View {
         VStack(alignment: .leading, spacing: 0) {
-            FINDRTag(title: opportunity.deadline, tone: opportunity.isUrgentDeadline ? .danger : .brand, font: FINDRFont.bold(12), kerning: 0, textHeight: 17, horizontalPadding: 8, verticalPadding: 4)
+            if opportunity.isClosed {
+                Text("모집 마감")
+                    .font(FINDRFont.bold(12))
+                    .foregroundStyle(FINDRColor.tertiaryText)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(FINDRColor.subtle, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+            } else {
+                FINDRTag(title: opportunity.deadline, tone: opportunity.isUrgentDeadline ? .danger : .brand, font: FINDRFont.bold(12), kerning: 0, textHeight: 17, horizontalPadding: 8, verticalPadding: 4)
+            }
             Text(opportunity.title)
                 .font(FINDRFont.bold(24))
                 .kerning(-0.48)
@@ -191,7 +204,51 @@ struct OpportunityDetailView: View {
                 }
             }
         default:
-            eligibilitySection
+            if opportunity.isClosed {
+                closedOpportunitySection
+            } else {
+                eligibilitySection
+            }
+        }
+    }
+
+    private var closedOpportunitySection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("모집이 마감되었어요")
+                    .font(FINDRFont.bold(15))
+                    .kerning(-0.3)
+                    .foregroundStyle(FINDRColor.secondaryText)
+                Text("다음 모집이 열리면 알려드릴까요?")
+                    .font(FINDRFont.regular(13))
+                    .kerning(-0.26)
+                    .foregroundStyle(FINDRColor.tertiaryText)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(FINDRColor.subtle, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+            Text("비슷한 기회")
+                .font(FINDRFont.bold(17))
+                .kerning(-0.34)
+                .foregroundStyle(FINDRColor.primaryText)
+
+            VStack(spacing: 14) {
+                ForEach(Opportunity.closedOpportunityRecommendations) { recommendation in
+                    OpportunityListRow(
+                        opportunity: recommendation,
+                        showsProgress: false,
+                        showsDivider: false,
+                        rowHeight: 88,
+                        informationSpacing: 2,
+                        trailingSpacing: 20,
+                        artworkCornerRadius: 12,
+                        moreIconName: FINDRAssetName.aPathMore,
+                        onMore: { onOpenActions(recommendation) },
+                        onTap: { onOpenOpportunity(recommendation) }
+                    )
+                }
+            }
         }
     }
 
@@ -404,15 +461,33 @@ struct OpportunityDetailView: View {
     private var bottomActions: some View {
         VStack(spacing: 18) {
             HStack(spacing: 10) {
-                FINDRButton(title: "저장하기", kind: .outline) {
-                    saveOpportunity()
+                if opportunity.isClosed {
+                    FINDRButton(title: "알림 받기", kind: .outline) {
+                        showClosedReminderUnavailableAlert = true
+                    }
+                    .frame(height: 55)
+                    .frame(maxWidth: 116)
+                    .alert("모집 알림", isPresented: $showClosedReminderUnavailableAlert) {
+                        Button("확인", role: .cancel) {}
+                    } message: {
+                        Text("모집 정보가 업데이트될 때 알림을 보내는 기능은 아직 연결되지 않았어요.")
+                    }
+
+                    FINDRButton(title: "비슷한 기회 보기", kind: .accent) {
+                        onViewSimilarOpportunities()
+                    }
+                    .frame(height: 53)
+                } else {
+                    FINDRButton(title: "저장하기", kind: .outline) {
+                        saveOpportunity()
+                    }
+                    .frame(height: 55)
+                    .frame(maxWidth: 116)
+                    FINDRButton(title: isMissing ? "A-Path에서 준비하기" : "신청하러 가기", kind: isMissing ? .primary : .inverse) {
+                        if isMissing { onPrepareWithPath() } else { showExternalSiteDialog = true }
+                    }
+                    .frame(height: 53)
                 }
-                .frame(height: 55)
-                .frame(maxWidth: 116)
-                FINDRButton(title: isMissing ? "A-Path에서 준비하기" : "신청하러 가기", kind: isMissing ? .primary : .inverse) {
-                    if isMissing { onPrepareWithPath() } else { showExternalSiteDialog = true }
-                }
-                .frame(height: 53)
             }
             Capsule()
                 .fill(FINDRColor.primaryText)

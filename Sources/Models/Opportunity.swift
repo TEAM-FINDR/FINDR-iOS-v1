@@ -32,6 +32,7 @@ enum OpportunityStatus: String, Hashable {
 
 enum OpportunityArtwork: String, Hashable {
     case cpu, bulb, monitor, graduation, award, aPathRocket, aPathTrophy, aPathAward
+    case closedRecommendationGraduation, closedRecommendationBulb
     case homeDeadlineRocket, homeDeadlineCPU, homeDeadlineAward
 
     var icon: String {
@@ -44,6 +45,8 @@ enum OpportunityArtwork: String, Hashable {
         case .aPathRocket: FINDRAssetName.aPathOpportunityRocket
         case .aPathTrophy: FINDRAssetName.aPathOpportunityTrophy
         case .aPathAward: FINDRAssetName.aPathOpportunityAward
+        case .closedRecommendationGraduation: FINDRAssetName.searchGraduation
+        case .closedRecommendationBulb: FINDRAssetName.searchBulb
         case .homeDeadlineRocket: FINDRAssetName.aPathOpportunityRocket
         case .homeDeadlineCPU: FINDRAssetName.homeDeadlineCPU
         case .homeDeadlineAward: FINDRAssetName.aPathOpportunityAward
@@ -59,7 +62,7 @@ enum OpportunityArtwork: String, Hashable {
 
     var gradient: Gradient {
         switch self {
-        case .cpu:
+        case .cpu, .closedRecommendationGraduation, .closedRecommendationBulb:
             let start = Color(hex: 0x4F8BFF)
             let end = Color(hex: 0x1B2F7A)
             return Gradient(stops: [
@@ -138,6 +141,7 @@ struct Opportunity: Identifiable, Hashable {
     let missingCondition: String?
     var applicationURL: URL? = nil
     var shareURL: URL? = nil
+    var isClosed: Bool = false
 
     var progress: Double {
         guard totalConditions > 0 else { return 0 }
@@ -185,6 +189,39 @@ struct Opportunity: Identifiable, Hashable {
             deadline: "D-14", dateRange: "2026.10.01 ~ 2026.10.15", categories: ["인턴", "서울", "온라인"],
             artwork: .cpu, status: .missing, completedConditions: 4, totalConditions: 5,
             conditionNames: ["나이 조건 (만 18세 이상)", "지역 조건 (전국)", "학생 조건 (고등·대학생)", "관심 분야 (개발)", "포트폴리오 제출 필요"], missingCondition: "포트폴리오"
+        )
+    ]
+
+    static let closedOpportunityRecommendations: [Opportunity] = [
+        Opportunity(
+            id: "closed-recommendation-ai-sw-program",
+            title: "AI·SW 인재 양성 프로그램",
+            organization: "과학기술정보통신부",
+            location: "온라인",
+            deadline: "D-15",
+            dateRange: nil,
+            categories: ["교육", "AI", "온라인"],
+            artwork: .closedRecommendationGraduation,
+            status: .eligible,
+            completedConditions: 4,
+            totalConditions: 4,
+            conditionNames: ["청소년 대상", "학생 조건", "AI·SW 분야", "온라인 참여"],
+            missingCondition: nil
+        ),
+        Opportunity(
+            id: "closed-recommendation-youth-ai-contest",
+            title: "청소년 AI 아이디어 공모전",
+            organization: "한국지능정보사회진흥원",
+            location: "온라인",
+            deadline: "D-10",
+            dateRange: nil,
+            categories: ["공모전", "AI", "온라인"],
+            artwork: .closedRecommendationBulb,
+            status: .eligible,
+            completedConditions: 4,
+            totalConditions: 4,
+            conditionNames: ["청소년 대상", "학생 조건", "AI 분야", "온라인 제출"],
+            missingCondition: nil
         )
     ]
 
