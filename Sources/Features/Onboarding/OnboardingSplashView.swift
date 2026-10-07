@@ -25,7 +25,7 @@ struct FINDRSplashView: View {
                     .tracking(-0.24)
                     .foregroundStyle(FINDRColor.inverseSecondary)
             }
-            .padding(.bottom, 80)
+            .padding(.bottom, 26)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
