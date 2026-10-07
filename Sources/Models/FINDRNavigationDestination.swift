@@ -5,4 +5,5 @@ enum FINDRNavigationDestination: Hashable {
     case aPathUnlocked(APathActionID)
     case notifications
     case notificationSettings
+    case recommendedOpportunities
 }

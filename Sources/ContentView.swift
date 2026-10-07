@@ -73,6 +73,8 @@ struct ContentView: View {
                         )
                     case .notificationSettings:
                         NotificationSettingsView()
+                    case .recommendedOpportunities:
+                        RecommendedOpportunitiesView(onOpenOpportunity: open)
                     }
                 }
         }
@@ -99,7 +101,7 @@ struct ContentView: View {
         case .home:
             HomeView(
                 onOpenOpportunity: open,
-                onSeeAll: { selectedTab = .explore },
+                onSeeAll: { navigationPath.append(.recommendedOpportunities) },
                 onOpenNotifications: openNotificationCenter,
                 onOpenNotificationSettings: openNotificationSettings,
                 onOpenAPath: {

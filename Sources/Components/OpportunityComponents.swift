@@ -191,14 +191,21 @@ struct HomeDeadlineAlertBanner: View {
     }
 }
 
-struct HomeDeadlineOpportunityRow: View {
+struct OpportunityFeedRow: View {
     let opportunity: Opportunity
+    var artworkOverride: OpportunityArtwork? = nil
     let onOpenOpportunity: () -> Void
+
+    private var isCriticalDeadline: Bool {
+        guard opportunity.deadline.hasPrefix("D-"),
+              let daysRemaining = Int(opportunity.deadline.dropFirst(2)) else { return false }
+        return daysRemaining <= 5
+    }
 
     var body: some View {
         Button(action: onOpenOpportunity) {
             HStack(spacing: 12) {
-                OpportunityArtworkTile(artwork: opportunity.artwork, size: 64, iconSize: 24)
+                OpportunityArtworkTile(artwork: artworkOverride ?? opportunity.artwork, size: 64, iconSize: 24)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(opportunity.title)
@@ -216,7 +223,7 @@ struct HomeDeadlineOpportunityRow: View {
 
                     Text(opportunity.deadline)
                         .font(FINDRFont.bold(12))
-                        .foregroundStyle(FINDRColor.danger)
+                        .foregroundStyle(isCriticalDeadline ? FINDRColor.danger : FINDRColor.brand)
                 }
 
                 VStack(alignment: .trailing, spacing: 20) {

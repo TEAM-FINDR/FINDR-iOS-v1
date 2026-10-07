@@ -106,7 +106,7 @@ struct HomeView: View {
 
             VStack(spacing: 16) {
                 ForEach(Opportunity.homeDeadlineSamples) { opportunity in
-                    HomeDeadlineOpportunityRow(opportunity: opportunity) {
+                    OpportunityFeedRow(opportunity: opportunity) {
                         onOpenOpportunity(opportunity)
                     }
                 }
@@ -153,7 +153,7 @@ struct HomeView: View {
                     .frame(height: 24, alignment: .leading)
                     .padding(.horizontal, FINDRSpacing.screen)
 
-                Button(action: onSeeAll) {
+                Button(action: onOpenAPath) {
                     HStack(spacing: 12) {
                         ZStack {
                             Circle().fill(FINDRColor.successSubtle).frame(width: 44, height: 44)
