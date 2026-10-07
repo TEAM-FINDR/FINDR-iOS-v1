@@ -18,12 +18,15 @@ struct FINDROnboardingIntroPageContent {
             switch self {
             case .sparkles: FINDRAssetName.sparkles
             case .checkCircle: FINDRAssetName.onboardingCheckCircle
-            case .unlock: FINDRAssetName.unlock
+            case .unlock: FINDRAssetName.onboardingUnlock
             }
         }
 
         var usesTemplate: Bool {
-            self != .sparkles && self != .checkCircle
+            switch self {
+            case .sparkles, .checkCircle, .unlock:
+                false
+            }
         }
     }
 }
