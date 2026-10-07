@@ -168,21 +168,28 @@ struct APathView: View {
     }
 
     private func actionCard(_ actionID: APathActionID) -> some View {
-        Button {
+        let usesCertificateFileIcon = selectedAPathCategory == .certificate && actionID == .computerLiteracy
+        let iconName = usesCertificateFileIcon ? FINDRAssetName.file : actionID.listIconName
+        let iconTint = actionID.iconTint
+        let iconBackground = usesCertificateFileIcon ? FINDRColor.brandSubtle : actionID.iconBackground
+
+        return Button {
             onOpenAction(actionID)
         } label: {
             HStack(spacing: FINDRSpacing.medium) {
-                FINDRIcon(name: actionID.listIconName, size: 20, tint: actionID.iconTint, usesTemplate: false)
+                FINDRIcon(name: iconName, size: 20, tint: iconTint, usesTemplate: false)
                     .frame(width: 44, height: 44)
-                    .background(actionID.iconBackground, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .background(iconBackground, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(selectedAPathCategory == .certificate ? actionID.categoryTitle : actionID.title)
-                        .font(FINDRFont.bold(14))
+                        .font(FINDRFont.bold(15))
+                        .kerning(-0.3)
                         .foregroundStyle(FINDRColor.primaryText)
                         .lineLimit(1)
                     Text(actionID.subtitle)
-                        .font(FINDRFont.regular(11))
+                        .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
                         .lineLimit(1)
                 }
@@ -196,16 +203,18 @@ struct APathView: View {
                             .foregroundStyle(FINDRColor.success)
                     } else {
                         Text("+\(actionID.opportunityCount)개")
-                            .font(FINDRFont.bold(14))
+                            .font(FINDRFont.bold(15))
+                            .kerning(-0.3)
                             .foregroundStyle(FINDRColor.brand)
                     }
                     Text("기회")
-                        .font(FINDRFont.regular(10))
+                        .font(FINDRFont.regular(11))
+                        .kerning(-0.22)
                         .foregroundStyle(FINDRColor.tertiaryText)
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 15)
+            .padding(.vertical, 14)
             .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
