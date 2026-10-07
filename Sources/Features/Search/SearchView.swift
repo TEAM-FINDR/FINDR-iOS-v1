@@ -4,6 +4,7 @@ struct SearchView: View {
     @AppStorage("FINDR.search.recentTerms") private var recentSearchStorage = "AI 캠프|해커톤|장학금|디자인 공모전"
     @Binding var query: String
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var isSearchFocused: Bool
 
     let onSubmit: () -> Void
 
@@ -71,6 +72,7 @@ struct SearchView: View {
                     prompt: Text("공고명, 기관명, 분야로 검색해보세요")
                         .foregroundColor(FINDRColor.tertiaryText)
                 )
+                .focused($isSearchFocused)
                 .font(FINDRFont.regular(14))
                 .kerning(-0.28)
                 .foregroundStyle(FINDRColor.primaryText)
@@ -180,6 +182,7 @@ struct SearchView: View {
         let value = (term ?? query).trimmingCharacters(in: .whitespacesAndNewlines)
         guard !value.isEmpty else { return }
 
+        isSearchFocused = false
         query = value
         let updatedSearches = [value] + recentSearches.filter { $0 != value }
         recentSearchStorage = updatedSearches.prefix(8).joined(separator: "|")

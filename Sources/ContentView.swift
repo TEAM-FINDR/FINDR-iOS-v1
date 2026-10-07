@@ -78,10 +78,14 @@ struct ContentView: View {
                         RecommendedOpportunitiesView(onOpenOpportunity: open)
                     case .search:
                         SearchView(query: $exploreQuery) {
-                            if !navigationPath.isEmpty {
-                                navigationPath.removeLast()
-                            }
+                            navigationPath.append(.searchResults)
                         }
+                    case .searchResults:
+                        SearchResultsView(
+                            query: $exploreQuery,
+                            onOpenOpportunity: open,
+                            onCancel: { navigationPath.removeAll() }
+                        )
                     }
                 }
         }
