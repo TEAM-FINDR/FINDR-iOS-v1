@@ -148,6 +148,7 @@ enum FINDRAssetName {
     static let calendar = "Figma_246db"
     static let checkCircle = "Figma_417cd"
     static let onboardingCheckCircle = "OnboardingCheckCircle"
+    static let onboardingUnlock = "OnboardingUnlock"
     static let gift = "Figma_36165"
     static let missing = "Figma_d04e7"
     static let alert = "Figma_635c1"
