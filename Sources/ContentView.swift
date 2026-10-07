@@ -101,6 +101,7 @@ struct ContentView: View {
                 onOpenOpportunity: open,
                 onSeeAll: { selectedTab = .explore },
                 onOpenNotifications: openNotificationCenter,
+                onOpenNotificationSettings: openNotificationSettings,
                 onOpenAPath: {
                     selectedTab = .path
                     navigationPath.removeAll()

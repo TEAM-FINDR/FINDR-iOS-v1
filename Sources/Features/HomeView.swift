@@ -4,6 +4,7 @@ struct HomeView: View {
     let onOpenOpportunity: (Opportunity) -> Void
     let onSeeAll: () -> Void
     let onOpenNotifications: () -> Void
+    let onOpenNotificationSettings: () -> Void
     let onOpenAPath: () -> Void
 
     @State private var selectedFilter = "지금 가능 4"
@@ -31,20 +32,30 @@ struct HomeView: View {
         selectedFilter == "거의 가능 7"
     }
 
+    private var isDeadlineSelected: Bool {
+        selectedFilter == "마감 임박 5"
+    }
+
+    private var isFilteredHomeState: Bool {
+        isNearlyEligibleSelected || isDeadlineSelected
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: isNearlyEligibleSelected ? 16 : 18) {
+            VStack(alignment: .leading, spacing: isFilteredHomeState ? 16 : 18) {
                 header
                     .frame(height: 108, alignment: .top)
                 filterSegment
 
                 if isNearlyEligibleSelected {
                     nearlyEligibleList
+                } else if isDeadlineSelected {
+                    deadlineList
                 } else {
                     defaultHomeContent
                 }
             }
-            .padding(.top, isNearlyEligibleSelected ? 14 : 24)
+            .padding(.top, isFilteredHomeState ? 14 : 24)
         }
         .background(FINDRColor.canvas)
     }
@@ -83,6 +94,26 @@ struct HomeView: View {
         }
         .padding(.horizontal, FINDRSpacing.screen)
         .padding(.top, 7)
+    }
+
+    private var deadlineList: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HomeDeadlineAlertBanner(onOpenNotificationSettings: onOpenNotificationSettings)
+
+            Color.clear
+                .frame(height: 8)
+                .accessibilityHidden(true)
+
+            VStack(spacing: 16) {
+                ForEach(Opportunity.homeDeadlineSamples) { opportunity in
+                    HomeDeadlineOpportunityRow(opportunity: opportunity) {
+                        onOpenOpportunity(opportunity)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, FINDRSpacing.screen)
+        .padding(.top, 8)
     }
 
     private var defaultHomeContent: some View {
@@ -164,7 +195,7 @@ struct HomeView: View {
 
     private var header: some View {
         HStack(alignment: .top, spacing: 12) {
-            VStack(alignment: .leading, spacing: isNearlyEligibleSelected ? 9 : 8) {
+            VStack(alignment: .leading, spacing: isFilteredHomeState ? 9 : 8) {
                 Text("안녕하세요,\n시우님")
                     .font(FINDRFont.titleLarge)
                     .kerning(-0.52)
@@ -172,7 +203,7 @@ struct HomeView: View {
                     .lineSpacing(-4)
                     .foregroundStyle(FINDRColor.heading)
                     .frame(height: 68, alignment: .topLeading)
-                    .offset(y: isNearlyEligibleSelected ? 1 : 0)
+                    .offset(y: isFilteredHomeState ? 1 : 0)
                 HStack(spacing: 5) {
                     FINDRIcon(name: FINDRAssetName.unlock, size: 14, tint: FINDRColor.brand)
                     Text("오늘 새로 열린 기회 4개")
@@ -192,7 +223,7 @@ struct HomeView: View {
             )
         }
         .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.top, isNearlyEligibleSelected ? 12 : 10)
+        .padding(.top, isFilteredHomeState ? 12 : 10)
         .padding(.bottom, 4)
     }
 }

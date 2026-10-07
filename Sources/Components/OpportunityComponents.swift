@@ -9,7 +9,7 @@ struct OpportunityArtworkTile: View {
         RoundedRectangle(cornerRadius: size > 64 ? 12 : 10, style: .continuous)
             .fill(LinearGradient(gradient: artwork.gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
             .overlay {
-                FINDRIcon(name: artwork.icon, size: iconSize, tint: .white)
+                FINDRIcon(name: artwork.icon, size: iconSize, tint: artwork.iconTint)
             }
             .frame(width: size, height: size)
             .accessibilityHidden(true)
@@ -157,6 +157,80 @@ struct HomeNearlyEligibleOpportunityCard: View {
         }
         .shadow(color: FINDRShadow.card, radius: 18, x: 0, y: 4)
         .accessibilityElement(children: .contain)
+    }
+}
+
+struct HomeDeadlineAlertBanner: View {
+    let onOpenNotificationSettings: () -> Void
+
+    var body: some View {
+        Button(action: onOpenNotificationSettings) {
+            HStack(spacing: 8) {
+                FINDRIcon(name: FINDRAssetName.clock, size: 18, tint: FINDRColor.dangerStatus)
+
+                Text("7일 안에 마감되는 기회 5개")
+                    .font(FINDRFont.medium(13))
+                    .kerning(-0.26)
+                    .foregroundStyle(FINDRColor.danger)
+                    .lineLimit(1)
+
+                Spacer(minLength: 4)
+
+                Text("알림 설정")
+                    .font(FINDRFont.bold(12))
+                    .foregroundStyle(FINDRColor.danger)
+                    .fixedSize()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(FINDRColor.dangerSubtle, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("7일 안에 마감되는 기회 5개, 알림 설정")
+    }
+}
+
+struct HomeDeadlineOpportunityRow: View {
+    let opportunity: Opportunity
+    let onOpenOpportunity: () -> Void
+
+    var body: some View {
+        Button(action: onOpenOpportunity) {
+            HStack(spacing: 12) {
+                OpportunityArtworkTile(artwork: opportunity.artwork, size: 64, iconSize: 24)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(opportunity.title)
+                        .font(FINDRFont.bold(15))
+                        .kerning(-0.3)
+                        .foregroundStyle(FINDRColor.primaryText)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Text("\(opportunity.organization) · \(opportunity.location)")
+                        .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
+                        .foregroundStyle(FINDRColor.tertiaryText)
+                        .lineLimit(1)
+
+                    Text(opportunity.deadline)
+                        .font(FINDRFont.bold(12))
+                        .foregroundStyle(FINDRColor.danger)
+                }
+
+                VStack(alignment: .trailing, spacing: 20) {
+                    FINDRIcon(name: FINDRAssetName.aPathMore, size: 18, tint: FINDRColor.inactiveIcon)
+                    FINDRStatusBadge(status: opportunity.status)
+                }
+            }
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: 88)
+            .background(FINDRColor.surface)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 
