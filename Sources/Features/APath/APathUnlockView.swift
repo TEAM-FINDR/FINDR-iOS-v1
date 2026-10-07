@@ -10,6 +10,11 @@ struct APathUnlockView: View {
         Opportunity.aPathUnlockedSamples(for: actionID)
     }
 
+    private var unlockDescription: String {
+        let conditionName = actionID == .portfolio ? "포트폴리오" : actionID.title
+        return "\(conditionName) 보유 조건이 추가되었어요.\n지금 바로 지원할 수 있어요."
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ScrollView(showsIndicators: false) {
@@ -17,32 +22,32 @@ struct APathUnlockView: View {
                     FINDRIcon(name: FINDRAssetName.aPathUnlock, size: 44, tint: FINDRColor.successStatus)
                         .frame(width: 104, height: 104)
                         .background(FINDRColor.successSubtle, in: Circle())
-                        .padding(.top, 32)
+                        .padding(.top, FINDRSpacing.xLarge + 4)
 
                     Text("새로운 기회 \(actionID.opportunityCount)개가 열렸어요!")
-                        .font(FINDRFont.bold(22))
-                        .kerning(-0.44)
-                        .foregroundStyle(FINDRColor.primaryText)
+                        .font(FINDRFont.bold(26))
+                        .kerning(-0.52)
+                        .foregroundStyle(FINDRColor.heading)
                         .multilineTextAlignment(.center)
-                        .padding(.top, FINDRSpacing.medium)
+                        .padding(.top, FINDRSpacing.medium - 2)
                         .accessibilityIdentifier("apath-unlocked-title")
 
-                    Text("\(actionID.title) 보유 조건이 추가되었어요.\n지금 바로 지원할 수 있어요.")
-                        .font(FINDRFont.regular(13))
-                        .kerning(-0.26)
+                    Text(unlockDescription)
+                        .font(FINDRFont.regular(14))
+                        .kerning(-0.28)
                         .foregroundStyle(FINDRColor.secondaryText)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, FINDRSpacing.small)
+                        .padding(.top, FINDRSpacing.medium - 2)
 
                     if !opportunities.isEmpty {
-                        VStack(spacing: FINDRSpacing.medium) {
+                        VStack(spacing: 0) {
                             ForEach(opportunities) { opportunity in
                                 unlockedOpportunityRow(opportunity)
                             }
                         }
                         .padding(.horizontal, FINDRSpacing.screen)
-                        .padding(.top, 36)
+                        .padding(.top, FINDRSpacing.section + 3)
                         .padding(.bottom, FINDRSpacing.large)
                     }
                 }
@@ -61,34 +66,35 @@ struct APathUnlockView: View {
             onOpenOpportunity(opportunity)
         } label: {
             HStack(spacing: FINDRSpacing.medium) {
-                OpportunityArtworkTile(artwork: opportunity.artwork, size: 64, iconSize: 25)
+                OpportunityArtworkTile(artwork: opportunity.artwork, size: 64, iconSize: 24)
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(opportunity.title)
-                        .font(FINDRFont.bold(14))
-                        .kerning(-0.28)
+                        .font(FINDRFont.bold(15))
+                        .kerning(-0.3)
                         .foregroundStyle(FINDRColor.primaryText)
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     Text("\(opportunity.organization) · \(opportunity.location)")
-                        .font(FINDRFont.regular(11))
-                        .kerning(-0.22)
+                        .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
                         .lineLimit(1)
 
                     Text(opportunity.deadline)
-                        .font(FINDRFont.bold(11))
+                        .font(FINDRFont.bold(12))
                         .foregroundStyle(FINDRColor.brand)
                 }
 
-                VStack(alignment: .trailing, spacing: 12) {
+                VStack(alignment: .trailing, spacing: 20) {
                     FINDRIcon(name: FINDRAssetName.aPathMore, size: 18, tint: FINDRColor.inactiveIcon)
                     FINDRStatusBadge(status: .eligible)
                 }
-                .padding(.vertical, 2)
             }
-            .frame(maxWidth: .infinity, minHeight: 72)
+            .frame(maxWidth: .infinity, minHeight: 64)
+            .padding(.vertical, FINDRSpacing.medium)
+            .frame(maxWidth: .infinity, minHeight: 88)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -96,21 +102,30 @@ struct APathUnlockView: View {
     }
 
     private var bottomCTA: some View {
-        HStack(spacing: FINDRSpacing.small) {
-            FINDRButton(title: "홈으로", kind: .outline, action: onGoHome)
-                .frame(width: 116)
-            FINDRButton(
-                title: "열린 기회 \(actionID.opportunityCount)개 보기",
-                action: onViewOpportunities
-            )
+        VStack(spacing: FINDRSpacing.large) {
+            HStack(alignment: .top, spacing: FINDRSpacing.small) {
+                FINDRButton(title: "홈으로", kind: .outline, height: 55, action: onGoHome)
+                    .frame(width: 116)
+                FINDRButton(
+                    title: "열린 기회 \(actionID.opportunityCount)개 보기",
+                    height: 53,
+                    action: onViewOpportunities
+                )
+            }
+
+            Capsule()
+                .fill(FINDRColor.primaryText)
+                .frame(width: 134, height: 5)
         }
         .padding(.horizontal, FINDRSpacing.screen)
         .padding(.top, FINDRSpacing.medium)
         .padding(.bottom, FINDRSpacing.small)
+        .frame(maxWidth: .infinity)
         .background {
             FINDRColor.surface
                 .overlay(alignment: .top) { FINDRColor.divider.frame(height: 1) }
                 .ignoresSafeArea(edges: .bottom)
         }
+        .ignoresSafeArea(edges: .bottom)
     }
 }
