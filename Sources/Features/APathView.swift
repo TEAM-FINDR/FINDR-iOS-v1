@@ -41,26 +41,27 @@ struct APathView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
+            VStack(alignment: .leading, spacing: FINDRSpacing.large) {
                 header
-                whatIfCard
-                Text("지금 할 수 있는 활동이 새로운 기회를 만들어요.")
-                    .font(FINDRFont.regular(13))
-                    .kerning(-0.26)
-                    .foregroundStyle(FINDRColor.secondaryText)
-                    .padding(.top, 2)
-                categoryTabs
-                VStack(spacing: FINDRSpacing.small) {
-                    ForEach(visibleActions, id: \.self) { actionID in
-                        actionCard(actionID)
+                VStack(alignment: .leading, spacing: 20) {
+                    whatIfCard
+                    Text("지금 할 수 있는 활동이 새로운 기회를 만들어요.")
+                        .font(FINDRFont.regular(13))
+                        .kerning(-0.26)
+                        .foregroundStyle(FINDRColor.secondaryText)
+                    categoryTabs
+                    VStack(spacing: 10) {
+                        ForEach(visibleActions, id: \.self) { actionID in
+                            actionCard(actionID)
+                        }
                     }
+                    .padding(.bottom, FINDRSpacing.medium)
                 }
-                .padding(.bottom, FINDRSpacing.medium)
             }
             .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.top, 14)
+            .padding(.top, 30)
         }
-        .background(FINDRColor.canvas)
+        .background(FINDRColor.surface)
         .sheet(isPresented: $showHelp) {
             APathHelpSheet(onClose: { showHelp = false })
                 .presentationDetents([.height(330)])
@@ -75,50 +76,53 @@ struct APathView: View {
             trailingIcon: FINDRAssetName.aPathHelp,
             trailingLabel: "A-Path 도움말",
             action: { showHelp = true },
-            trailingSize: 21
+            trailingSize: 22
         )
     }
 
     private var whatIfCard: some View {
         Button(action: onOpenSimulator) {
-            VStack(spacing: FINDRSpacing.medium) {
+            VStack(spacing: 12) {
                 Text("What-if")
-                    .font(FINDRFont.bold(10))
+                    .font(FINDRFont.bold(11))
                     .foregroundStyle(FINDRColor.brand)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 5)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
                     .background(FINDRColor.surface, in: Capsule())
 
                 Text(previewTitle)
-                    .font(FINDRFont.bold(16))
-                    .kerning(-0.32)
+                    .font(FINDRFont.bold(17))
+                    .kerning(-0.34)
                     .foregroundStyle(FINDRColor.primaryText)
 
-                HStack(spacing: 16) {
-                    VStack(spacing: 2) {
+                HStack(spacing: 28) {
+                    VStack(spacing: 0) {
                         Text("현재")
-                            .font(FINDRFont.regular(11))
+                            .font(FINDRFont.medium(12))
                             .foregroundStyle(FINDRColor.secondaryText)
                         Text("\(currentOpportunityCount)개")
                             .font(FINDRFont.bold(28))
+                            .kerning(-0.56)
                             .foregroundStyle(FINDRColor.primaryText)
                     }
-                    FINDRIcon(name: FINDRAssetName.pathArrow, size: 18, tint: FINDRColor.inactiveIcon)
-                    VStack(spacing: 2) {
+                    FINDRIcon(name: FINDRAssetName.pathArrow, size: 22, tint: FINDRColor.inactiveIcon)
+                    VStack(spacing: 0) {
                         Text("완료 후")
-                            .font(FINDRFont.regular(11))
+                            .font(FINDRFont.medium(12))
                             .foregroundStyle(FINDRColor.brand)
                         Text("\(projectedOpportunityCount)개")
                             .font(FINDRFont.bold(28))
+                            .kerning(-0.56)
                             .foregroundStyle(FINDRColor.brand)
                     }
                 }
 
                 Text("+\(projectedOpportunityCount - currentOpportunityCount)개의 새로운 기회")
-                    .font(FINDRFont.bold(12))
+                    .font(FINDRFont.bold(14))
+                    .kerning(-0.28)
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 7)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
                     .background(FINDRColor.brandButton, in: Capsule())
 
                 HStack(spacing: 6) {
@@ -128,8 +132,8 @@ struct APathView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, FINDRSpacing.large)
-            .background(FINDRColor.brandSubtle, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .padding(20)
+            .background(FINDRColor.brandTint, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -142,13 +146,12 @@ struct APathView: View {
     }
 
     private func breakdown(_ category: String, _ count: String) -> some View {
-        HStack(spacing: 3) {
-            Text(category).foregroundStyle(FINDRColor.secondaryText)
-            Text(count).font(FINDRFont.bold(11)).foregroundStyle(FINDRColor.brand)
+        HStack(spacing: 4) {
+            Text(category).font(FINDRFont.medium(12)).foregroundStyle(FINDRColor.secondaryText)
+            Text(count).font(FINDRFont.bold(12)).foregroundStyle(FINDRColor.brand)
         }
-        .font(FINDRFont.regular(11))
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 9)
+        .padding(.vertical, 5)
         .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .fixedSize()
     }
@@ -157,11 +160,14 @@ struct APathView: View {
         FINDRUnderlineTabs(
             titles: APathCategory.allCases.map(\.rawValue),
             selection: $selectedCategory,
-            fontSize: 13,
+            fontSize: 14,
+            selectedFont: FINDRFont.bold(14),
+            unselectedFont: FINDRFont.medium(14),
+            textKerning: -0.28,
             itemSpacing: 18,
             indicatorSpacing: 8,
             equalWidth: false,
-            unselectedTextColor: FINDRColor.secondaryText,
+            unselectedTextColor: FINDRColor.tertiaryText,
             unselectedIndicatorColor: .clear,
             showsBottomDivider: true
         )
@@ -172,7 +178,7 @@ struct APathView: View {
             onOpenAction(actionID)
         } label: {
             HStack(spacing: FINDRSpacing.medium) {
-                FINDRIcon(name: actionID.iconName, size: 20, tint: actionID.iconTint)
+                FINDRIcon(name: actionID.listIconName, size: 20, tint: actionID.iconTint, usesTemplate: false)
                     .frame(width: 44, height: 44)
                     .background(actionID.iconBackground, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
@@ -204,7 +210,8 @@ struct APathView: View {
                         .foregroundStyle(FINDRColor.tertiaryText)
                 }
             }
-            .padding(14)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 15)
             .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)

@@ -144,6 +144,15 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
         }
     }
 
+    var listIconName: String {
+        switch self {
+        case .portfolio: FINDRAssetName.file
+        case .computerLiteracy, .dataProcessing: FINDRAssetName.aPathListMonitor
+        case .aiEducation, .gtq: FINDRAssetName.aPathListCPU
+        case .projectExperience, .koreanHistory: FINDRAssetName.rocket
+        }
+    }
+
     var iconTint: Color {
         switch self {
         case .portfolio, .computerLiteracy, .dataProcessing, .koreanHistory:
@@ -159,8 +168,10 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
 
     var iconBackground: Color {
         switch self {
-        case .portfolio, .computerLiteracy:
+        case .portfolio:
             FINDRColor.brandSubtle
+        case .computerLiteracy:
+            FINDRColor.successSubtle
         case .aiEducation:
             FINDRColor.warningSubtle
         case .projectExperience:

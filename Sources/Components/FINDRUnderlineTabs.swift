@@ -34,6 +34,7 @@ struct FINDRUnderlineTabs: View {
                             .fill(selection == title ? selectedIndicatorColor : unselectedIndicatorColor)
                             .frame(height: 2)
                     }
+                    .fixedSize(horizontal: !equalWidth, vertical: false)
                 }
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(selection == title ? .isSelected : [])
