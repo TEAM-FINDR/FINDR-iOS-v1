@@ -168,6 +168,8 @@ enum FINDRAssetName {
     static let check = "Figma_5eead"
     static let back = "Figma_fd617"
     static let bookmark = "Figma_b6aa8"
+    static let savedBookmark = "Figma_3ceed"
+    static let saveToastCheck = "Figma_ae8dd"
     static let share = "Figma_23dbf"
     static let building = "Figma_150c8"
     static let calendar = "Figma_246db"
