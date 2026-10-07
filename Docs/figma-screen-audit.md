@@ -19,7 +19,7 @@
 | 30:614 | A1 Splash | 393×852 | 수정 후 직접 재대조 완료 · 로고·문구 위치·색상 |
 | 30:628 | A2 Onboarding 1 | 393×852 | 수정 후 직접 재대조 완료 · 상단 바·카드·문구·페이지 점·하단 CTA |
 | 30:659 | A3 Onboarding 2 | 393×852 | 수정 후 직접 재대조 완료 · 체크 아이콘 stroke·공통 화면 위치 |
-| 30:690 | A4 Onboarding 3 | 393×852 | 미대조 |
+| 30:690 | A4 Onboarding 3 | 393×852 | 수정 후 직접 재대조 완료 · 자물쇠 SVG·설명 줄바꿈 |
 | 30:721 | A5 Login | 393×852 | 미대조 |
 | 31:672 | A6 Profile 1 | 393×852 | 미대조 |
 | 31:719 | A7 Profile 2 | 393×852 | 미대조 |
@@ -103,8 +103,9 @@
 - `3:204 03 Opportunity Detail`: 393×852 Figma 프레임과 iPhone 시뮬레이터 캡처를 같은 크기로 정규화해 직접 대조했습니다. 처음에는 제목 22pt(시안 24pt), 상세 태그의 글자 크기·기관/기간 정보 간격, 탭 굵기·자간, 자격 상태 카드와 조건 행 간격, 혜택 칩 글꼴, 신청 버튼의 글자/배경 색이 달랐습니다. Figma에 맞춰 제목 24pt Bold/−0.48pt 자간, 상세 태그 12pt와 25pt 높이, 기관/기간 13pt Regular/−0.26pt 자간, 탭 14pt Bold/Medium/−0.28pt 자간, 상태 카드 93pt, 조건 행 38pt 및 14pt 본문, 혜택 13pt Medium, 저장/신청 버튼 55/53pt로 조정했습니다. 신청 버튼은 Figma의 흰 글자와 짙은 남색 배경으로 맞췄습니다. D-7부터 탭까지의 세로 위치 차이는 최종 비교에서 약 0–2pt, 상태 카드와 조건 행 시작 위치는 약 0–1pt입니다. 비교 이미지: `Docs/Screenshots/findr-detail-figma-target.png`, `Docs/Screenshots/findr-detail-figma-aligned.jpg`. 시뮬레이터의 상태 표시줄은 Figma 정적 그림과 기기 표현이 달라 비교에서 제외했습니다.
 - `44:2070 G1 설정`: Figma 화면의 구조와 행 규격은 확인했습니다. 현재 앱에는 대응하는 설정 화면이나 진입 경로가 없습니다. `Sources/Features/MyView.swift`의 활동 기록·도움말·로그아웃 동작도 실제 화면 연결 대신 샘플 알림을 띄웁니다. 이는 Figma 시각 대조 완료로 세지 않았고, 화면 구현 및 흐름 연결이 남았습니다.
 - `20:1418 04 A-Path — Dark`: 다크 배경, 상단 제목과 도움말, What-if 카드, 숫자와 +12 배지, 4개 분해 칩, 설명문, 탭, 행동 카드 3개의 위치·너비·타이포그래피를 Figma와 직접 비교했습니다. Figma와 같은 저장 완료 상태가 없는 실행 조건에서 기본 시나리오가 포트폴리오 만들기, 29→41, +12 및 교육 +4/공모전 +3/인턴 +3/지원 +2로 표시됩니다. 캡처를 393×852로 정규화했을 때 본문 시작점·카드·목록 행의 위치 차이는 약 0–2pt이며, Figma의 정적 Dynamic Island는 기기 캡처와 달라 비교에서 제외했습니다. Figma 기준: `Docs/Screenshots/findr-apath-dark-figma-target.png`; 시뮬레이터: `Docs/Screenshots/findr-apath-dark-figma-aligned.jpg`. 시뮬레이터에 포트폴리오 완료 ID가 저장되어 있으면 다음 시나리오(컴퓨터활용능력, 41→49)가 표시될 수 있습니다. 이는 저장 상태에 따른 결과입니다.
-- 직접 대조 완료로 기록한 화면은 `2:3 Home`, `20:1117 Home — Dark`, `20:1200 Explore — Dark`, `20:1338 Opportunity Detail — Dark`, `20:1418 A-Path — Dark`, `20:1524 Saved — Dark`, `20:1632 MY — Dark`, `20:1727 Opportunity Detail (Missing) — Dark`, `30:614 A1 Splash`, `30:628 A2 Onboarding 1`, `30:659 A3 Onboarding 2`, `3:3 Explore`, `3:424 A-Path`, `3:558 Saved`, `3:204 Opportunity Detail`, `3:310 Opportunity Detail (Missing)`, `3:716 MY`, G2, G3, G4, G6, G10 스물두 개입니다. 총 66개 중 44개는 아직 Figma와 대조하지 않았으며, 나머지 다크 화면과 상태 프레임도 별도로 대조해야 합니다.
+- 직접 대조 완료로 기록한 화면은 `2:3 Home`, `20:1117 Home — Dark`, `20:1200 Explore — Dark`, `20:1338 Opportunity Detail — Dark`, `20:1418 A-Path — Dark`, `20:1524 Saved — Dark`, `20:1632 MY — Dark`, `20:1727 Opportunity Detail (Missing) — Dark`, `30:614 A1 Splash`, `30:628 A2 Onboarding 1`, `30:659 A3 Onboarding 2`, `30:690 A4 Onboarding 3`, `3:3 Explore`, `3:424 A-Path`, `3:558 Saved`, `3:204 Opportunity Detail`, `3:310 Opportunity Detail (Missing)`, `3:716 MY`, G2, G3, G4, G6, G10 스물세 개입니다. 총 66개 중 43개는 아직 Figma와 대조하지 않았으며, 나머지 다크 화면과 상태 프레임도 별도로 대조해야 합니다.
 
 ## 화면별 완료 기록
 
 이슈 #15 작업이 진행될 때마다 각 행을 `미대조`, `불일치 발견`, `수정 후 재대조` 또는 `대조 완료`로 갱신하고, 변경 화면의 캡처 경로를 추가합니다.
+- `30:690 A4 Onboarding 3`: 393×852 화면에서 제목·설명, +12 배지, 잠금 아이콘, 페이지 점과 시작하기 버튼을 직접 비교했습니다. 설명문 줄바꿈을 Figma처럼 교육 뒤에서 나누고, 14×14 공유 자물쇠 에셋 대신 Figma 원본 96×96·4.8pt stroke 에셋을 온보딩에만 적용했습니다. 재캡처 아이콘 경계는 Figma x=162–229/y=226–301, 앱 x=162–230/y=225–301로 약 1px 차이이며 문구와 CTA 위치는 약 0–1pt 차이입니다. 상태 표시줄·홈 인디케이터는 비교에서 제외했습니다. 기준: `Docs/Screenshots/findr-onboarding-a4-figma-target.png`; 앱: `Docs/Screenshots/findr-onboarding-a4-figma-aligned.png`.
