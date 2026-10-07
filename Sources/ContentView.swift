@@ -8,6 +8,7 @@ struct ContentView: View {
     @AppStorage("FINDR.isLoggedOut") private var isLoggedOut = false
     @State private var accountConfirmation: AccountConfirmation?
     @State private var withdrawalUnavailable = false
+    @StateObject private var connectivity = FINDRConnectivity()
     @State private var selectedTab: FINDRTab = .home
     @State private var navigationPath: [FINDRNavigationDestination] = []
     @State private var exploreQuery = ""
@@ -34,6 +35,9 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             appContent
+            if didCompleteOnboarding && !isLoggedOut && selectedTab == .home && navigationPath.isEmpty && connectivity.presentation == .toast {
+                NetworkErrorToastOverlay(onRetry: connectivity.retry).zIndex(18)
+            }
             if let kind = accountConfirmation {
                 AccountConfirmationOverlay(kind: kind, onCancel: { accountConfirmation = nil }, onConfirm: {
                     accountConfirmation = nil
@@ -282,6 +286,9 @@ struct ContentView: View {
     private var selectedScreen: some View {
         switch selectedTab {
         case .home:
+            if connectivity.presentation == .fullScreen {
+                NetworkErrorView(onRetry: connectivity.retry)
+            } else {
             HomeView(
                 onOpenOpportunity: open,
                 onSeeAll: { navigationPath.append(.recommendedOpportunities) },
@@ -292,6 +299,7 @@ struct ContentView: View {
                     navigationPath.removeAll()
                 }
             )
+            }
         case .explore:
             ExploreView(
                 query: $exploreQuery,
