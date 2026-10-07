@@ -20,6 +20,7 @@ struct OpportunityListRow: View {
     let opportunity: Opportunity
     var asCard = false
     var showsProgress = true
+    var showsLocation = true
     var onTap: () -> Void = {}
 
     var body: some View {
@@ -33,7 +34,7 @@ struct OpportunityListRow: View {
                         .foregroundStyle(FINDRColor.primaryText)
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text("\(opportunity.organization) · \(opportunity.location)")
+                    Text(showsLocation ? "\(opportunity.organization) · \(opportunity.location)" : opportunity.organization)
                         .font(FINDRFont.regular(12))
                         .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
