@@ -17,6 +17,8 @@ struct ContentView: View {
     @State private var isExploreSortSheetPresented = false
     @State private var selectedOpportunityForActions: Opportunity?
     @State private var selectedSavedOpportunityForActions: Opportunity?
+    @State private var savedRemovalCandidate: Opportunity?
+    @State private var savedRemovalToastOpportunity: Opportunity?
     @State private var isReportUnavailableAlertPresented = false
     @State private var profile = FINDRProfileStore.load()
     @State private var isConditionSheetPresented = false
@@ -27,7 +29,15 @@ struct ContentView: View {
     ]
 
     var body: some View {
-        appContent
+        ZStack {
+            appContent
+            if savedRemovalToastOpportunity != nil {
+                SavedOpportunityRemovalToastOverlay(onUndo: undoSavedOpportunityRemoval)
+                    .zIndex(17)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.easeInOut(duration: 0.2), value: savedRemovalToastOpportunity)
     }
 
     private var appContent: some View {
@@ -206,12 +216,26 @@ struct ContentView: View {
                         openNotificationSettings()
                     },
                     onRemove: {
-                        savedIDs.remove(opportunity.id)
                         selectedSavedOpportunityForActions = nil
+                        savedRemovalCandidate = opportunity
                     }
                 )
                 .transition(.opacity)
                 .zIndex(15)
+            }
+        }
+        .overlay {
+            if let opportunity = savedRemovalCandidate {
+                SavedOpportunityRemovalConfirmationOverlay(
+                    onCancel: { savedRemovalCandidate = nil },
+                    onConfirm: {
+                        savedIDs.remove(opportunity.id)
+                        savedRemovalCandidate = nil
+                        savedRemovalToastOpportunity = opportunity
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(16)
             }
         }
         .alert("신고 기능", isPresented: $isReportUnavailableAlertPresented) {
@@ -224,7 +248,14 @@ struct ContentView: View {
         .animation(.easeInOut(duration: 0.2), value: isExploreSortSheetPresented)
         .animation(.easeInOut(duration: 0.2), value: selectedOpportunityForActions)
         .animation(.easeInOut(duration: 0.2), value: selectedSavedOpportunityForActions)
+        .animation(.easeInOut(duration: 0.2), value: savedRemovalCandidate)
         .animation(.easeInOut(duration: 0.2), value: isAPathHelpPresented)
+    }
+
+    private func undoSavedOpportunityRemoval() {
+        guard let opportunity = savedRemovalToastOpportunity else { return }
+        savedIDs.insert(opportunity.id)
+        savedRemovalToastOpportunity = nil
     }
 
     @ViewBuilder
@@ -267,7 +298,8 @@ struct ContentView: View {
                 savedIDs: $savedIDs,
                 onOpenOpportunity: open,
                 onOpenNotifications: openNotificationCenter,
-                onOpenActions: { selectedSavedOpportunityForActions = $0 }
+                onOpenActions: { selectedSavedOpportunityForActions = $0 },
+                isRemovalToastVisible: savedRemovalToastOpportunity != nil
             )
         case .my:
             MyView(

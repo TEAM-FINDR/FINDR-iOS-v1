@@ -5,6 +5,7 @@ struct SavedView: View {
     let onOpenOpportunity: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
     let onOpenActions: (Opportunity) -> Void
+    let isRemovalToastVisible: Bool
 
     @State private var selectedFilter = "전체"
     @State private var remindersEnabled = true
@@ -66,7 +67,7 @@ struct SavedView: View {
                             }
                         }
                     }
-                    .frame(height: 422)
+                    .frame(height: isRemovalToastVisible ? 314 : 422)
                 }
                 .padding(.horizontal, FINDRSpacing.screen)
                 .padding(.top, 30)
