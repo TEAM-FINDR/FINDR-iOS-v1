@@ -12,6 +12,8 @@ struct ContentView: View {
     @State private var exploreFilterDraft = FINDRExploreFilterLogic.figmaSelections
     @State private var didOpenExploreFilterSheet = false
     @State private var isExploreFilterSheetPresented = false
+    @State private var exploreSort: FINDRExploreSort = .recommended
+    @State private var isExploreSortSheetPresented = false
     @State private var profile = FINDRProfileStore.load()
     @State private var isConditionSheetPresented = false
     @State private var notifications = FINDRNotification.samples
@@ -133,8 +135,23 @@ struct ContentView: View {
                 .zIndex(11)
             }
         }
+        .overlay {
+            if isExploreSortSheetPresented {
+                FINDRExploreSortSheetOverlay(
+                    selectedSort: exploreSort,
+                    onDismiss: { isExploreSortSheetPresented = false },
+                    onSelect: { sort in
+                        exploreSort = sort
+                        isExploreSortSheetPresented = false
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(12)
+            }
+        }
         .animation(.easeInOut(duration: 0.2), value: isConditionSheetPresented)
         .animation(.easeInOut(duration: 0.2), value: isExploreFilterSheetPresented)
+        .animation(.easeInOut(duration: 0.2), value: isExploreSortSheetPresented)
     }
 
     @ViewBuilder
@@ -156,10 +173,12 @@ struct ContentView: View {
                 query: $exploreQuery,
                 filterResetVersion: $exploreFilterResetVersion,
                 selectedFilters: $exploreFilters,
+                selectedSort: $exploreSort,
                 onOpenOpportunity: open,
                 onOpenNotifications: openNotificationCenter,
                 onOpenSearch: { navigationPath.append(.search) },
-                onOpenFilters: presentExploreFilterSheet
+                onOpenFilters: presentExploreFilterSheet,
+                onOpenSort: { isExploreSortSheetPresented = true }
             )
         case .path:
             APathView(

@@ -18,7 +18,7 @@ struct FINDRProfileStatusOptionRowView: View {
             .padding(.horizontal, FINDRSpacing.large)
             .frame(height: isSelected ? 57 : 56)
             .background(
-                isSelected ? FINDRColor.brandSubtle : Color.white,
+                isSelected ? FINDRColor.brandSubtle : FINDRColor.surface,
                 in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous)
             )
             .overlay {

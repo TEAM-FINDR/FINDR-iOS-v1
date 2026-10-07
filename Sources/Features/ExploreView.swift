@@ -4,13 +4,14 @@ struct ExploreView: View {
     @Binding var query: String
     @Binding var filterResetVersion: Int
     @Binding var selectedFilters: [String: String]
+    @Binding var selectedSort: FINDRExploreSort
     let onOpenOpportunity: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
     let onOpenSearch: () -> Void
     let onOpenFilters: () -> Void
+    let onOpenSort: () -> Void
 
     @State private var selectedCategory = "전체"
-    @State private var sortByRecommended = true
 
     private let firstCategoryRow = ["전체", "교육", "공모전", "대외활동"]
     private let secondCategoryRow = ["장학금", "창업", "인턴", "지원사업", "행사"]
@@ -41,8 +42,7 @@ struct ExploreView: View {
                 guard let mode = selectedFilters["방식"], mode != "전체" else { return true }
                 return mode == "온라인" ? opportunity.location == "온라인" : opportunity.location != "온라인"
             }
-        guard !sortByRecommended else { return matches }
-        return matches.sorted { deadlineDays(for: $0) < deadlineDays(for: $1) }
+        return selectedSort.sorted(matches)
     }
 
     var body: some View {
@@ -59,11 +59,11 @@ struct ExploreView: View {
                         .foregroundStyle(FINDRColor.tertiaryText)
                     Spacer()
                     Button {
-                        sortByRecommended.toggle()
+                        onOpenSort()
                     } label: {
                         HStack(spacing: 4) {
                             FINDRIcon(name: FINDRAssetName.sliders, size: 14, tint: FINDRColor.secondaryText)
-                            Text(sortByRecommended ? "추천순" : "마감순")
+                            Text(selectedSort.title)
                                 .font(FINDRFont.medium(11))
                                 .foregroundStyle(FINDRColor.secondaryText)
                         }
@@ -94,7 +94,7 @@ struct ExploreView: View {
         .background(FINDRColor.surface)
         .onChange(of: filterResetVersion) { _, _ in
             selectedCategory = "전체"
-            sortByRecommended = true
+            selectedSort = .recommended
             selectedFilters = [:]
         }
     }
