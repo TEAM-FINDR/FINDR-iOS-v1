@@ -318,6 +318,29 @@ struct Opportunity: Identifiable, Hashable {
         )
     ]
 
+    static let homeRecommendedSamples: [Opportunity] = [
+        samples[1],
+        samples[2],
+        samples[0],
+        samples[3],
+        samples[4],
+        Opportunity(
+            id: "home-b3-youth-startup-tour",
+            title: "청년 스타트업 탐방 프로그램",
+            organization: "창업진흥원",
+            location: "서울",
+            deadline: "D-24",
+            dateRange: nil,
+            categories: ["대외활동", "창업", "서울"],
+            artwork: .homeDeadlineRocket,
+            status: .eligible,
+            completedConditions: 4,
+            totalConditions: 4,
+            conditionNames: ["청년 대상", "관심 분야 (창업)", "서울 현장 참가 가능", "참가 신청서 제출"],
+            missingCondition: nil
+        )
+    ]
+
     static let aPathUnlockedSamples: [Opportunity] = [
         Opportunity(
             id: "apath-summer-tech-internship", title: "테크 스타트업 여름 인턴십",
