@@ -58,6 +58,7 @@ struct ExploreView: View {
                 HStack {
                     Text("총 \(hasActiveFilters ? "\(filteredOpportunities.count)" : "312")개의 기회")
                         .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
                     Spacer()
                     Button {
@@ -81,18 +82,19 @@ struct ExploreView: View {
                 } else {
                     LazyVStack(spacing: 0) {
                         ForEach(filteredOpportunities) { opportunity in
-                            OpportunityListRow(opportunity: opportunity) {
+                            OpportunityListRow(opportunity: opportunity, showsProgress: false, onTap: {
                                 onOpenOpportunity(opportunity)
-                            }
+                            })
                         }
                     }
+                    .padding(.top, 1)
                     .padding(.bottom, 12)
                 }
             }
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, 14)
         }
-        .background(FINDRColor.canvas)
+        .background(FINDRColor.surface)
     }
 
     private var header: some View {
@@ -102,6 +104,7 @@ struct ExploreView: View {
             trailingLabel: "알림",
             action: onOpenNotifications,
             titleKerning: -0.44,
+            trailingSize: 24,
             trailingTint: FINDRColor.primaryText
         )
     }
@@ -129,26 +132,28 @@ struct ExploreView: View {
 
     private var detailFilters: some View {
         HStack(spacing: 6) {
-            filterMenu(key: "지역", title: "지역", options: ["전체 지역", "광주", "서울", "온라인"])
-            filterMenu(key: "대상", title: "대상", options: ["전체 대상", "중학생", "고등학생", "대학생"])
-            filterMenu(key: "마감일", title: "마감일", options: ["전체", "7일 이내", "30일 이내"])
-            filterMenu(key: "방식", title: "온/오프라인", options: ["전체", "온라인", "오프라인"])
+            filterMenu(key: "지역", title: "지역", options: ["전체 지역", "광주", "서울", "온라인"], width: 59)
+            filterMenu(key: "대상", title: "대상", options: ["전체 대상", "중학생", "고등학생", "대학생"], width: 59)
+            filterMenu(key: "마감일", title: "마감일", options: ["전체", "7일 이내", "30일 이내"], width: 70)
+            filterMenu(key: "방식", title: "온/오프라인", options: ["전체", "온라인", "오프라인"], width: 96)
         }
     }
 
-    private func filterMenu(key: String, title: String, options: [String]) -> some View {
+    private func filterMenu(key: String, title: String, options: [String], width: CGFloat) -> some View {
         FINDRFilterMenu(
             title: title,
             selectedOption: selectedFilters[key],
             resetOption: options[0],
-            options: options
-        ) { option in
-            if option == options[0] {
-                selectedFilters.removeValue(forKey: key)
-            } else {
-                selectedFilters[key] = option
-            }
-        }
+            options: options,
+            onSelect: { option in
+                if option == options[0] {
+                    selectedFilters.removeValue(forKey: key)
+                } else {
+                    selectedFilters[key] = option
+                }
+            },
+            width: width
+        )
     }
 
     private func matchesTarget(_ target: String, opportunity: Opportunity) -> Bool {

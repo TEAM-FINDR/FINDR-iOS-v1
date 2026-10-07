@@ -19,13 +19,14 @@ struct OpportunityArtworkTile: View {
 struct OpportunityListRow: View {
     let opportunity: Opportunity
     var asCard = false
+    var showsProgress = true
     var onTap: () -> Void = {}
 
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                OpportunityArtworkTile(artwork: opportunity.artwork, size: 64, iconSize: 25)
-                VStack(alignment: .leading, spacing: 4) {
+                OpportunityArtworkTile(artwork: opportunity.artwork, size: 64, iconSize: asCard ? 25 : 24)
+                VStack(alignment: .leading, spacing: asCard ? 4 : 3) {
                     Text(opportunity.title)
                         .font(FINDRFont.bold(15))
                         .kerning(-0.3)
@@ -33,30 +34,33 @@ struct OpportunityListRow: View {
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Text("\(opportunity.organization) · \(opportunity.location)")
-                        .font(FINDRFont.regular(11))
-                        .kerning(-0.2)
+                        .font(FINDRFont.regular(asCard ? 11 : 12))
+                        .kerning(asCard ? -0.2 : -0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
                         .lineLimit(1)
                     HStack(spacing: 7) {
                         Text(opportunity.deadline)
-                            .font(FINDRFont.bold(11))
+                            .font(FINDRFont.bold(asCard ? 11 : 12))
                             .foregroundStyle(opportunity.deadline == "D-3" ? FINDRColor.danger : FINDRColor.brand)
-                        FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 4)
-                            .frame(maxWidth: 52)
-                        Text("\(opportunity.completedConditions)/\(opportunity.totalConditions)")
-                            .font(FINDRFont.regular(10))
-                            .foregroundStyle(FINDRColor.tertiaryText)
+                        if showsProgress {
+                            FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 4)
+                                .frame(maxWidth: 52)
+                            Text("\(opportunity.completedConditions)/\(opportunity.totalConditions)")
+                                .font(FINDRFont.regular(10))
+                                .foregroundStyle(FINDRColor.tertiaryText)
+                        }
                     }
                 }
-                VStack(alignment: .trailing, spacing: 10) {
-                    FINDRIcon(name: FINDRAssetName.more, size: 16, tint: FINDRColor.inactiveIcon)
-                    Spacer(minLength: 0)
+                VStack(alignment: .trailing, spacing: asCard ? 10 : 18) {
+                    FINDRIcon(name: FINDRAssetName.more, size: asCard ? 16 : 18, tint: FINDRColor.inactiveIcon)
+                    if asCard { Spacer(minLength: 0) }
                     FINDRStatusBadge(status: opportunity.status)
                 }
-                .padding(.vertical, 2)
+                .padding(.vertical, asCard ? 2 : 0)
             }
             .padding(asCard ? 12 : 0)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: asCard ? nil : 93)
             .background(asCard ? FINDRColor.surface : .clear)
             .clipShape(RoundedRectangle(cornerRadius: asCard ? 16 : 0, style: .continuous))
             .overlay(alignment: .bottom) {
