@@ -19,6 +19,6 @@ struct FINDROnboardingAnalysisChecklistView: View {
                 textColor: FINDRColor.tertiaryText
             )
         }
-        .padding(.top, FINDRSpacing.medium)
+        .padding(.top, FINDRSpacing.large)
     }
 }
