@@ -6,8 +6,8 @@ struct FINDRProfileSetupNavigationBarView: View {
     var body: some View {
         HStack(spacing: 0) {
             Button(action: onBack) {
-                FINDRIcon(name: FINDRAssetName.back, size: 24, tint: FINDRColor.primaryText)
-                    .frame(width: 64, height: 40, alignment: .leading)
+                FINDRIcon(name: FINDRAssetName.profileSetupBack, size: 24, tint: FINDRColor.primaryText)
+                    .frame(width: 64, height: 24, alignment: .leading)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -23,6 +23,7 @@ struct FINDRProfileSetupNavigationBarView: View {
                 .frame(width: 64, height: 24)
         }
         .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.vertical, FINDRSpacing.small)
+        .padding(.top, 14)
+        .padding(.bottom, 2)
     }
 }

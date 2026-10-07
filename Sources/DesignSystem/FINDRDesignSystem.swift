@@ -127,6 +127,7 @@ enum FINDRAssetName {
     static let aPathOpportunityAward = "Figma_04776"
     static let appleLogo = "FINDRAppleLogo"
     static let kakaoLogo = "FINDRKakaoLogo"
+    static let profileSetupBack = "Figma_fd617"
     static let unlock = "Figma_a1402"
     static let bell = "Figma_87021"
     static let cpu = "Figma_d3e89"
@@ -363,7 +364,7 @@ struct FINDRSectionHeader: View {
 }
 
 enum FINDRButtonKind: Equatable {
-    case primary, secondary, outline
+    case primary, secondary, outline, accent
     case inverse
 }
 
@@ -394,7 +395,7 @@ struct FINDRButton: View {
 
     private var foreground: Color {
         switch kind {
-        case .primary, .inverse: .white
+        case .primary, .inverse, .accent: .white
         case .secondary, .outline: FINDRColor.primaryText
         }
     }
@@ -402,6 +403,7 @@ struct FINDRButton: View {
     private var background: Color {
         switch kind {
         case .primary: FINDRColor.brandButton
+        case .accent: FINDRColor.brand
         case .secondary: FINDRColor.inverse
         case .outline: FINDRColor.surface
         case .inverse: FINDRColor.inverse
@@ -411,12 +413,13 @@ struct FINDRButton: View {
 
 struct FINDRBottomCTA: View {
     let title: String
+    var buttonKind: FINDRButtonKind = .primary
     var isEnabled = true
     let action: () -> Void
 
     var body: some View {
         VStack(spacing: FINDRSpacing.large) {
-            FINDRButton(title: title, height: 53, action: action)
+            FINDRButton(title: title, kind: buttonKind, height: 53, action: action)
                 .disabled(!isEnabled)
                 .opacity(isEnabled ? 1 : 0.45)
 
