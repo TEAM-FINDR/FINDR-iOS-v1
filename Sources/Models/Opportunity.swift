@@ -56,9 +56,30 @@ enum OpportunityArtwork: String, Hashable {
                 .init(color: end, location: 0.71429),
                 .init(color: end, location: 1)
             ])
-        case .bulb: return Gradient(colors: [Color(hex: 0xFF9D4D), Color(hex: 0xF4512C)])
-        case .monitor: return Gradient(colors: [Color(hex: 0x8A70FF), Color(hex: 0x3523A8)])
-        case .graduation: return Gradient(colors: [Color(hex: 0x28C9B0), Color(hex: 0x08777A)])
+        case .bulb:
+            let start = Color(hex: 0xFFB36B)
+            let end = Color(hex: 0xF0663A)
+            return Gradient(stops: [
+                .init(color: start, location: 0),
+                .init(color: end, location: 0.71429),
+                .init(color: end, location: 1)
+            ])
+        case .monitor:
+            let start = Color(hex: 0x8A7CFF)
+            let end = Color(hex: 0x3B2FA8)
+            return Gradient(stops: [
+                .init(color: start, location: 0),
+                .init(color: end, location: 0.71429),
+                .init(color: end, location: 1)
+            ])
+        case .graduation:
+            let start = Color(hex: 0x34C3B5)
+            let end = Color(hex: 0x0F6E78)
+            return Gradient(stops: [
+                .init(color: start, location: 0),
+                .init(color: end, location: 0.71429),
+                .init(color: end, location: 1)
+            ])
         case .award: return Gradient(colors: [Color(hex: 0xF278AA), Color(hex: 0xC21E67)])
         case .aPathRocket, .aPathTrophy, .aPathAward:
             return Gradient(colors: [Color(hex: 0x4B8BFF), Color(hex: 0x183C9B)])

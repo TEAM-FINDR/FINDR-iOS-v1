@@ -25,8 +25,8 @@ struct OpportunityListRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                OpportunityArtworkTile(artwork: opportunity.artwork, size: 64, iconSize: asCard ? 25 : 24)
-                VStack(alignment: .leading, spacing: asCard ? 4 : 3) {
+                OpportunityArtworkTile(artwork: opportunity.artwork, size: asCard ? 68 : 64, iconSize: asCard ? 26 : 24)
+                VStack(alignment: .leading, spacing: 3) {
                     Text(opportunity.title)
                         .font(FINDRFont.bold(15))
                         .kerning(-0.3)
@@ -34,31 +34,29 @@ struct OpportunityListRow: View {
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Text("\(opportunity.organization) · \(opportunity.location)")
-                        .font(FINDRFont.regular(asCard ? 11 : 12))
-                        .kerning(asCard ? -0.2 : -0.24)
+                        .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
                         .lineLimit(1)
-                    HStack(spacing: 7) {
+                    HStack(spacing: asCard ? 8 : 7) {
                         Text(opportunity.deadline)
-                            .font(FINDRFont.bold(asCard ? 11 : 12))
+                            .font(FINDRFont.bold(12))
                             .foregroundStyle(opportunity.deadline == "D-3" ? FINDRColor.danger : FINDRColor.brand)
                         if showsProgress {
                             FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 4)
-                                .frame(maxWidth: 52)
+                                .frame(maxWidth: asCard ? 60 : 52)
                             Text("\(opportunity.completedConditions)/\(opportunity.totalConditions)")
-                                .font(FINDRFont.regular(10))
+                                .font(asCard ? FINDRFont.medium(11) : FINDRFont.regular(10))
                                 .foregroundStyle(FINDRColor.tertiaryText)
                         }
                     }
                 }
-                VStack(alignment: .trailing, spacing: asCard ? 10 : 18) {
-                    FINDRIcon(name: FINDRAssetName.more, size: asCard ? 16 : 18, tint: FINDRColor.inactiveIcon)
-                    if asCard { Spacer(minLength: 0) }
+                VStack(alignment: .trailing, spacing: asCard ? 22 : 18) {
+                    FINDRIcon(name: FINDRAssetName.more, size: 18, tint: FINDRColor.inactiveIcon)
                     FINDRStatusBadge(status: opportunity.status)
                 }
-                .padding(.vertical, asCard ? 2 : 0)
             }
-            .padding(asCard ? 12 : 0)
+            .padding(asCard ? 14 : 0)
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(height: asCard ? nil : 93)
             .background(asCard ? FINDRColor.surface : .clear)
@@ -72,7 +70,7 @@ struct OpportunityListRow: View {
                         .stroke(FINDRColor.border, lineWidth: 1)
                 }
             }
-            .shadow(color: .black.opacity(asCard ? 0.04 : 0), radius: 16, x: 0, y: 4)
+            .shadow(color: asCard ? FINDRShadow.card : .clear, radius: 18, x: 0, y: 4)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

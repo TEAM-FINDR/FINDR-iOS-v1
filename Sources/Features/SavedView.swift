@@ -24,7 +24,7 @@ struct SavedView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 16) {
                 header
                 filterBar
                 HStack {
@@ -32,35 +32,38 @@ struct SavedView: View {
                         Button("마감 임박순") { sortByDeadline = true }
                         Button("추천순") { sortByDeadline = false }
                     } label: {
-                        HStack(spacing: 4) {
+                        HStack(spacing: 2) {
                             Text(sortByDeadline ? "마감 임박순" : "추천순")
-                                .font(FINDRFont.regular(12))
-                            FINDRIcon(name: FINDRAssetName.chevronDown, size: 13, tint: FINDRColor.secondaryText)
+                                .font(FINDRFont.medium(13))
+                                .kerning(-0.26)
+                            FINDRIcon(name: FINDRAssetName.chevronDown, size: 14, tint: FINDRColor.secondaryText)
                         }
                         .foregroundStyle(FINDRColor.secondaryText)
                     }
                     Spacer()
                     Button { remindersEnabled.toggle() } label: {
-                        HStack(spacing: 5) {
+                        HStack(spacing: 4) {
                             FINDRIcon(name: FINDRAssetName.bell, size: 14, tint: FINDRColor.brand)
                             Text(remindersEnabled ? "마감 알림 켜짐" : "마감 알림 꺼짐")
-                                .font(FINDRFont.medium(11))
+                                .font(FINDRFont.medium(12))
                                 .foregroundStyle(FINDRColor.brand)
                         }
                     }
                     .buttonStyle(.plain)
                 }
-                LazyVStack(spacing: 10) {
-                    ForEach(savedOpportunities) { opportunity in
-                        OpportunityListRow(opportunity: opportunity, asCard: true) {
-                            onOpenOpportunity(opportunity)
+                ScrollView(showsIndicators: false) {
+                    LazyVStack(spacing: 10) {
+                        ForEach(savedOpportunities) { opportunity in
+                            OpportunityListRow(opportunity: opportunity, asCard: true) {
+                                onOpenOpportunity(opportunity)
+                            }
                         }
                     }
                 }
-                .padding(.bottom, 12)
+                .frame(height: 422)
             }
             .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.top, 14)
+            .padding(.top, 30)
         }
         .background(FINDRColor.canvas)
     }
@@ -70,7 +73,8 @@ struct SavedView: View {
             title: "저장한 기회",
             trailingIcon: FINDRAssetName.bell,
             trailingLabel: "알림",
-            action: onOpenNotifications
+            action: onOpenNotifications,
+            titleKerning: -0.44
         )
     }
 
