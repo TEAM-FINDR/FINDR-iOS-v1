@@ -4,12 +4,11 @@ struct FINDROnboardingResultMetricRowView: View {
     let title: String
     let value: String
     let icon: String
-    let tint: Color
     let valueColor: Color
 
     var body: some View {
         HStack(spacing: FINDRSpacing.medium) {
-            FINDRIcon(name: icon, size: 22, tint: tint)
+            FINDRIcon(name: icon, size: 22, usesTemplate: false)
             Text(title)
                 .font(FINDRFont.medium(15))
                 .tracking(-0.3)
