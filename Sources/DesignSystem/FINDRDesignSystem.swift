@@ -140,6 +140,7 @@ enum FINDRAssetName {
     static let unlock = "Figma_a1402"
     static let bell = "Figma_87021"
     static let cpu = "Figma_d3e89"
+    static let homeDeadlineCPU = "Figma_c55a4"
     static let chevronRight = "Figma_5eec4"
     static let folder = "Figma_3ded9"
     static let arrowRight = "Figma_30ec3"
