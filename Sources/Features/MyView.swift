@@ -13,8 +13,10 @@ struct MyView: View {
     let completedAPathActions: Set<APathActionID>
     let onOpenNotificationSettings: () -> Void
     let onPresentConditionSheet: () -> Void
-    @State private var selectedAction = ""
-    @State private var showActionNotice = false
+    let onOpenSettings: () -> Void
+    let onOpenActivityHistory: () -> Void
+    let onOpenHelp: () -> Void
+    let onLogout: () -> Void
     @State private var activeEditor: MYEditorDestination?
     @State private var shouldShowProfileSaveConfirmation = false
     @State private var isProfileSaveConfirmationVisible = false
@@ -86,21 +88,18 @@ struct MyView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: isProfileSaveConfirmationVisible)
-        .alert(selectedAction, isPresented: $showActionNotice) {
-            Button("확인", role: .cancel) {}
-        } message: {
-            Text("이 화면은 디자인 확인용 샘플입니다.")
-        }
+
     }
 
     private var header: some View {
         FINDRPageHeader(
             title: "MY",
             trailingIcon: FINDRAssetName.settings,
-            trailingLabel: isDarkMode ? "라이트 모드로 변경" : "다크 모드로 변경",
-            action: { isDarkMode.toggle() },
+            trailingLabel: "설정",
+            action: onOpenSettings,
             titleKerning: -0.44
         )
+        .contextMenu { Button(isDarkMode ? "라이트 모드로 변경" : "다크 모드로 변경") { isDarkMode.toggle() } }
     }
 
     private var profileCard: some View {
@@ -168,8 +167,8 @@ struct MyView: View {
         values: [String],
         addLabel: String,
         tagTone: FINDRTagTone,
-        onEdit: (() -> Void)? = nil,
-        onAdd: (() -> Void)? = nil
+        onEdit: @escaping () -> Void,
+        onAdd: @escaping () -> Void
     ) -> some View {
         FINDRCard(padding: 16, hasShadow: true) {
             VStack(alignment: .leading, spacing: 12) {
@@ -180,7 +179,7 @@ struct MyView: View {
                         .foregroundStyle(FINDRColor.primaryText)
                         .frame(height: 21, alignment: .leading)
                     Spacer()
-                    Button { (onEdit ?? { showAction("\(title) 수정") })() } label: {
+                    Button { onEdit() } label: {
                         HStack(spacing: 3) {
                             Text("수정")
                                 .font(FINDRFont.regular(12))
@@ -193,7 +192,7 @@ struct MyView: View {
                     .buttonStyle(.plain)
                 }
                 FlowTags(values: values, tone: tagTone, dashedAddLabel: addLabel) {
-                    (onAdd ?? { showAction("\(title) 추가") })()
+                    onAdd()
                 }
             }
         }
@@ -206,7 +205,11 @@ struct MyView: View {
                     if item.0 == "알림 설정" {
                         onOpenNotificationSettings()
                     } else {
-                        showAction(item.0)
+                        switch item.0 {
+                        case "활동 기록": onOpenActivityHistory()
+                        case "도움말": onOpenHelp()
+                        default: onLogout()
+                        }
                     }
                 } label: {
                     HStack(spacing: 10) {
@@ -242,11 +245,6 @@ struct MyView: View {
                 .stroke(FINDRColor.border, lineWidth: 1)
         }
         .shadow(color: FINDRShadow.card, radius: 18, x: 0, y: 4)
-    }
-
-    private func showAction(_ action: String) {
-        selectedAction = action
-        showActionNotice = true
     }
 
     private func presentSaveConfirmationIfNeeded() {

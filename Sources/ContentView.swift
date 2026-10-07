@@ -5,6 +5,9 @@ struct ContentView: View {
     @AppStorage("FINDR.didCompleteOnboarding") private var didCompleteOnboarding = false
     @AppStorage("FINDR.aPath.completedActionIDs") private var completedAPathActionIDsStorage = ""
     @AppStorage("FINDR.explore.ignoredOpportunityIDs") private var ignoredExploreOpportunityIDsStorage = ""
+    @AppStorage("FINDR.isLoggedOut") private var isLoggedOut = false
+    @State private var accountConfirmation: AccountConfirmation?
+    @State private var withdrawalUnavailable = false
     @State private var selectedTab: FINDRTab = .home
     @State private var navigationPath: [FINDRNavigationDestination] = []
     @State private var exploreQuery = ""
@@ -31,6 +34,12 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             appContent
+            if let kind = accountConfirmation {
+                AccountConfirmationOverlay(kind: kind, onCancel: { accountConfirmation = nil }, onConfirm: {
+                    accountConfirmation = nil
+                    if kind == .logout { isLoggedOut = true; navigationPath.removeAll() } else { withdrawalUnavailable = true }
+                }).zIndex(20)
+            }
             if savedRemovalToastOpportunity != nil {
                 SavedOpportunityRemovalToastOverlay(onUndo: undoSavedOpportunityRemoval)
                     .zIndex(17)
@@ -38,11 +47,14 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeInOut(duration: 0.2), value: savedRemovalToastOpportunity)
+        .alert("회원 탈퇴 서비스 미연결", isPresented: $withdrawalUnavailable) { Button("확인", role: .cancel) {} } message: { Text("계정 삭제 서비스가 연결되어 있지 않아 탈퇴를 처리할 수 없어요.") }
     }
 
     private var appContent: some View {
         Group {
-            if didCompleteOnboarding {
+            if isLoggedOut {
+                FINDROnboardingLoginView { isLoggedOut = false }
+            } else if didCompleteOnboarding {
                 mainExperience
                     .preferredColorScheme(isDarkMode ? .dark : .light)
             } else {
@@ -108,6 +120,14 @@ struct ContentView: View {
                             onOpenSettings: openNotificationSettings,
                             onSelectDestination: openNotificationDestination
                         )
+                    case .settings:
+                        SettingsView(profile: $profile, onNotifications: openNotificationSettings,
+                                     onHelp: { navigationPath.append(.help) },
+                                     onLogout: { accountConfirmation = .logout }, onWithdraw: { accountConfirmation = .withdrawal })
+                    case .activityHistory:
+                        ActivityHistoryView()
+                    case .help:
+                        HelpView()
                     case .notificationSettings:
                         NotificationSettingsView()
                     case .recommendedOpportunities:
@@ -308,7 +328,11 @@ struct ContentView: View {
                 profile: $profile,
                 completedAPathActions: completedAPathActions,
                 onOpenNotificationSettings: openNotificationSettings,
-                onPresentConditionSheet: { isConditionSheetPresented = true }
+                onPresentConditionSheet: { isConditionSheetPresented = true },
+                onOpenSettings: { navigationPath.append(.settings) },
+                onOpenActivityHistory: { navigationPath.append(.activityHistory) },
+                onOpenHelp: { navigationPath.append(.help) },
+                onLogout: { accountConfirmation = .logout }
             )
         }
     }
