@@ -78,6 +78,88 @@ struct OpportunityListRow: View {
     }
 }
 
+struct HomeNearlyEligibleOpportunityCard: View {
+    let opportunity: Opportunity
+    let onOpenOpportunity: () -> Void
+    let onPrepare: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Button(action: onOpenOpportunity) {
+                    Text(opportunity.title)
+                        .font(FINDRFont.bold(15))
+                        .kerning(-0.3)
+                        .foregroundStyle(FINDRColor.primaryText)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .buttonStyle(.plain)
+
+                FINDRStatusBadge(status: .nearlyEligible)
+            }
+            .frame(height: 24)
+
+            Text("\(opportunity.organization) · \(opportunity.location) · \(opportunity.deadline)")
+                .font(FINDRFont.regular(12))
+                .kerning(-0.24)
+                .foregroundStyle(FINDRColor.tertiaryText)
+                .lineLimit(1)
+                .frame(height: 17, alignment: .leading)
+
+            HStack(spacing: 8) {
+                FINDRProgressBar(
+                    progress: opportunity.progress,
+                    color: FINDRColor.warningStatus,
+                    height: 4
+                )
+                .frame(width: 150)
+
+                Text("\(opportunity.completedConditions)/\(opportunity.totalConditions) 조건 충족")
+                    .font(FINDRFont.bold(12))
+                    .foregroundStyle(FINDRColor.warning)
+                    .fixedSize()
+            }
+            .frame(height: 17)
+
+            HStack(spacing: 4) {
+                HStack(spacing: 4) {
+                    FINDRIcon(name: FINDRAssetName.missing, size: 14, tint: FINDRColor.dangerStatus)
+                    Text(opportunity.missingCondition ?? "")
+                        .font(FINDRFont.medium(12))
+                        .kerning(-0.24)
+                        .foregroundStyle(FINDRColor.danger)
+                        .lineLimit(1)
+                }
+
+                Spacer(minLength: 4)
+
+                Button(action: onPrepare) {
+                    HStack(spacing: 2) {
+                        Text("A-Path에서 준비하기")
+                            .font(FINDRFont.bold(12))
+                            .kerning(-0.24)
+                            .foregroundStyle(FINDRColor.brand)
+                        FINDRIcon(name: FINDRAssetName.chevronRight, size: 14, tint: FINDRColor.brand)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+            .frame(height: 17)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(FINDRColor.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(FINDRColor.border, lineWidth: 1)
+        }
+        .shadow(color: FINDRShadow.card, radius: 18, x: 0, y: 4)
+        .accessibilityElement(children: .contain)
+    }
+}
+
 struct FeaturedOpportunityCard: View {
     let opportunity: Opportunity
     var categoryLabels: [String]? = nil

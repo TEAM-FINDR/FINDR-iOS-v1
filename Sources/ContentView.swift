@@ -100,7 +100,11 @@ struct ContentView: View {
             HomeView(
                 onOpenOpportunity: open,
                 onSeeAll: { selectedTab = .explore },
-                onOpenNotifications: openNotificationCenter
+                onOpenNotifications: openNotificationCenter,
+                onOpenAPath: {
+                    selectedTab = .path
+                    navigationPath.removeAll()
+                }
             )
         case .explore:
             ExploreView(onOpenOpportunity: open, onOpenNotifications: openNotificationCenter)

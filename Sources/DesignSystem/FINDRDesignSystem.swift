@@ -7,6 +7,7 @@ enum FINDRColor {
     static let scrim = Color(uiColor: UIColor(rgb: 0x0B0B0F))
     static let subtle = dynamic(light: 0xF2F4F7, dark: 0x1C2338)
     static let primaryText = dynamic(light: 0x111827, dark: 0xE6E9F0)
+    static let heading = dynamic(light: 0x0E1A3A, dark: 0xE6E9F0)
     static let secondaryText = dynamic(light: 0x5B6474, dark: 0xB4BBCB)
     static let tertiaryText = dynamic(light: 0x686C75, dark: 0x7C859C)
     static let brand = dynamic(light: 0x2B62E9, dark: 0x5B8CFF)
