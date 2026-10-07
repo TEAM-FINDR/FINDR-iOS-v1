@@ -114,6 +114,7 @@ enum FINDRAssetName {
     static let notificationSettings = "FINDRNotificationSettings"
     static let notificationUnlock = "FINDRNotificationUnlock"
     static let notificationClock = "FINDRNotificationClock"
+    static let notificationEmptyBell = "FINDRNotificationEmptyBell"
     static let aPathHelp = "Figma_aa157"
     static let aPathClose = "Figma_89e40"
     static let aPathToggleOn = "Figma_b42cc"
