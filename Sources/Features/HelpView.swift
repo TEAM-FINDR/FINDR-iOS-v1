@@ -18,7 +18,7 @@ struct HelpView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("자주 묻는 질문").font(FINDRFont.bold(17)).kerning(-0.34).frame(height: 24)
-                    VStack(spacing: 0) {
+                    VStack(spacing: 16) {
                         ForEach(questions.indices, id: \.self) { index in
                             VStack(alignment: .leading, spacing: 8) {
                                 Button { expanded = expanded == index ? nil : index } label: {
@@ -27,7 +27,7 @@ struct HelpView: View {
                                         Text(questions[index]).font(FINDRFont.medium(14)).kerning(-0.28).foregroundStyle(FINDRColor.primaryText)
                                         Spacer(minLength: 0)
                                         Image(expanded == index ? "Figma_9d2ee" : "Figma_e20f9").resizable().frame(width: 16, height: 16)
-                                    }
+                                    }.frame(height: 20)
                                 }.buttonStyle(.plain)
                                 if expanded == index {
                                     Text(answers[index]).font(FINDRFont.regular(13)).kerning(-0.26)
@@ -39,7 +39,7 @@ struct HelpView: View {
                                 .overlay(alignment: .bottom) { FINDRColor.divider.frame(height: 1) }
                         }
                     }
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .center, spacing: 8) {
                         Text("원하는 답을 찾지 못했나요?").font(FINDRFont.bold(14)).kerning(-0.28)
                         Text("평일 10:00–18:00 · 1일 이내 답변").font(FINDRFont.regular(12)).foregroundStyle(FINDRColor.tertiaryText)
                         Button { contactUnavailable = true } label: {
