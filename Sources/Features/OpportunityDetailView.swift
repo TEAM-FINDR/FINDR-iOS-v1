@@ -12,6 +12,7 @@ struct OpportunityDetailView: View {
     private let sections = ["상세 정보", "지원 자격", "문의처"]
     private var isSaved: Bool { savedIDs.contains(opportunity.id) }
     private var isMissing: Bool { opportunity.status == .missing }
+    private var usesEligibilityInfoCards: Bool { !opportunity.eligibilityInfoCards.isEmpty }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -20,9 +21,9 @@ struct OpportunityDetailView: View {
                     .padding(.bottom, 12)
                 overview
                 sectionSelector
-                    .padding(.top, 15)
+                    .padding(.top, usesEligibilityInfoCards ? 10 : 15)
                 sectionContent
-                    .padding(.top, 17)
+                    .padding(.top, usesEligibilityInfoCards ? 12 : 17)
             }
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, 4)
@@ -115,7 +116,11 @@ struct OpportunityDetailView: View {
     private var sectionContent: some View {
         switch selectedSection {
         case "지원 자격":
-            eligibilitySection
+            if opportunity.eligibilityInfoCards.isEmpty {
+                eligibilitySection
+            } else {
+                eligibilityInformationSection
+            }
         case "문의처":
             VStack(alignment: .leading, spacing: 12) {
                 Text("문의처")
@@ -154,6 +159,41 @@ struct OpportunityDetailView: View {
             if isMissing {
                 unlockCallout
                     .padding(.top, 2)
+            }
+        }
+    }
+
+    private var eligibilityInformationSection: some View {
+        VStack(spacing: 12) {
+            ForEach(opportunity.eligibilityInfoCards) { card in
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(card.title)
+                        .font(FINDRFont.bold(14))
+                        .kerning(-0.28)
+                        .foregroundStyle(FINDRColor.primaryText)
+                        .frame(height: 19.32, alignment: .top)
+
+                    ForEach(card.bulletItems, id: \.self) { item in
+                        HStack(alignment: .top, spacing: 8) {
+                            Text("·")
+                                .font(FINDRFont.regular(13))
+                                .kerning(-0.26)
+                                .foregroundStyle(FINDRColor.tertiaryText)
+                                .frame(height: 18.2, alignment: .top)
+
+                            Text(item)
+                                .font(FINDRFont.regular(13))
+                                .kerning(-0.26)
+                                .foregroundStyle(FINDRColor.secondaryText)
+                                .lineLimit(1)
+                                .frame(height: 18.2, alignment: .top)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(FINDRColor.canvas, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
         }
     }

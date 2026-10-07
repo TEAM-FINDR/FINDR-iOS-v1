@@ -374,6 +374,42 @@ struct Opportunity: Identifiable, Hashable {
     }
 }
 
+struct OpportunityInfoCard: Identifiable, Hashable {
+    let title: String
+    let bulletItems: [String]
+
+    var id: String { title }
+}
+
+extension Opportunity {
+    var eligibilityInfoCards: [OpportunityInfoCard] {
+        guard id == "gwangju-ai-camp" else { return [] }
+        return [
+            OpportunityInfoCard(
+                title: "모집 대상",
+                bulletItems: [
+                    "광주광역시 거주 또는 재학 중인 만 14~19세",
+                    "중학생 · 고등학생 (학교 밖 청소년 포함)"
+                ]
+            ),
+            OpportunityInfoCard(
+                title: "모집 인원 · 일정",
+                bulletItems: [
+                    "40명 (선착순 아님)",
+                    "캠프 일정: 2026.10.24 ~ 10.26 (2박 3일)"
+                ]
+            ),
+            OpportunityInfoCard(
+                title: "제출 서류",
+                bulletItems: [
+                    "참가 신청서 1부",
+                    "재학증명서 또는 주민등록등본"
+                ]
+            )
+        ]
+    }
+}
+
 extension Color {
     init(hex: UInt32) {
         self.init(
