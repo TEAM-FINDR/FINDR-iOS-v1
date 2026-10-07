@@ -15,7 +15,8 @@ struct NotificationCenterView: View {
                 emptyState
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.horizontal, FINDRSpacing.screen)
-                    .padding(.bottom, 60)
+                    .padding(.top, FINDRSpacing.small)
+                    .padding(.bottom, 82)
             } else {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: FINDRSpacing.large) {
@@ -45,24 +46,27 @@ struct NotificationCenterView: View {
     @ViewBuilder
     private var emptyState: some View {
         VStack(spacing: FINDRSpacing.medium) {
-            FINDRIcon(name: FINDRAssetName.bell, size: 32, tint: FINDRColor.secondaryText)
+            FINDRIcon(
+                name: FINDRAssetName.notificationEmptyBell,
+                size: 32,
+                tint: FINDRColor.secondaryText,
+                usesTemplate: false
+            )
                 .frame(width: 72, height: 72)
                 .background(FINDRColor.subtle, in: Circle())
 
-            VStack(spacing: FINDRSpacing.xSmall) {
-                Text("아직 받은 알림이 없어요")
-                    .font(FINDRFont.titleSmall)
-                    .kerning(-0.34)
-                    .foregroundStyle(FINDRColor.primaryText)
-                    .multilineTextAlignment(.center)
+            Text("아직 받은 알림이 없어요")
+                .font(FINDRFont.titleSmall)
+                .kerning(-0.34)
+                .foregroundStyle(FINDRColor.primaryText)
+                .multilineTextAlignment(.center)
 
-                Text("새로운 기회가 열리거나 마감이 다가오면 가장 먼저 알려드릴게요.")
-                    .font(FINDRFont.bodySmall)
-                    .kerning(-0.26)
-                    .foregroundStyle(FINDRColor.secondaryText)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            Text("새로운 기회가 열리거나 마감이 다가오면 가장 먼저 알려드릴게요.")
+                .font(FINDRFont.bodySmall)
+                .kerning(-0.26)
+                .foregroundStyle(FINDRColor.secondaryText)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.vertical, FINDRSpacing.xLarge)
     }
