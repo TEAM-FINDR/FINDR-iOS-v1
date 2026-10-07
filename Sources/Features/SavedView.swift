@@ -4,6 +4,7 @@ struct SavedView: View {
     @Binding var savedIDs: Set<String>
     let onOpenOpportunity: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
+    let onOpenActions: (Opportunity) -> Void
 
     @State private var selectedFilter = "전체"
     @State private var remindersEnabled = true
@@ -23,47 +24,54 @@ struct SavedView: View {
     }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 16) {
-                header
-                filterBar
-                HStack {
-                    Menu {
-                        Button("마감 임박순") { sortByDeadline = true }
-                        Button("추천순") { sortByDeadline = false }
-                    } label: {
-                        HStack(spacing: 2) {
-                            Text(sortByDeadline ? "마감 임박순" : "추천순")
-                                .font(FINDRFont.medium(13))
-                                .kerning(-0.26)
-                            FINDRIcon(name: FINDRAssetName.chevronDown, size: 14, tint: FINDRColor.secondaryText)
+        ZStack {
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 16) {
+                    header
+                    filterBar
+                    HStack {
+                        Menu {
+                            Button("마감 임박순") { sortByDeadline = true }
+                            Button("추천순") { sortByDeadline = false }
+                        } label: {
+                            HStack(spacing: 2) {
+                                Text(sortByDeadline ? "마감 임박순" : "추천순")
+                                    .font(FINDRFont.medium(13))
+                                    .kerning(-0.26)
+                                FINDRIcon(name: FINDRAssetName.chevronDown, size: 14, tint: FINDRColor.secondaryText)
+                            }
+                            .foregroundStyle(FINDRColor.secondaryText)
                         }
-                        .foregroundStyle(FINDRColor.secondaryText)
+                        Spacer()
+                        Button { remindersEnabled.toggle() } label: {
+                            HStack(spacing: 4) {
+                                FINDRIcon(name: FINDRAssetName.bell, size: 14, tint: FINDRColor.brand)
+                                Text(remindersEnabled ? "마감 알림 켜짐" : "마감 알림 꺼짐")
+                                    .font(FINDRFont.medium(12))
+                                    .foregroundStyle(FINDRColor.brand)
+                            }
+                        }
+                        .buttonStyle(.plain)
                     }
-                    Spacer()
-                    Button { remindersEnabled.toggle() } label: {
-                        HStack(spacing: 4) {
-                            FINDRIcon(name: FINDRAssetName.bell, size: 14, tint: FINDRColor.brand)
-                            Text(remindersEnabled ? "마감 알림 켜짐" : "마감 알림 꺼짐")
-                                .font(FINDRFont.medium(12))
-                                .foregroundStyle(FINDRColor.brand)
+                    ScrollView(showsIndicators: false) {
+                        LazyVStack(spacing: 10) {
+                            ForEach(savedOpportunities) { opportunity in
+                                OpportunityListRow(
+                                    opportunity: opportunity,
+                                    asCard: true,
+                                    showsLocation: false,
+                                    onMore: { onOpenActions(opportunity) },
+                                    onTap: { onOpenOpportunity(opportunity) }
+                                )
+                            }
                         }
                     }
-                    .buttonStyle(.plain)
+                    .frame(height: 422)
                 }
-                ScrollView(showsIndicators: false) {
-                    LazyVStack(spacing: 10) {
-                        ForEach(savedOpportunities) { opportunity in
-                            OpportunityListRow(opportunity: opportunity, asCard: true, showsLocation: false, onTap: {
-                                onOpenOpportunity(opportunity)
-                            })
-                        }
-                    }
-                }
-                .frame(height: 422)
+                .padding(.horizontal, FINDRSpacing.screen)
+                .padding(.top, 30)
             }
-            .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.top, 30)
+
         }
         .background(FINDRColor.canvas)
     }

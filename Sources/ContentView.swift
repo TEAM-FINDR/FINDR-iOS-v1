@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var exploreSort: FINDRExploreSort = .recommended
     @State private var isExploreSortSheetPresented = false
     @State private var selectedOpportunityForActions: Opportunity?
+    @State private var selectedSavedOpportunityForActions: Opportunity?
     @State private var isReportUnavailableAlertPresented = false
     @State private var profile = FINDRProfileStore.load()
     @State private var isConditionSheetPresented = false
@@ -195,6 +196,24 @@ struct ContentView: View {
                     .zIndex(14)
             }
         }
+        .overlay {
+            if let opportunity = selectedSavedOpportunityForActions {
+                SavedOpportunityActionsSheetOverlay(
+                    opportunity: opportunity,
+                    onDismiss: { selectedSavedOpportunityForActions = nil },
+                    onOpenReminderSettings: {
+                        selectedSavedOpportunityForActions = nil
+                        openNotificationSettings()
+                    },
+                    onRemove: {
+                        savedIDs.remove(opportunity.id)
+                        selectedSavedOpportunityForActions = nil
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(15)
+            }
+        }
         .alert("신고 기능", isPresented: $isReportUnavailableAlertPresented) {
             Button("확인", role: .cancel) {}
         } message: {
@@ -204,6 +223,7 @@ struct ContentView: View {
         .animation(.easeInOut(duration: 0.2), value: isExploreFilterSheetPresented)
         .animation(.easeInOut(duration: 0.2), value: isExploreSortSheetPresented)
         .animation(.easeInOut(duration: 0.2), value: selectedOpportunityForActions)
+        .animation(.easeInOut(duration: 0.2), value: selectedSavedOpportunityForActions)
         .animation(.easeInOut(duration: 0.2), value: isAPathHelpPresented)
     }
 
@@ -246,7 +266,8 @@ struct ContentView: View {
             SavedView(
                 savedIDs: $savedIDs,
                 onOpenOpportunity: open,
-                onOpenNotifications: openNotificationCenter
+                onOpenNotifications: openNotificationCenter,
+                onOpenActions: { selectedSavedOpportunityForActions = $0 }
             )
         case .my:
             MyView(

@@ -145,6 +145,8 @@ enum FINDRAssetName {
     static let exploreActionShare = "Figma_c5038"
     static let exploreActionIgnore = "Figma_b459f"
     static let exploreActionReport = "Figma_7a217"
+    static let savedReminder = "FINDRSavedReminder"
+    static let savedRemove = "FINDRSavedRemove"
     static let unlock = "Figma_a1402"
     static let bell = "Figma_87021"
     static let cpu = "Figma_d3e89"
