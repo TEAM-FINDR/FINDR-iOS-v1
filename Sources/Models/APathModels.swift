@@ -210,7 +210,7 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
             [
                 "보여주고 싶은 프로젝트 2~3개 고르기",
                 "노션·깃허브 등에 과정과 결과 정리하기",
-                "PDF 또는 링크로 MY › 보유 조건에 등록하기"
+                "아래에 파일이나 링크를 올려 보유 조건에 등록하기"
             ]
         case .computerLiteracy:
             ["시험 일정을 확인하고 응시 과목 정하기", "기출문제로 실기와 필기 준비하기", "자격증을 취득하면 MY › 보유 조건에 등록하기"]
