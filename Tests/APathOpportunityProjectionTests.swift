@@ -76,6 +76,13 @@ final class APathOpportunityProjectionTests: XCTestCase {
         XCTAssertEqual(APathActionID.koreanHistory.iconName, FINDRAssetName.rocket)
     }
 
+    func testRecommendedActionRowIconsMatchFigma() {
+        XCTAssertEqual(APathActionID.portfolio.listIconName, FINDRAssetName.file)
+        XCTAssertEqual(APathActionID.computerLiteracy.listIconName, FINDRAssetName.aPathListMonitor)
+        XCTAssertEqual(APathActionID.aiEducation.listIconName, FINDRAssetName.aPathListCPU)
+        XCTAssertEqual(APathActionID.projectExperience.listIconName, FINDRAssetName.rocket)
+    }
+
     func testPortfolioUnlockedSamplesAreNotReusedForOtherActions() {
         XCTAssertEqual(Opportunity.aPathUnlockedSamples(for: .portfolio).count, 3)
         XCTAssertTrue(Opportunity.aPathUnlockedSamples(for: .computerLiteracy).isEmpty)
