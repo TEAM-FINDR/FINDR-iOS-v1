@@ -32,6 +32,7 @@ enum OpportunityStatus: String, Hashable {
 
 enum OpportunityArtwork: String, Hashable {
     case cpu, bulb, monitor, graduation, award, aPathRocket, aPathTrophy, aPathAward
+    case homeDeadlineRocket, homeDeadlineCPU, homeDeadlineAward
 
     var icon: String {
         switch self {
@@ -43,6 +44,16 @@ enum OpportunityArtwork: String, Hashable {
         case .aPathRocket: FINDRAssetName.aPathOpportunityRocket
         case .aPathTrophy: FINDRAssetName.aPathOpportunityTrophy
         case .aPathAward: FINDRAssetName.aPathOpportunityAward
+        case .homeDeadlineRocket: FINDRAssetName.aPathOpportunityRocket
+        case .homeDeadlineCPU: FINDRAssetName.homeDeadlineCPU
+        case .homeDeadlineAward: FINDRAssetName.aPathOpportunityAward
+        }
+    }
+
+    var iconTint: Color {
+        switch self {
+        case .homeDeadlineCPU: FINDRColor.primaryText
+        default: .white
         }
     }
 
@@ -72,9 +83,33 @@ enum OpportunityArtwork: String, Hashable {
                 .init(color: end, location: 0.71429),
                 .init(color: end, location: 1)
             ])
+        case .homeDeadlineRocket:
+            let start = Color(hex: 0x6FD3FF)
+            let end = Color(hex: 0x1E6FB8)
+            return Gradient(stops: [
+                .init(color: start, location: 0),
+                .init(color: end, location: 0.71429),
+                .init(color: end, location: 1)
+            ])
         case .graduation:
             let start = Color(hex: 0x34C3B5)
             let end = Color(hex: 0x0F6E78)
+            return Gradient(stops: [
+                .init(color: start, location: 0),
+                .init(color: end, location: 0.71429),
+                .init(color: end, location: 1)
+            ])
+        case .homeDeadlineCPU:
+            let start = Color(hex: 0x4F8BFF)
+            let end = Color(hex: 0x1B2F7A)
+            return Gradient(stops: [
+                .init(color: start, location: 0),
+                .init(color: end, location: 0.71429),
+                .init(color: end, location: 1)
+            ])
+        case .homeDeadlineAward:
+            let start = Color(hex: 0xFF8FB1)
+            let end = Color(hex: 0xC2336B)
             return Gradient(stops: [
                 .init(color: start, location: 0),
                 .init(color: end, location: 0.71429),
@@ -202,6 +237,84 @@ struct Opportunity: Identifiable, Hashable {
             totalConditions: 5,
             conditionNames: ["청소년 대상", "학생 조건", "공공데이터 분야", "온라인 지원", "컴퓨터활용능력 2급"],
             missingCondition: "컴퓨터활용능력 2급"
+        )
+    ]
+
+    static let homeDeadlineSamples: [Opportunity] = [
+        Opportunity(
+            id: "home-b2-app-dev-hackathon",
+            title: "전국 고교생 앱 개발 해커톤",
+            organization: "네이버 CONNECT",
+            location: "서울",
+            deadline: "D-1",
+            dateRange: nil,
+            categories: ["공모전", "개발", "서울"],
+            artwork: .monitor,
+            status: .missing,
+            completedConditions: 2,
+            totalConditions: 4,
+            conditionNames: ["나이 조건 (만 14세 ~ 19세)", "학생 조건 (중·고등학생)", "관심 분야 (개발)", "팀 포트폴리오 제출"],
+            missingCondition: "팀 포트폴리오 제출"
+        ),
+        Opportunity(
+            id: "home-b2-youth-startup-camp",
+            title: "청소년 창업 캠프",
+            organization: "중소벤처기업부",
+            location: "온라인",
+            deadline: "D-2",
+            dateRange: nil,
+            categories: ["창업", "교육", "온라인"],
+            artwork: .homeDeadlineRocket,
+            status: .eligible,
+            completedConditions: 4,
+            totalConditions: 4,
+            conditionNames: ["나이 조건 (만 14세 ~ 19세)", "학생 조건 (중·고등학생)", "관심 분야 (창업)", "온라인 참가 가능"],
+            missingCondition: nil
+        ),
+        Opportunity(
+            id: "home-b2-gwangju-ai-camp",
+            title: "광주 청소년 AI 캠프",
+            organization: "광주광역시교육청",
+            location: "광주",
+            deadline: "D-3",
+            dateRange: nil,
+            categories: ["교육", "광주", "AI"],
+            artwork: .homeDeadlineCPU,
+            status: .eligible,
+            completedConditions: 4,
+            totalConditions: 4,
+            conditionNames: ["나이 조건 (만 14세 ~ 19세)", "지역 조건 (광주광역시 거주 또는 재학)", "학생 조건 (중·고등학생)", "관심 분야 (AI, SW 관련)"],
+            missingCondition: nil
+        ),
+        Opportunity(
+            id: "home-b2-youth-design-contest",
+            title: "청소년 디자인 공모전",
+            organization: "한국디자인진흥원",
+            location: "온라인",
+            deadline: "D-3",
+            dateRange: nil,
+            categories: ["공모전", "디자인", "온라인"],
+            artwork: .homeDeadlineAward,
+            status: .nearlyEligible,
+            completedConditions: 3,
+            totalConditions: 4,
+            conditionNames: ["나이 조건 (만 14세 ~ 19세)", "학생 조건 (중·고등학생)", "관심 분야 (디자인)", "공모전 기획서 제출"],
+            missingCondition: "공모전 기획서 제출"
+        ),
+        Opportunity(
+            id: "home-b2-science-summer-camp",
+            title: "과학 영재 여름 캠프",
+            organization: "KAIST",
+            location: "대전",
+            deadline: "D-5",
+            dateRange: nil,
+            categories: ["교육", "과학", "대전"],
+            artwork: .graduation,
+            status: .eligible,
+            completedConditions: 4,
+            totalConditions: 4,
+            conditionNames: ["학생 조건 (중·고등학생)", "과학 분야 관심", "대전 캠퍼스 참가 가능", "참가 신청서 제출"],
+            missingCondition: nil
         )
     ]
 
