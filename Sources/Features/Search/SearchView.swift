@@ -88,7 +88,10 @@ struct SearchView: View {
                     .stroke(Color(red: 47.0 / 255, green: 107.0 / 255, blue: 1), lineWidth: 1.5)
             }
 
-            Button("취소", action: dismiss.callAsFunction)
+            Button("취소") {
+                query = ""
+                dismiss()
+            }
                 .font(FINDRFont.medium(14))
                 .kerning(-0.28)
                 .foregroundStyle(FINDRColor.secondaryText)

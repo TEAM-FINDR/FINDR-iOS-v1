@@ -3,6 +3,7 @@ import SwiftUI
 struct ExploreView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Binding var query: String
+    @Binding var filterResetVersion: Int
     let onOpenOpportunity: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
     let onOpenSearch: () -> Void
@@ -97,6 +98,11 @@ struct ExploreView: View {
             .padding(.top, colorScheme == .dark ? 30 : 14)
         }
         .background(FINDRColor.surface)
+        .onChange(of: filterResetVersion) { _, _ in
+            selectedCategory = "전체"
+            sortByRecommended = true
+            selectedFilters = [:]
+        }
     }
 
     private var header: some View {

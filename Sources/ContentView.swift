@@ -7,6 +7,7 @@ struct ContentView: View {
     @State private var selectedTab: FINDRTab = .home
     @State private var navigationPath: [FINDRNavigationDestination] = []
     @State private var exploreQuery = ""
+    @State private var exploreFilterResetVersion = 0
     @State private var profile = FINDRProfileStore.load()
     @State private var isConditionSheetPresented = false
     @State private var notifications = FINDRNotification.samples
@@ -84,7 +85,17 @@ struct ContentView: View {
                         SearchResultsView(
                             query: $exploreQuery,
                             onOpenOpportunity: open,
-                            onCancel: { navigationPath.removeAll() }
+                            onCancel: { navigationPath.removeAll() },
+                            onClear: {
+                                if !navigationPath.isEmpty {
+                                    navigationPath.removeLast()
+                                }
+                            },
+                            onResetFilters: {
+                                exploreQuery = ""
+                                exploreFilterResetVersion += 1
+                                navigationPath.removeAll()
+                            }
                         )
                     }
                 }
@@ -123,6 +134,7 @@ struct ContentView: View {
         case .explore:
             ExploreView(
                 query: $exploreQuery,
+                filterResetVersion: $exploreFilterResetVersion,
                 onOpenOpportunity: open,
                 onOpenNotifications: openNotificationCenter,
                 onOpenSearch: { navigationPath.append(.search) }

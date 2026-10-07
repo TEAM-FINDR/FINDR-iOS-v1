@@ -6,6 +6,8 @@ struct SearchResultsView: View {
 
     let onOpenOpportunity: (Opportunity) -> Void
     let onCancel: () -> Void
+    let onClear: () -> Void
+    let onResetFilters: () -> Void
 
     private var results: [FINDRSearchResult] {
         FINDRSearchCatalog.results(for: query)
@@ -15,21 +17,27 @@ struct SearchResultsView: View {
         VStack(spacing: 0) {
             searchHeader
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("‘\(query)’ 검색 결과 \(FINDRSearchCatalog.resultCount(for: query, matching: results))개")
-                        .font(FINDRFont.medium(13))
-                        .kerning(-0.26)
-                        .foregroundStyle(FINDRColor.secondaryText)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+            if results.isEmpty {
+                GeometryReader { geometry in
+                    let topInset: CGFloat = 8
+                    let bottomInset: CGFloat = 104
 
-                    if results.isEmpty {
-                        Text("검색 결과가 없어요")
-                            .font(FINDRFont.regular(14))
-                            .foregroundStyle(FINDRColor.tertiaryText)
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 80)
-                    } else {
+                    SearchEmptyState(query: query, onResetFilters: onResetFilters)
+                        .frame(width: geometry.size.width - 2 * FINDRSpacing.screen)
+                        .position(
+                            x: geometry.size.width / 2,
+                            y: topInset + (geometry.size.height - topInset - bottomInset) / 2
+                        )
+                }
+            } else {
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("‘\(query)’ 검색 결과 \(FINDRSearchCatalog.resultCount(for: query, matching: results))개")
+                            .font(FINDRFont.medium(13))
+                            .kerning(-0.26)
+                            .foregroundStyle(FINDRColor.secondaryText)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
                         LazyVStack(spacing: 16) {
                             ForEach(results) { result in
                                 SearchResultRow(result: result) {
@@ -70,7 +78,8 @@ struct SearchResultsView: View {
 
                 Button {
                     query = ""
-                    isSearchFocused = true
+                    isSearchFocused = false
+                    onClear()
                 } label: {
                     FINDRIcon(
                         name: FINDRAssetName.searchClear,
@@ -86,6 +95,7 @@ struct SearchResultsView: View {
             .background(FINDRColor.subtle, in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous))
 
             Button("취소") {
+                query = ""
                 isSearchFocused = false
                 onCancel()
             }
@@ -97,6 +107,49 @@ struct SearchResultsView: View {
         .padding(.horizontal, FINDRSpacing.screen)
         .padding(.top, 15)
         .padding(.bottom, FINDRSpacing.small)
+    }
+}
+
+private struct SearchEmptyState: View {
+    let query: String
+    let onResetFilters: () -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Circle()
+                .fill(FINDRColor.subtle)
+                .frame(width: 72, height: 72)
+                .overlay {
+                    FINDRIcon(name: FINDRAssetName.searchEmptyState, size: 32, usesTemplate: false)
+                }
+
+            Text("‘\(query)’ 결과가 없어요")
+                .font(FINDRFont.bold(17))
+                .kerning(-0.34)
+                .foregroundStyle(FINDRColor.primaryText)
+                .multilineTextAlignment(.center)
+
+            Text("다른 키워드로 검색하거나 필터를 바꿔보세요.")
+                .font(FINDRFont.regular(13))
+                .kerning(-0.26)
+                .foregroundStyle(FINDRColor.secondaryText)
+                .multilineTextAlignment(.center)
+
+            Button(action: onResetFilters) {
+                Text("필터 초기화")
+                    .font(FINDRFont.bold(15))
+                    .kerning(-0.3)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 16)
+                    .background(FINDRColor.brand, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .frame(width: 180)
+        }
+        .padding(.vertical, 32)
+        .frame(maxWidth: .infinity)
     }
 }
 
