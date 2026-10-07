@@ -54,9 +54,9 @@ struct SavedView: View {
                 ScrollView(showsIndicators: false) {
                     LazyVStack(spacing: 10) {
                         ForEach(savedOpportunities) { opportunity in
-                            OpportunityListRow(opportunity: opportunity, asCard: true, showsLocation: false) {
+                            OpportunityListRow(opportunity: opportunity, asCard: true, showsLocation: false, onTap: {
                                 onOpenOpportunity(opportunity)
-                            }
+                            })
                         }
                     }
                 }

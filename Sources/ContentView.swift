@@ -4,6 +4,7 @@ struct ContentView: View {
     @AppStorage("FINDR.isDarkMode") private var isDarkMode = false
     @AppStorage("FINDR.didCompleteOnboarding") private var didCompleteOnboarding = false
     @AppStorage("FINDR.aPath.completedActionIDs") private var completedAPathActionIDsStorage = ""
+    @AppStorage("FINDR.explore.ignoredOpportunityIDs") private var ignoredExploreOpportunityIDsStorage = ""
     @State private var selectedTab: FINDRTab = .home
     @State private var navigationPath: [FINDRNavigationDestination] = []
     @State private var exploreQuery = ""
@@ -14,6 +15,8 @@ struct ContentView: View {
     @State private var isExploreFilterSheetPresented = false
     @State private var exploreSort: FINDRExploreSort = .recommended
     @State private var isExploreSortSheetPresented = false
+    @State private var selectedOpportunityForActions: Opportunity?
+    @State private var isReportUnavailableAlertPresented = false
     @State private var profile = FINDRProfileStore.load()
     @State private var isConditionSheetPresented = false
     @State private var notifications = FINDRNotification.samples
@@ -149,9 +152,37 @@ struct ContentView: View {
                 .zIndex(12)
             }
         }
+        .overlay {
+            if let opportunity = selectedOpportunityForActions {
+                FINDROpportunityActionsSheetOverlay(
+                    opportunity: opportunity,
+                    onDismiss: { selectedOpportunityForActions = nil },
+                    onSave: {
+                        savedIDs.insert(opportunity.id)
+                        selectedOpportunityForActions = nil
+                    },
+                    onIgnore: {
+                        ignoreOpportunityInExplore(opportunity.id)
+                        selectedOpportunityForActions = nil
+                    },
+                    onReport: {
+                        selectedOpportunityForActions = nil
+                        isReportUnavailableAlertPresented = true
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(13)
+            }
+        }
+        .alert("신고 기능", isPresented: $isReportUnavailableAlertPresented) {
+            Button("확인", role: .cancel) {}
+        } message: {
+            Text("신고 접수 기능이 아직 연결되지 않았어요.")
+        }
         .animation(.easeInOut(duration: 0.2), value: isConditionSheetPresented)
         .animation(.easeInOut(duration: 0.2), value: isExploreFilterSheetPresented)
         .animation(.easeInOut(duration: 0.2), value: isExploreSortSheetPresented)
+        .animation(.easeInOut(duration: 0.2), value: selectedOpportunityForActions)
     }
 
     @ViewBuilder
@@ -174,7 +205,9 @@ struct ContentView: View {
                 filterResetVersion: $exploreFilterResetVersion,
                 selectedFilters: $exploreFilters,
                 selectedSort: $exploreSort,
+                ignoredOpportunityIDs: ignoredOpportunityIDsBinding,
                 onOpenOpportunity: open,
+                onOpenActions: { selectedOpportunityForActions = $0 },
                 onOpenNotifications: openNotificationCenter,
                 onOpenSearch: { navigationPath.append(.search) },
                 onOpenFilters: presentExploreFilterSheet,
@@ -224,6 +257,23 @@ struct ContentView: View {
 
     private func open(_ opportunity: Opportunity) {
         navigationPath.append(.opportunity(opportunity))
+    }
+
+    private var ignoredOpportunityIDs: Set<String> {
+        Set(ignoredExploreOpportunityIDsStorage.split(separator: "|").map(String.init))
+    }
+
+    private var ignoredOpportunityIDsBinding: Binding<Set<String>> {
+        Binding(
+            get: { ignoredOpportunityIDs },
+            set: { ignoredExploreOpportunityIDsStorage = $0.sorted().joined(separator: "|") }
+        )
+    }
+
+    private func ignoreOpportunityInExplore(_ id: String) {
+        var ignoredIDs = ignoredOpportunityIDs
+        ignoredIDs.insert(id)
+        ignoredExploreOpportunityIDsStorage = ignoredIDs.sorted().joined(separator: "|")
     }
 
     private func openNotificationCenter() {

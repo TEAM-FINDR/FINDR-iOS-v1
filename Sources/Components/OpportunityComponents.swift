@@ -21,60 +21,81 @@ struct OpportunityListRow: View {
     var asCard = false
     var showsProgress = true
     var showsLocation = true
+    var onMore: (() -> Void)? = nil
     var onTap: () -> Void = {}
 
     var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: 12) {
-                OpportunityArtworkTile(artwork: opportunity.artwork, size: asCard ? 68 : 64, iconSize: asCard ? 26 : 24)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(opportunity.title)
-                        .font(FINDRFont.bold(15))
-                        .kerning(-0.3)
-                        .foregroundStyle(FINDRColor.primaryText)
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Text(showsLocation ? "\(opportunity.organization) · \(opportunity.location)" : opportunity.organization)
-                        .font(FINDRFont.regular(12))
-                        .kerning(-0.24)
-                        .foregroundStyle(FINDRColor.tertiaryText)
-                        .lineLimit(1)
-                    HStack(spacing: asCard ? 8 : 7) {
-                        Text(opportunity.deadline)
-                            .font(FINDRFont.bold(12))
-                            .foregroundStyle(opportunity.deadline == "D-3" ? FINDRColor.danger : FINDRColor.brand)
-                        if showsProgress {
-                            FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 4)
-                                .frame(maxWidth: asCard ? 60 : 52)
-                            Text("\(opportunity.completedConditions)/\(opportunity.totalConditions)")
-                                .font(asCard ? FINDRFont.medium(11) : FINDRFont.regular(10))
-                                .foregroundStyle(FINDRColor.tertiaryText)
+        HStack(spacing: 12) {
+            Button(action: onTap) {
+                HStack(spacing: 12) {
+                    OpportunityArtworkTile(artwork: opportunity.artwork, size: asCard ? 68 : 64, iconSize: asCard ? 26 : 24)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(opportunity.title)
+                            .font(FINDRFont.bold(15))
+                            .kerning(-0.3)
+                            .foregroundStyle(FINDRColor.primaryText)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Text(showsLocation ? "\(opportunity.organization) · \(opportunity.location)" : opportunity.organization)
+                            .font(FINDRFont.regular(12))
+                            .kerning(-0.24)
+                            .foregroundStyle(FINDRColor.tertiaryText)
+                            .lineLimit(1)
+                        HStack(spacing: asCard ? 8 : 7) {
+                            Text(opportunity.deadline)
+                                .font(FINDRFont.bold(12))
+                                .foregroundStyle(opportunity.deadline == "D-3" ? FINDRColor.danger : FINDRColor.brand)
+                            if showsProgress {
+                                FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 4)
+                                    .frame(maxWidth: asCard ? 60 : 52)
+                                Text("\(opportunity.completedConditions)/\(opportunity.totalConditions)")
+                                    .font(asCard ? FINDRFont.medium(11) : FINDRFont.regular(10))
+                                    .foregroundStyle(FINDRColor.tertiaryText)
+                            }
                         }
                     }
                 }
-                VStack(alignment: .trailing, spacing: asCard ? 22 : 18) {
-                    FINDRIcon(name: FINDRAssetName.more, size: 18, tint: FINDRColor.inactiveIcon)
-                    FINDRStatusBadge(status: opportunity.status)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity)
+
+            VStack(alignment: .trailing, spacing: asCard ? 22 : 18) {
+                if let onMore {
+                    Button(action: onMore) {
+                        moreIcon
+                            .frame(width: 24, height: 24)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("더보기")
+                } else {
+                    moreIcon
                 }
+
+                FINDRStatusBadge(status: opportunity.status)
             }
-            .padding(asCard ? 14 : 0)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(height: asCard ? nil : 93)
-            .background(asCard ? FINDRColor.surface : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: asCard ? 16 : 0, style: .continuous))
-            .overlay(alignment: .bottom) {
-                if !asCard { FINDRColor.divider.frame(height: 1).padding(.leading, 76) }
-            }
-            .overlay {
-                if asCard {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(FINDRColor.border, lineWidth: 1)
-                }
-            }
-            .shadow(color: asCard ? FINDRShadow.card : .clear, radius: 18, x: 0, y: 4)
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .padding(asCard ? 14 : 0)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: asCard ? nil : 93)
+        .background(asCard ? FINDRColor.surface : .clear)
+        .clipShape(RoundedRectangle(cornerRadius: asCard ? 16 : 0, style: .continuous))
+        .overlay(alignment: .bottom) {
+            if !asCard { FINDRColor.divider.frame(height: 1).padding(.leading, 76) }
+        }
+        .overlay {
+            if asCard {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(FINDRColor.border, lineWidth: 1)
+            }
+        }
+        .shadow(color: asCard ? FINDRShadow.card : .clear, radius: 18, x: 0, y: 4)
+    }
+
+    private var moreIcon: some View {
+        FINDRIcon(name: FINDRAssetName.more, size: 18, tint: FINDRColor.inactiveIcon)
     }
 }
 

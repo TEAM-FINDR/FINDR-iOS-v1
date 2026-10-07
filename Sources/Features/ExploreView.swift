@@ -5,7 +5,9 @@ struct ExploreView: View {
     @Binding var filterResetVersion: Int
     @Binding var selectedFilters: [String: String]
     @Binding var selectedSort: FINDRExploreSort
+    @Binding var ignoredOpportunityIDs: Set<String>
     let onOpenOpportunity: (Opportunity) -> Void
+    let onOpenActions: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
     let onOpenSearch: () -> Void
     let onOpenFilters: () -> Void
@@ -19,6 +21,7 @@ struct ExploreView: View {
 
     private var filteredOpportunities: [Opportunity] {
         let matches = opportunities
+            .filter { !ignoredOpportunityIDs.contains($0.id) }
             .filter { opportunity in
                 query.isEmpty || opportunity.title.localizedCaseInsensitiveContains(query) || opportunity.organization.localizedCaseInsensitiveContains(query)
             }
@@ -79,12 +82,15 @@ struct ExploreView: View {
                 } else {
                     LazyVStack(spacing: 0) {
                         ForEach(filteredOpportunities) { opportunity in
-                            OpportunityListRow(opportunity: opportunity, showsProgress: false, onTap: {
-                                onOpenOpportunity(opportunity)
-                            })
+                            OpportunityListRow(
+                                opportunity: opportunity,
+                                showsProgress: false,
+                                onMore: { onOpenActions(opportunity) },
+                                onTap: { onOpenOpportunity(opportunity) }
+                            )
                         }
                     }
-                    .padding(.top, 1)
+                    .padding(.top, 2)
                     .padding(.bottom, 12)
                 }
             }
