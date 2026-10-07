@@ -197,6 +197,12 @@ enum FINDRAssetName {
     static let tabPath = "Figma_fbb8a"
     static let tabSaved = "Figma_2dbe1"
     static let tabMy = "Figma_0c7a2"
+    static let detailContactBuilding = "Figma_eb6b3"
+    static let detailContactPhone = "Figma_38835"
+    static let detailContactChevron = "Figma_6f7ff"
+    static let detailContactEmail = "Figma_431cf"
+    static let detailContactWebsite = "Figma_5e980"
+    static let detailContactNotice = "Figma_e6174"
 }
 
 struct FINDRIcon: View {
