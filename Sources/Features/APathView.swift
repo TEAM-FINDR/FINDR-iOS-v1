@@ -2,11 +2,11 @@ import SwiftUI
 
 struct APathView: View {
     let completedActions: Set<APathActionID>
+    let onOpenHelp: () -> Void
     let onOpenSimulator: () -> Void
     let onOpenAction: (APathActionID) -> Void
 
     @State private var selectedCategory = APathCategory.recommended.rawValue
-    @State private var showHelp = false
 
     private var selectedAPathCategory: APathCategory {
         APathCategory(rawValue: selectedCategory) ?? .recommended
@@ -62,12 +62,6 @@ struct APathView: View {
             .padding(.top, 30)
         }
         .background(FINDRColor.surface)
-        .sheet(isPresented: $showHelp) {
-            APathHelpSheet(onClose: { showHelp = false })
-                .presentationDetents([.height(330)])
-                .presentationDragIndicator(.hidden)
-                .presentationCornerRadius(36)
-        }
     }
 
     private var header: some View {
@@ -75,7 +69,7 @@ struct APathView: View {
             title: "A-Path",
             trailingIcon: FINDRAssetName.aPathHelp,
             trailingLabel: "A-Path 도움말",
-            action: { showHelp = true },
+            action: onOpenHelp,
             trailingSize: 22
         )
     }
@@ -224,6 +218,37 @@ struct APathView: View {
     }
 }
 
+struct APathHelpSheetOverlay: View {
+    let onDismiss: () -> Void
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Button(action: onDismiss) {
+                FINDRColor.scrim.opacity(0.45)
+                    .ignoresSafeArea()
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("A-Path 도움말 닫기")
+
+            APathHelpSheet(onClose: onDismiss)
+                .frame(height: 330)
+                .background(FINDRColor.surface)
+                .clipShape(UnevenRoundedRectangle(
+                    cornerRadii: RectangleCornerRadii(
+                        topLeading: 20,
+                        bottomLeading: 0,
+                        bottomTrailing: 0,
+                        topTrailing: 20
+                    ),
+                    style: .continuous
+                ))
+        }
+        .ignoresSafeArea()
+        .transition(.opacity)
+    }
+}
+
 private struct APathHelpSheet: View {
     let onClose: () -> Void
 
@@ -234,50 +259,72 @@ private struct APathHelpSheet: View {
     ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
-            HStack {
-                Text("A-Path는 이렇게 작동해요")
-                    .font(FINDRFont.bold(17))
-                    .kerning(-0.34)
-                    .foregroundStyle(FINDRColor.primaryText)
-                Spacer()
-                Button(action: onClose) {
-                    FINDRIcon(name: FINDRAssetName.aPathClose, size: 22, tint: FINDRColor.secondaryText)
-                        .frame(width: 24, height: 24)
+        VStack(spacing: 0) {
+            VStack(spacing: 12) {
+                Capsule()
+                    .fill(FINDRColor.track)
+                    .frame(width: 36, height: 5)
+
+                HStack {
+                    Text("A-Path는 이렇게 작동해요")
+                        .font(FINDRFont.bold(17))
+                        .kerning(-0.34)
+                        .foregroundStyle(FINDRColor.primaryText)
+                    Spacer()
+                    Button(action: onClose) {
+                        FINDRIcon(name: FINDRAssetName.aPathClose, size: 22, tint: FINDRColor.secondaryText)
+                            .frame(width: 22, height: 22)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("닫기")
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("닫기")
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 12)
 
-            VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
-                ForEach(instructions.indices, id: \.self) { index in
-                    HStack(alignment: .top, spacing: FINDRSpacing.medium) {
-                        Text("\(index + 1)")
-                            .font(FINDRFont.bold(12))
-                            .foregroundStyle(FINDRColor.brand)
-                            .frame(width: 28, height: 28)
-                            .background(FINDRColor.brandSubtle, in: Circle())
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(instructions[index].0)
+            VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(instructions.indices, id: \.self) { index in
+                        HStack(alignment: .top, spacing: 12) {
+                            Text("\(index + 1)")
                                 .font(FINDRFont.bold(13))
-                                .foregroundStyle(FINDRColor.primaryText)
-                            Text(instructions[index].1)
-                                .font(FINDRFont.regular(11))
-                                .foregroundStyle(FINDRColor.secondaryText)
-                                .fixedSize(horizontal: false, vertical: true)
+                                .kerning(-0.26)
+                                .foregroundStyle(FINDRColor.brand)
+                                .frame(width: 28, height: 28)
+                                .background(FINDRColor.brandSubtle, in: Circle())
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(instructions[index].0)
+                                    .font(FINDRFont.bold(15))
+                                    .kerning(-0.3)
+                                    .foregroundStyle(FINDRColor.primaryText)
+                                    .frame(height: 21, alignment: .topLeading)
+                                Text(instructions[index].1)
+                                    .font(FINDRFont.regular(13))
+                                    .kerning(-0.26)
+                                    .foregroundStyle(FINDRColor.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .frame(height: 18.2, alignment: .topLeading)
+                            }
                         }
                     }
                 }
-            }
 
-            FINDRButton(title: "알겠어요", action: onClose)
-                .padding(.top, FINDRSpacing.xSmall)
+                Spacer(minLength: 0)
+
+                FINDRButton(title: "알겠어요", kind: .accent, height: 53, action: onClose)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 16)
+
+            Capsule()
+                .fill(FINDRColor.primaryText)
+                .frame(width: 134, height: 5)
+                .padding(.vertical, 8)
         }
-        .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.top, FINDRSpacing.large)
-        .padding(.bottom, FINDRSpacing.medium)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(FINDRColor.surface.ignoresSafeArea())
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .accessibilityElement(children: .contain)
     }
 }

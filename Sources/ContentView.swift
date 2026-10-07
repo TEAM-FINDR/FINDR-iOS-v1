@@ -19,6 +19,7 @@ struct ContentView: View {
     @State private var isReportUnavailableAlertPresented = false
     @State private var profile = FINDRProfileStore.load()
     @State private var isConditionSheetPresented = false
+    @State private var isAPathHelpPresented = false
     @State private var notifications = FINDRNotification.samples
     @State private var savedIDs: Set<String> = [
         "app-dev-hackathon", "gwangju-ai-camp", "youth-startup-contest", "ai-sw-program", "design-bootcamp"
@@ -188,6 +189,12 @@ struct ContentView: View {
                 .zIndex(13)
             }
         }
+        .overlay {
+            if isAPathHelpPresented {
+                APathHelpSheetOverlay(onDismiss: { isAPathHelpPresented = false })
+                    .zIndex(14)
+            }
+        }
         .alert("신고 기능", isPresented: $isReportUnavailableAlertPresented) {
             Button("확인", role: .cancel) {}
         } message: {
@@ -197,6 +204,7 @@ struct ContentView: View {
         .animation(.easeInOut(duration: 0.2), value: isExploreFilterSheetPresented)
         .animation(.easeInOut(duration: 0.2), value: isExploreSortSheetPresented)
         .animation(.easeInOut(duration: 0.2), value: selectedOpportunityForActions)
+        .animation(.easeInOut(duration: 0.2), value: isAPathHelpPresented)
     }
 
     @ViewBuilder
@@ -230,6 +238,7 @@ struct ContentView: View {
         case .path:
             APathView(
                 completedActions: completedAPathActions,
+                onOpenHelp: { isAPathHelpPresented = true },
                 onOpenSimulator: { navigationPath.append(.aPathSimulator) },
                 onOpenAction: openAPathAction
             )
