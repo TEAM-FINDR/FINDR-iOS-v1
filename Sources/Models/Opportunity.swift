@@ -93,7 +93,7 @@ struct Opportunity: Identifiable, Hashable {
     let organization: String
     let location: String
     let deadline: String
-    let dateRange: String
+    let dateRange: String?
     let categories: [String]
     let artwork: OpportunityArtwork
     let status: OpportunityStatus
@@ -148,6 +148,60 @@ struct Opportunity: Identifiable, Hashable {
             deadline: "D-14", dateRange: "2026.10.01 ~ 2026.10.15", categories: ["인턴", "서울", "온라인"],
             artwork: .cpu, status: .missing, completedConditions: 4, totalConditions: 5,
             conditionNames: ["나이 조건 (만 18세 이상)", "지역 조건 (전국)", "학생 조건 (고등·대학생)", "관심 분야 (개발)", "포트폴리오 제출 필요"], missingCondition: "포트폴리오"
+        )
+    ]
+
+    static let homeNearlyEligibleSamples: [Opportunity] = [
+        Opportunity(
+            id: "home-b1-summer-tech-internship",
+            title: "테크 스타트업 여름 인턴십",
+            organization: "○○ 테크",
+            location: "온라인",
+            deadline: "D-14",
+            dateRange: nil,
+            categories: ["인턴", "온라인"],
+            artwork: .cpu,
+            status: .nearlyEligible,
+            completedConditions: 4,
+            totalConditions: 5,
+            conditionNames: [
+                "나이 조건 (만 18세 이상)",
+                "지역 조건 (온라인 지원)",
+                "학생 조건 (고등·대학생)",
+                "관심 분야 (개발)",
+                "포트폴리오 제출 필요"
+            ],
+            missingCondition: "포트폴리오 제출 필요"
+        ),
+        Opportunity(
+            id: "home-b1-youth-sw-hackathon",
+            title: "청소년 SW 해커톤",
+            organization: "과학기술정보통신부",
+            location: "서울",
+            deadline: "D-9",
+            dateRange: nil,
+            categories: ["공모전", "SW", "서울"],
+            artwork: .monitor,
+            status: .nearlyEligible,
+            completedConditions: 3,
+            totalConditions: 4,
+            conditionNames: ["청소년 대상", "학생 조건", "SW 분야", "3인 팀 구성 필요"],
+            missingCondition: "3인 팀 구성 필요"
+        ),
+        Opportunity(
+            id: "home-b1-public-data-contest",
+            title: "공공데이터 활용 공모전",
+            organization: "행정안전부",
+            location: "온라인",
+            deadline: "D-21",
+            dateRange: nil,
+            categories: ["공모전", "공공데이터", "온라인"],
+            artwork: .award,
+            status: .nearlyEligible,
+            completedConditions: 4,
+            totalConditions: 5,
+            conditionNames: ["청소년 대상", "학생 조건", "공공데이터 분야", "온라인 지원", "컴퓨터활용능력 2급"],
+            missingCondition: "컴퓨터활용능력 2급"
         )
     ]
 

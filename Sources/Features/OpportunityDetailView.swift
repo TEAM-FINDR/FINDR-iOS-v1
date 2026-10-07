@@ -86,12 +86,14 @@ struct OpportunityDetailView: View {
                         .kerning(-0.26)
                         .foregroundStyle(FINDRColor.secondaryText)
                 }
-                HStack(spacing: 6) {
-                    FINDRIcon(name: FINDRAssetName.calendar, size: 16, tint: FINDRColor.tertiaryText)
-                    Text(opportunity.dateRange)
-                        .font(FINDRFont.regular(13))
-                        .kerning(-0.26)
-                        .foregroundStyle(FINDRColor.secondaryText)
+                if let dateRange = opportunity.dateRange, !dateRange.isEmpty {
+                    HStack(spacing: 6) {
+                        FINDRIcon(name: FINDRAssetName.calendar, size: 16, tint: FINDRColor.tertiaryText)
+                        Text(dateRange)
+                            .font(FINDRFont.regular(13))
+                            .kerning(-0.26)
+                            .foregroundStyle(FINDRColor.secondaryText)
+                    }
                 }
             }
             .padding(.top, 9)
