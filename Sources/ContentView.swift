@@ -299,7 +299,8 @@ struct ContentView: View {
                 onOpenOpportunity: open,
                 onOpenNotifications: openNotificationCenter,
                 onOpenActions: { selectedSavedOpportunityForActions = $0 },
-                isRemovalToastVisible: savedRemovalToastOpportunity != nil
+                isRemovalToastVisible: savedRemovalToastOpportunity != nil,
+                onExplore: { selectedTab = .explore }
             )
         case .my:
             MyView(

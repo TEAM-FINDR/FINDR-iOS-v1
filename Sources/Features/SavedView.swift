@@ -6,6 +6,7 @@ struct SavedView: View {
     let onOpenNotifications: () -> Void
     let onOpenActions: (Opportunity) -> Void
     let isRemovalToastVisible: Bool
+    let onExplore: () -> Void
 
     @State private var selectedFilter = "전체"
     @State private var remindersEnabled = true
@@ -26,6 +27,20 @@ struct SavedView: View {
 
     var body: some View {
         ZStack {
+            if savedIDs.isEmpty {
+                VStack(spacing: 0) {
+                    header.padding(.horizontal, 20).padding(.top, 8)
+                    FINDREmptyState(
+                        icon: "Figma_c2801",
+                        title: "아직 저장한 기회가 없어요",
+                        message: "관심 있는 기회를 저장하면 마감 전에 알려드릴게요.",
+                        actionTitle: "기회 둘러보기",
+                        action: onExplore
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.bottom, 56)
+                }
+            } else {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 16) {
                     header
@@ -72,7 +87,7 @@ struct SavedView: View {
                 .padding(.horizontal, FINDRSpacing.screen)
                 .padding(.top, 30)
             }
-
+            }
         }
         .background(FINDRColor.canvas)
     }
