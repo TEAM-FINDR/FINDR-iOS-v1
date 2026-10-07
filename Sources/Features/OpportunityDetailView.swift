@@ -65,7 +65,7 @@ struct OpportunityDetailView: View {
 
     private var overview: some View {
         VStack(alignment: .leading, spacing: 0) {
-            FINDRTag(title: opportunity.deadline, tone: .danger, font: FINDRFont.bold(12), kerning: 0, textHeight: 17, horizontalPadding: 8, verticalPadding: 4)
+            FINDRTag(title: opportunity.deadline, tone: opportunity.isUrgentDeadline ? .danger : .brand, font: FINDRFont.bold(12), kerning: 0, textHeight: 17, horizontalPadding: 8, verticalPadding: 4)
             Text(opportunity.title)
                 .font(FINDRFont.bold(24))
                 .kerning(-0.48)
@@ -143,9 +143,11 @@ struct OpportunityDetailView: View {
                     conditionRow(condition, isMissing: condition.localizedCaseInsensitiveContains(opportunity.missingCondition ?? "∅"))
                 }
             }
-            HStack(spacing: 8) {
-                benefitTag(icon: FINDRAssetName.gift, title: "교육비 무료")
-                benefitTag(icon: FINDRAssetName.award, title: "수료증 제공")
+            if !isMissing {
+                HStack(spacing: 8) {
+                    benefitTag(icon: FINDRAssetName.gift, title: "교육비 무료")
+                    benefitTag(icon: FINDRAssetName.award, title: "수료증 제공")
+                }
             }
             if isMissing {
                 unlockCallout
@@ -176,7 +178,7 @@ struct OpportunityDetailView: View {
                         .foregroundStyle(FINDRColor.secondaryText)
                 }
             }
-            FINDRProgressBar(progress: opportunity.progress, color: opportunity.status.progressColor, height: 6)
+            FINDRProgressBar(progress: opportunity.progress, color: isEligible ? FINDRColor.successStatus : FINDRColor.warningStatus, height: 6)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14.5)
@@ -220,20 +222,23 @@ struct OpportunityDetailView: View {
             HStack(spacing: 12) {
                 ZStack {
                     Circle().fill(FINDRColor.primaryText.opacity(0.12)).frame(width: 36, height: 36)
-                    FINDRIcon(name: FINDRAssetName.unlock, size: 18, tint: FINDRColor.inverseSecondary)
+                    FINDRIcon(name: FINDRAssetName.unlock, size: 22, tint: FINDRColor.inverseSecondary)
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("포트폴리오를 준비하면")
-                        .font(FINDRFont.regular(11))
+                        .font(FINDRFont.regular(13))
+                        .kerning(-0.26)
                         .foregroundStyle(FINDRColor.inverseSecondary)
-                    Text("새롭게 6개의 기회가 열려요")
-                        .font(FINDRFont.bold(14))
-                        .foregroundStyle(.white)
+                    (Text("새롭게 ").foregroundColor(.white)
+                        + Text("6개").foregroundColor(Color(hex: 0x7FA6FF))
+                        + Text("의 기회가 열려요").foregroundColor(.white))
+                        .font(FINDRFont.bold(15))
+                        .kerning(-0.3)
                 }
                 Spacer()
                 FINDRIcon(name: FINDRAssetName.arrowRight, size: 20, tint: .white)
             }
-            .padding(14)
+            .padding(16)
             .background(FINDRColor.inverse, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
         .buttonStyle(.plain)

@@ -107,6 +107,11 @@ struct Opportunity: Identifiable, Hashable {
         return Double(completedConditions) / Double(totalConditions)
     }
 
+    var isUrgentDeadline: Bool {
+        guard deadline.hasPrefix("D-"), let daysRemaining = Int(deadline.dropFirst(2)) else { return false }
+        return daysRemaining <= 7
+    }
+
     static let samples: [Opportunity] = [
         Opportunity(
             id: "gwangju-ai-camp", title: "광주 청소년 AI 캠프", organization: "광주광역시교육청", location: "광주",
