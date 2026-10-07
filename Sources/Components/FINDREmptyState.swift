@@ -14,7 +14,7 @@ struct FINDREmptyState: View {
                 .background(FINDRColor.subtle, in: Circle())
                 .accessibilityHidden(true)
             Text(title).font(FINDRFont.bold(17)).kerning(-0.34)
-                .foregroundStyle(FINDRColor.primaryText)
+                .foregroundStyle(FINDRColor.primaryText).frame(height: 24)
             Text(message).font(FINDRFont.regular(13)).kerning(-0.26)
                 .foregroundStyle(FINDRColor.secondaryText)
                 .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
@@ -24,6 +24,7 @@ struct FINDREmptyState: View {
                     .background(FINDRColor.brandButton, in: RoundedRectangle(cornerRadius: 12))
             }.buttonStyle(.plain)
         }
+        .frame(maxWidth: .infinity)
         .padding(.horizontal, 20)
     }
 }

@@ -38,7 +38,7 @@ struct SavedView: View {
                         action: onExplore
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.bottom, 56)
+                    .padding(.bottom, 100)
                 }
             } else {
             ScrollView(showsIndicators: false) {

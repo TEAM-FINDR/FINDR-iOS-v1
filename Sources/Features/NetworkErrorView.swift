@@ -6,7 +6,7 @@ struct NetworkErrorView: View {
         FINDREmptyState(icon: "Figma_83649", title: "인터넷 연결이 불안정해요",
                        message: "연결 상태를 확인한 뒤 다시 시도해주세요. 저장한 기회는 오프라인에서도 볼 수 있어요.",
                        actionTitle: "다시 시도", action: onRetry)
-            .frame(maxWidth: .infinity, maxHeight: .infinity).padding(.bottom, 36)
+            .frame(maxWidth: .infinity, maxHeight: .infinity).padding(.bottom, 80)
             .background(FINDRColor.surface)
     }
 }
