@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ExploreView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let onOpenOpportunity: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
 
@@ -92,7 +93,7 @@ struct ExploreView: View {
                 }
             }
             .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.top, 14)
+            .padding(.top, colorScheme == .dark ? 30 : 14)
         }
         .background(FINDRColor.surface)
     }
