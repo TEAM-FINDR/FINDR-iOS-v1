@@ -71,7 +71,7 @@
 | 2:3 | 01 Home | 393×852 | 직접 재대조 완료 · 여백·카드·타이포·색상 일치 |
 | 3:3 | 02 Explore | 393×933 | 수정 후 직접 재대조 완료 · 탐색 필터·목록 행·배지 |
 | 3:204 | 03 Opportunity Detail | 393×852 | 수정 후 직접 재대조 완료 · 정보 간격·타이포·자격 카드·하단 CTA |
-| 3:424 | 04 A-Path | 393×927 | 미대조 |
+| 3:424 | 04 A-Path | 393×927 | 수정 후 직접 재대조 완료 · What-if 카드·탭·행동 목록 |
 | 3:558 | 05 Saved | 393×852 | 미대조 |
 | 3:716 | 06 MY | 393×852 | 수정 후 직접 재대조 완료 · 카드 위치·행·칩·타이포 |
 | 3:310 | 03-B Opportunity Detail (Missing) | 393×852 | 미대조 |
@@ -80,6 +80,7 @@
 
 - `2:3 01 Home`: Figma 기준 필터 y=198, 대표 카드 y=250, 오늘의 추천 제목 y=417, 추천 카드 y=465, 다음 행동 제목 y=619, 행동 카드 y=667입니다. 화면 여백(20pt), 섹션 간격(18/24pt), 대표 카드(143pt), 추천 카드(170.5×130pt), 다음 행동 카드(78pt), 타이포그래피를 직접 대조했습니다. 추가로 추천 카드의 진행 색(3/4 파랑, 2/4 주황), CPU 타일의 Figma 그라데이션, 카드 그림자, 전체보기 화살표 자산, `+12개` Bold를 수정했습니다. Figma 목표: `Docs/Screenshots/findr-home-figma-target.png`; 수정 후 앱 캡처: `Docs/Screenshots/findr-home-figma-aligned.jpg`. 캡처는 iPhone 17e(390×844)와 Figma 프레임(393×852) 차이 때문에 동일 비율 369×800으로 비교했으며, 상태 표시줄을 제외한 주요 위치 차이는 1–4px입니다.
 - `3:3 02 Explore`: 검색 헤더, 검색 필드, 두 줄 카테고리, 4개 필터, 결과 수와 목록을 Figma와 직접 대조했습니다. 화면 배경은 흰색으로, 필터는 높이 31pt와 각 너비 59/59/70/96pt로, 목록은 행 높이 93pt·아트 타일 64pt·제목 15pt Bold·기관/지역 12pt Regular·마감 12pt Bold로 맞췄습니다. Explore 행에 Figma에 없는 진행 바와 충족 조건 수가 보이던 점, 첫 행이 16pt 위에서 시작하던 점, 더보기 아이콘과 상태 배지가 행 끝으로 벌어지던 점을 수정했습니다. 첫 행의 타일 시작은 Figma y=359, 시뮬레이터를 393pt 너비로 환산한 캡처에서 약 y=358입니다. Figma 캔버스 높이 933pt와 iPhone 17e 화면 높이 852pt가 달라 탭 바 위치와 한 화면에 보이는 행 수는 다릅니다. 목표: `Docs/Screenshots/findr-explore-figma-target.png`; 앱: `Docs/Screenshots/findr-explore-figma-aligned.jpg`.
+- `3:424 04 A-Path`: Figma What-if 카드(y=127, h=257), 설명문, 카테고리 탭과 추천 행동 목록을 직접 대조했습니다. 카드 배경/내부 여백, What-if 라벨·제목·현재/완료 수·증가 배지·분야별 칩의 글꼴 크기와 굵기, 비교 화살표 간격을 맞췄고 탭 레이블의 14pt 굵기/색/인디케이터 폭도 수정했습니다. 행동 행은 353×74pt, 간격 10pt, 좌우 패딩 16pt로 맞췄습니다. 두 번째 행의 컴퓨터 아이콘/초록 배경이 파일 아이콘/파랑 배경으로 잘못 표시되던 문제를 고쳐, 추천 행동 전용 색상 SVG를 사용하게 했습니다. Figma 첫 행 y=493, 앱 캡처를 393pt 너비로 환산한 시작 위치는 약 y=494입니다. Figma 927pt와 iPhone 17e 852pt의 화면 높이 차이 때문에 네 번째 행과 탭 바의 노출 범위만 다릅니다. 기준: `Docs/Screenshots/findr-apath-figma-target.png`; 앱: `Docs/Screenshots/findr-apath-figma-aligned.jpg`.
 - 전 화면 공통 글꼴: `UIAppFonts`가 실제 등록한 Noto Sans KR 이름은 `NotoSansKR-Thin_Regular`, `NotoSansKR-Thin_Medium`, `NotoSansKR-Thin_Bold`입니다. 이전 이름은 등록되지 않아 시스템 대체 글꼴이 사용됐습니다. 공통 토큰을 고치고 등록 테스트를 추가한 뒤 홈과 G2·G3·G4·G6·G10 캡처를 다시 만들었습니다. 아래 대조 결과는 이 수정 이후의 캡처 기준입니다.
 - 공통 뒤로가기 헤더: G2·G3·G6의 헤더와 본문 시작점을 각각 대조해 기존 상단 위치가 약 6pt 높음을 확인했습니다. 공통 헤더 상단 패딩을 6pt 늘린 뒤 세 화면을 다시 캡처했습니다. 비교 이미지: `Docs/Screenshots/findr-g2-figma-vs-simulator.png`, `Docs/Screenshots/findr-g3-figma-vs-simulator.png`, `Docs/Screenshots/findr-g6-figma-vs-simulator.png`.
 - `44:2182 G2 프로필 수정`: 72×72 아바타, 68pt 높이 입력 필드, 입력 필드 사이 16pt 간격, 현재 상태 라벨과 칩, 하단 저장 버튼의 폭·높이를 Figma와 비교했습니다. 원본 디자인과 앱의 값·글꼴 크기·굵기·간격이 일치합니다. Figma 왼쪽 / 시뮬레이터 오른쪽: `Docs/Screenshots/findr-g2-figma-vs-simulator.png`; 앱 캡처: `Docs/Screenshots/findr-my-profile-g2.jpg`.
@@ -90,7 +91,7 @@
 - `3:716 06 MY`: Figma와 iPhone 17e 화면을 둘 다 393×852로 맞춰 카드·메뉴 행 경계와 텍스트를 직접 비교했습니다. 프로필 카드 시작 y=128, 관심 분야 y=311, 보유 조건 y=419, 메뉴 y=558, 탭 바 y=769가 일치합니다. Figma의 22pt Bold MY 제목(-0.44pt 자간), 18pt Bold 프로필 이름(-0.36pt), 13pt Regular 프로필 요약(-0.26pt), 15pt Bold 카드 제목(-0.3pt), 14pt Medium 메뉴 행(-0.28pt), 12pt chip 및 수정 라벨의 크기·굵기·자간을 코드와 대조했습니다. 코드에서 프로필 카드의 16pt 안쪽 여백과 아바타 행 간격 14pt, 섹션 카드 안쪽 여백 16pt, 추가 칩 높이 30pt, 메뉴 카드 16/4pt 여백 및 메뉴 행 높이 45/44pt를 맞췄습니다. 카드 그림자를 Figma 색 `#0F1733`·불투명도 6%·반경 18pt·y 오프셋 4pt로 적용했습니다. Figma에 없는 버전 문구를 제거했습니다. 프로필/섹션/메뉴 화살표, 알림, 도움말은 파일명만 따르지 않고 실제 SVG 모양과 렌더 캡처를 확인해 페이지 자산을 지정했습니다. Figma 기준: `Docs/Screenshots/findr-my-figma-target.png`; 시뮬레이터 비교 캡처: `Docs/Screenshots/findr-my-figma-aligned.png`. 시뮬레이터에는 Figma의 정적 Dynamic Island 그림이 없으므로 시스템 상태 표시줄 모양은 비교 대상에서 제외했습니다.
 - `3:204 03 Opportunity Detail`: 393×852 Figma 프레임과 iPhone 시뮬레이터 캡처를 같은 크기로 정규화해 직접 대조했습니다. 처음에는 제목 22pt(시안 24pt), 상세 태그의 글자 크기·기관/기간 정보 간격, 탭 굵기·자간, 자격 상태 카드와 조건 행 간격, 혜택 칩 글꼴, 신청 버튼의 글자/배경 색이 달랐습니다. Figma에 맞춰 제목 24pt Bold/−0.48pt 자간, 상세 태그 12pt와 25pt 높이, 기관/기간 13pt Regular/−0.26pt 자간, 탭 14pt Bold/Medium/−0.28pt 자간, 상태 카드 93pt, 조건 행 38pt 및 14pt 본문, 혜택 13pt Medium, 저장/신청 버튼 55/53pt로 조정했습니다. 신청 버튼은 Figma의 흰 글자와 짙은 남색 배경으로 맞췄습니다. D-7부터 탭까지의 세로 위치 차이는 최종 비교에서 약 0–2pt, 상태 카드와 조건 행 시작 위치는 약 0–1pt입니다. 비교 이미지: `Docs/Screenshots/findr-detail-figma-target.png`, `Docs/Screenshots/findr-detail-figma-aligned.jpg`. 시뮬레이터의 상태 표시줄은 Figma 정적 그림과 기기 표현이 달라 비교에서 제외했습니다.
 - `44:2070 G1 설정`: Figma 화면의 구조와 행 규격은 확인했습니다. 현재 앱에는 대응하는 설정 화면이나 진입 경로가 없습니다. `Sources/Features/MyView.swift`의 활동 기록·도움말·로그아웃 동작도 실제 화면 연결 대신 샘플 알림을 띄웁니다. 이는 Figma 시각 대조 완료로 세지 않았고, 화면 구현 및 흐름 연결이 남았습니다.
-- 직접 대조 완료로 기록한 화면은 `2:3 Home`, `3:3 Explore`, `3:204 Opportunity Detail`, `3:716 MY`, G2, G3, G4, G6, G10 아홉 개입니다. 총 66개 중 57개는 아직 Figma와 대조하지 않았으며, Dark Home과 다른 상태 프레임도 별도로 대조해야 합니다.
+- 직접 대조 완료로 기록한 화면은 `2:3 Home`, `3:3 Explore`, `3:424 A-Path`, `3:204 Opportunity Detail`, `3:716 MY`, G2, G3, G4, G6, G10 열 개입니다. 총 66개 중 56개는 아직 Figma와 대조하지 않았으며, Dark Home과 다른 상태 프레임도 별도로 대조해야 합니다.
 
 ## 화면별 완료 기록
 
