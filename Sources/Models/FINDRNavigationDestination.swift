@@ -6,4 +6,5 @@ enum FINDRNavigationDestination: Hashable {
     case notifications
     case notificationSettings
     case recommendedOpportunities
+    case search
 }

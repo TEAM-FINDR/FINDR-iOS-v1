@@ -6,6 +6,7 @@ struct ContentView: View {
     @AppStorage("FINDR.aPath.completedActionIDs") private var completedAPathActionIDsStorage = ""
     @State private var selectedTab: FINDRTab = .home
     @State private var navigationPath: [FINDRNavigationDestination] = []
+    @State private var exploreQuery = ""
     @State private var profile = FINDRProfileStore.load()
     @State private var isConditionSheetPresented = false
     @State private var notifications = FINDRNotification.samples
@@ -75,6 +76,12 @@ struct ContentView: View {
                         NotificationSettingsView()
                     case .recommendedOpportunities:
                         RecommendedOpportunitiesView(onOpenOpportunity: open)
+                    case .search:
+                        SearchView(query: $exploreQuery) {
+                            if !navigationPath.isEmpty {
+                                navigationPath.removeLast()
+                            }
+                        }
                     }
                 }
         }
@@ -110,7 +117,12 @@ struct ContentView: View {
                 }
             )
         case .explore:
-            ExploreView(onOpenOpportunity: open, onOpenNotifications: openNotificationCenter)
+            ExploreView(
+                query: $exploreQuery,
+                onOpenOpportunity: open,
+                onOpenNotifications: openNotificationCenter,
+                onOpenSearch: { navigationPath.append(.search) }
+            )
         case .path:
             APathView(
                 completedActions: completedAPathActions,

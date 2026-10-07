@@ -2,10 +2,11 @@ import SwiftUI
 
 struct ExploreView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Binding var query: String
     let onOpenOpportunity: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
+    let onOpenSearch: () -> Void
 
-    @State private var query = ""
     @State private var selectedCategory = "전체"
     @State private var sortByRecommended = true
     @State private var selectedFilters: [String: String] = [:]
@@ -111,7 +112,13 @@ struct ExploreView: View {
     }
 
     private var searchField: some View {
-        FINDRSearchField(text: $query, placeholder: "공고명, 기관명, 분야로 검색해보세요")
+        Button(action: onOpenSearch) {
+            FINDRSearchField(text: $query, placeholder: "공고명, 기관명, 분야로 검색해보세요")
+                .allowsHitTesting(false)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("검색")
+        .accessibilityValue(query.isEmpty ? "공고명, 기관명, 분야로 검색해보세요" : query)
     }
 
     private var categoryFilters: some View {
