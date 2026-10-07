@@ -15,7 +15,7 @@ struct ActivityHistoryView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(spacing: 8) {
-                        statistic("12", "저장한 기회")
+                        statistic("12", "저장")
                         statistic("5", "신청 페이지 방문")
                         statistic("+20", "열린 기회", color: FINDRColor.success)
                     }
@@ -43,7 +43,7 @@ struct ActivityHistoryView: View {
     private func statistic(_ value: String, _ label: String, color: Color = FINDRColor.primaryText) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(value).font(FINDRFont.bold(22)).kerning(-0.44).foregroundStyle(color).frame(height: 31)
-            Text(label).font(FINDRFont.regular(12)).foregroundStyle(FINDRColor.secondaryText).frame(height: 17)
+            Text(label).font(FINDRFont.regular(12)).kerning(-0.24).foregroundStyle(FINDRColor.secondaryText).fixedSize().frame(height: 17)
         }.frame(maxWidth: .infinity, alignment: .leading).padding(16)
             .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 16))
     }
