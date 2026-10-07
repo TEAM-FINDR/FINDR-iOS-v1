@@ -381,6 +381,35 @@ struct OpportunityInfoCard: Identifiable, Hashable {
     var id: String { title }
 }
 
+enum OpportunityContactKind: String, Hashable {
+    case phone
+    case email
+    case website
+    case notice
+
+    var iconName: String {
+        switch self {
+        case .phone: FINDRAssetName.detailContactPhone
+        case .email: FINDRAssetName.detailContactEmail
+        case .website: FINDRAssetName.detailContactWebsite
+        case .notice: FINDRAssetName.detailContactNotice
+        }
+    }
+}
+
+struct OpportunityContactItem: Identifiable, Hashable {
+    let kind: OpportunityContactKind
+    let title: String
+
+    var id: OpportunityContactKind { kind }
+}
+
+struct OpportunityContactInfo: Hashable {
+    let department: String
+    let officeHours: String
+    let items: [OpportunityContactItem]
+}
+
 extension Opportunity {
     var eligibilityInfoCards: [OpportunityInfoCard] {
         guard id == "gwangju-ai-camp" else { return [] }
@@ -407,6 +436,20 @@ extension Opportunity {
                 ]
             )
         ]
+    }
+
+    var contactInfo: OpportunityContactInfo? {
+        guard id == "gwangju-ai-camp" else { return nil }
+        return OpportunityContactInfo(
+            department: "미래인재교육과",
+            officeHours: "평일 09:00–18:00",
+            items: [
+                OpportunityContactItem(kind: .phone, title: "062-000-0000"),
+                OpportunityContactItem(kind: .email, title: "ai-camp@gen.go.kr"),
+                OpportunityContactItem(kind: .website, title: "공식 홈페이지"),
+                OpportunityContactItem(kind: .notice, title: "원문 공고 보기")
+            ]
+        )
     }
 }
 

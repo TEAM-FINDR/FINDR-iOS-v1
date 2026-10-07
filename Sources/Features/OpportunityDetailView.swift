@@ -8,11 +8,14 @@ struct OpportunityDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedSection = "상세 정보"
     @State private var showApplyNotice = false
+    @State private var showContactUnavailableAlert = false
 
     private let sections = ["상세 정보", "지원 자격", "문의처"]
     private var isSaved: Bool { savedIDs.contains(opportunity.id) }
     private var isMissing: Bool { opportunity.status == .missing }
     private var usesEligibilityInfoCards: Bool { !opportunity.eligibilityInfoCards.isEmpty }
+    private var usesContactInfo: Bool { opportunity.contactInfo != nil }
+    private var usesContactSectionSpacing: Bool { usesContactInfo && selectedSection == "문의처" }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -21,9 +24,9 @@ struct OpportunityDetailView: View {
                     .padding(.bottom, 12)
                 overview
                 sectionSelector
-                    .padding(.top, usesEligibilityInfoCards ? 10 : 15)
+                    .padding(.top, usesContactSectionSpacing ? 19 : (usesEligibilityInfoCards ? 10 : 15))
                 sectionContent
-                    .padding(.top, usesEligibilityInfoCards ? 12 : 17)
+                    .padding(.top, usesContactSectionSpacing ? 13 : (usesEligibilityInfoCards ? 12 : 17))
             }
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, 4)
@@ -122,23 +125,89 @@ struct OpportunityDetailView: View {
                 eligibilityInformationSection
             }
         case "문의처":
-            VStack(alignment: .leading, spacing: 12) {
-                Text("문의처")
-                    .font(FINDRFont.bold(16))
-                    .foregroundStyle(FINDRColor.primaryText)
-                FINDRCard {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(opportunity.organization)
-                            .font(FINDRFont.bold(14))
-                            .foregroundStyle(FINDRColor.primaryText)
-                        Text("상세 문의 정보는 공고 페이지에서 확인할 수 있어요.")
-                            .font(FINDRFont.regular(12))
-                            .foregroundStyle(FINDRColor.secondaryText)
+            if let contactInfo = opportunity.contactInfo {
+                contactInformationSection(contactInfo)
+            } else {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("문의처")
+                        .font(FINDRFont.bold(16))
+                        .foregroundStyle(FINDRColor.primaryText)
+                    FINDRCard {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(opportunity.organization)
+                                .font(FINDRFont.bold(14))
+                                .foregroundStyle(FINDRColor.primaryText)
+                            Text("상세 문의 정보는 공고 페이지에서 확인할 수 있어요.")
+                                .font(FINDRFont.regular(12))
+                                .foregroundStyle(FINDRColor.secondaryText)
+                        }
                     }
                 }
             }
         default:
             eligibilitySection
+        }
+    }
+
+    private func contactInformationSection(_ info: OpportunityContactInfo) -> some View {
+        VStack(spacing: 14) {
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(FINDRColor.brandSubtle)
+                        .frame(width: 44, height: 44)
+                    FINDRIcon(name: FINDRAssetName.detailContactBuilding, size: 22, usesTemplate: false)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(opportunity.organization)
+                        .font(FINDRFont.bold(15))
+                        .kerning(-0.3)
+                        .foregroundStyle(FINDRColor.primaryText)
+                    Text("\(info.department) · \(info.officeHours)")
+                        .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
+                        .foregroundStyle(FINDRColor.tertiaryText)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(FINDRColor.canvas, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+            VStack(spacing: 0) {
+                ForEach(info.items) { item in
+                    Button {
+                        showContactUnavailableAlert = true
+                    } label: {
+                        HStack(spacing: 12) {
+                            FINDRIcon(name: item.kind.iconName, size: 20, usesTemplate: false)
+                            Text(item.title)
+                                .font(FINDRFont.medium(14))
+                                .kerning(-0.28)
+                                .foregroundStyle(FINDRColor.primaryText)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            FINDRIcon(name: FINDRAssetName.detailContactChevron, size: 16, usesTemplate: false)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(FINDRColor.border, lineWidth: 1)
+            }
+        }
+        .alert("연락처 링크", isPresented: $showContactUnavailableAlert) {
+            Button("확인", role: .cancel) {}
+        } message: {
+            Text("현재 공고에 연락처 또는 원문 URL이 등록되지 않아 열 수 없어요. 기관의 공식 채널에서 확인해 주세요.")
         }
     }
 
@@ -287,21 +356,27 @@ struct OpportunityDetailView: View {
     }
 
     private var bottomActions: some View {
-        HStack(spacing: 10) {
-            FINDRButton(title: isSaved ? "저장됨" : "저장하기", kind: .outline) {
-                toggleSaved()
+        VStack(spacing: 18) {
+            HStack(spacing: 10) {
+                FINDRButton(title: isSaved ? "저장됨" : "저장하기", kind: .outline) {
+                    toggleSaved()
+                }
+                .frame(height: 55)
+                .frame(maxWidth: 116)
+                FINDRButton(title: isMissing ? "A-Path에서 준비하기" : "신청하러 가기", kind: isMissing ? .primary : .inverse) {
+                    if isMissing { onPrepareWithPath() } else { showApplyNotice = true }
+                }
+                .frame(height: 53)
             }
-            .frame(height: 55)
-            .frame(maxWidth: 116)
-            FINDRButton(title: isMissing ? "A-Path에서 준비하기" : "신청하러 가기", kind: isMissing ? .primary : .inverse) {
-                if isMissing { onPrepareWithPath() } else { showApplyNotice = true }
-            }
-            .frame(height: 53)
+            Capsule()
+                .fill(FINDRColor.primaryText)
+                .frame(width: 134, height: 5)
         }
         .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.top, 13)
-        .padding(.bottom, -4)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
         .background(FINDRColor.surface.overlay(alignment: .top) { FINDRColor.divider.frame(height: 1) }.ignoresSafeArea(edges: .bottom))
+        .ignoresSafeArea(edges: .bottom)
     }
 
     private func toggleSaved() {
