@@ -11,9 +11,11 @@ struct FINDROnboardingIntroPageView: View {
             FINDROnboardingIntroTopBarView(onSkip: onSkip)
 
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: FINDRSpacing.section) {
+                VStack(alignment: .leading, spacing: 0) {
                     FINDROnboardingIntroHeroView(content: content)
+                        .padding(.bottom, FINDRSpacing.section - 4)
                     FINDROnboardingIntroCopyView(content: content)
+                        .padding(.bottom, FINDRSpacing.section - 1)
                     FINDROnboardingIntroPaginationView(page: page)
                 }
                 .padding(.horizontal, FINDRSpacing.screen)
@@ -22,6 +24,7 @@ struct FINDROnboardingIntroPageView: View {
 
             FINDROnboardingIntroCTAView(title: content.buttonTitle, action: onContinue)
         }
+        .ignoresSafeArea(.container, edges: .bottom)
         .background(Color.white.ignoresSafeArea())
     }
 }

@@ -8,6 +8,6 @@ struct FINDROnboardingIntroCTAView: View {
         FINDRButton(title: title, action: action)
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, FINDRSpacing.medium)
-            .padding(.bottom, 16)
+            .padding(.bottom, 29)
     }
 }

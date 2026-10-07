@@ -6,7 +6,7 @@ struct FINDROnboardingIntroHeroView: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 28, style: .continuous)
             .fill(LinearGradient(colors: content.gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
-            .frame(height: 320)
+            .frame(height: 318)
             .overlay(alignment: .topLeading) {
                 badge
                     .padding(24)
