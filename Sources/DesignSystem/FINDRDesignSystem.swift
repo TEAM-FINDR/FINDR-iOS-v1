@@ -128,6 +128,7 @@ enum FINDRAssetName {
     static let appleLogo = "FINDRAppleLogo"
     static let kakaoLogo = "FINDRKakaoLogo"
     static let profileSetupBack = "Figma_fd617"
+    static let profileStatusSelectedRadio = "ProfileStatusSelectedRadio"
     static let unlock = "Figma_a1402"
     static let bell = "Figma_87021"
     static let cpu = "Figma_d3e89"
