@@ -101,7 +101,7 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
 
     var completionConfirmationTitle: String {
         switch self {
-        case .portfolio: "포트폴리오 만들기를 완료로 표시할까요?"
+        case .portfolio: "포트폴리오를 완료로 표시할까요?"
         case .computerLiteracy: "컴퓨터활용능력 2급 취득을 완료로 표시할까요?"
         case .aiEducation: "AI 관련 교육 수료를 완료로 표시할까요?"
         case .projectExperience: "프로젝트 경험 쌓기를 완료로 표시할까요?"

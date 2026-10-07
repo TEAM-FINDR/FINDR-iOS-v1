@@ -57,7 +57,7 @@ final class APathOpportunityProjectionTests: XCTestCase {
     func testCompletionConfirmationCopyIsNaturalForEachAction() {
         XCTAssertEqual(
             APathActionID.portfolio.completionConfirmationTitle,
-            "포트폴리오 만들기를 완료로 표시할까요?"
+            "포트폴리오를 완료로 표시할까요?"
         )
         XCTAssertEqual(
             APathActionID.aiEducation.completionConfirmationTitle,

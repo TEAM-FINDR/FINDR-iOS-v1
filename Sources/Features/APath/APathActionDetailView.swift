@@ -253,7 +253,8 @@ struct APathActionDetailView: View {
 
     private var completionConfirmation: some View {
         ZStack {
-            Color.black.opacity(0.45)
+            FINDRColor.scrim
+                .opacity(0.45)
                 .ignoresSafeArea()
                 .onTapGesture { showCompletionConfirmation = false }
 
@@ -264,12 +265,12 @@ struct APathActionDetailView: View {
 
                 VStack(spacing: FINDRSpacing.xSmall) {
                     Text(actionID.completionConfirmationTitle)
-                        .font(FINDRFont.bold(16))
-                        .kerning(-0.32)
+                        .font(FINDRFont.bold(17))
+                        .kerning(-0.34)
                         .foregroundStyle(FINDRColor.primaryText)
                         .multilineTextAlignment(.center)
 
-                    Text("보유 조건에 추가되고, 새로 열리는 기회를 바로 보여드려요.")
+                    Text("보유 조건에 추가되고, 새로 열리는 기회를 바로 보여\n드려요.")
                         .font(FINDRFont.regular(13))
                         .kerning(-0.26)
                         .foregroundStyle(FINDRColor.secondaryText)
@@ -287,15 +288,15 @@ struct APathActionDetailView: View {
                     }
                 }
             }
-            .padding(FINDRSpacing.large)
-            .frame(maxWidth: 320)
+            .padding(24)
+            .frame(width: 320, height: 247)
             .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .shadow(color: .black.opacity(0.12), radius: 24, x: 0, y: 12)
-            .padding(.horizontal, 36)
+            .shadow(color: Color(hex: 0x0F1733).opacity(0.1), radius: 40, x: 0, y: 16)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("apath-completion-confirmation")
         }
         .zIndex(2)
+        .ignoresSafeArea()
     }
 
     private func handleImportedFile(_ result: Result<[URL], Error>) {
