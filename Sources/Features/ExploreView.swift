@@ -1,16 +1,16 @@
 import SwiftUI
 
 struct ExploreView: View {
-    @Environment(\.colorScheme) private var colorScheme
     @Binding var query: String
     @Binding var filterResetVersion: Int
+    @Binding var selectedFilters: [String: String]
     let onOpenOpportunity: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
     let onOpenSearch: () -> Void
+    let onOpenFilters: () -> Void
 
     @State private var selectedCategory = "전체"
     @State private var sortByRecommended = true
-    @State private var selectedFilters: [String: String] = [:]
 
     private let firstCategoryRow = ["전체", "교육", "공모전", "대외활동"]
     private let secondCategoryRow = ["장학금", "창업", "인턴", "지원사업", "행사"]
@@ -45,12 +45,6 @@ struct ExploreView: View {
         return matches.sorted { deadlineDays(for: $0) < deadlineDays(for: $1) }
     }
 
-    private var hasActiveFilters: Bool {
-        !query.isEmpty || selectedCategory != "전체" || selectedFilters.values.contains { value in
-            !["전체", "전체 지역", "전체 대상"].contains(value)
-        }
-    }
-
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 15) {
@@ -59,7 +53,7 @@ struct ExploreView: View {
                 categoryFilters
                 detailFilters
                 HStack {
-                    Text("총 \(hasActiveFilters ? "\(filteredOpportunities.count)" : "312")개의 기회")
+                    Text("총 \(FINDRExploreFilterLogic.resultCount(opportunities: opportunities, query: query, category: selectedCategory, selections: selectedFilters))개의 기회")
                         .font(FINDRFont.regular(12))
                         .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
@@ -95,7 +89,7 @@ struct ExploreView: View {
                 }
             }
             .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.top, colorScheme == .dark ? 30 : 14)
+            .padding(.top, 30)
         }
         .background(FINDRColor.surface)
         .onChange(of: filterResetVersion) { _, _ in
@@ -146,26 +140,18 @@ struct ExploreView: View {
 
     private var detailFilters: some View {
         HStack(spacing: 6) {
-            filterMenu(key: "지역", title: "지역", options: ["전체 지역", "광주", "서울", "온라인"], width: 59)
-            filterMenu(key: "대상", title: "대상", options: ["전체 대상", "중학생", "고등학생", "대학생"], width: 59)
-            filterMenu(key: "마감일", title: "마감일", options: ["전체", "7일 이내", "30일 이내"], width: 70)
-            filterMenu(key: "방식", title: "온/오프라인", options: ["전체", "온라인", "오프라인"], width: 96)
+            filterTrigger(key: "지역", title: "지역", width: 59)
+            filterTrigger(key: "대상", title: "대상", width: 59)
+            filterTrigger(key: "마감일", title: "마감일", width: 70)
+            filterTrigger(key: "방식", title: "온/오프라인", width: 96)
         }
     }
 
-    private func filterMenu(key: String, title: String, options: [String], width: CGFloat) -> some View {
+    private func filterTrigger(key: String, title: String, width: CGFloat) -> some View {
         FINDRFilterMenu(
             title: title,
             selectedOption: selectedFilters[key],
-            resetOption: options[0],
-            options: options,
-            onSelect: { option in
-                if option == options[0] {
-                    selectedFilters.removeValue(forKey: key)
-                } else {
-                    selectedFilters[key] = option
-                }
-            },
+            action: onOpenFilters,
             width: width
         )
     }
@@ -178,6 +164,8 @@ struct ExploreView: View {
             opportunity.categories.contains("청소년") || opportunity.conditionNames.contains { $0.contains("고등학생") || $0.contains("고등·대학생") }
         case "대학생":
             opportunity.conditionNames.contains { $0.contains("대학생") }
+        case "청년":
+            opportunity.categories.contains { $0.contains("청년") } || opportunity.conditionNames.contains { $0.contains("청년") }
         default:
             true
         }

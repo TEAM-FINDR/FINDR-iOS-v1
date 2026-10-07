@@ -8,6 +8,10 @@ struct ContentView: View {
     @State private var navigationPath: [FINDRNavigationDestination] = []
     @State private var exploreQuery = ""
     @State private var exploreFilterResetVersion = 0
+    @State private var exploreFilters: [String: String] = [:]
+    @State private var exploreFilterDraft = FINDRExploreFilterLogic.figmaSelections
+    @State private var didOpenExploreFilterSheet = false
+    @State private var isExploreFilterSheetPresented = false
     @State private var profile = FINDRProfileStore.load()
     @State private var isConditionSheetPresented = false
     @State private var notifications = FINDRNotification.samples
@@ -93,6 +97,7 @@ struct ContentView: View {
                             },
                             onResetFilters: {
                                 exploreQuery = ""
+                                exploreFilters = [:]
                                 exploreFilterResetVersion += 1
                                 navigationPath.removeAll()
                             }
@@ -114,7 +119,22 @@ struct ContentView: View {
                     .zIndex(10)
             }
         }
+        .overlay {
+            if isExploreFilterSheetPresented {
+                FINDRExploreFilterSheetOverlay(
+                    selections: exploreFilterDraft,
+                    onDismiss: { isExploreFilterSheetPresented = false },
+                    onApply: { selections in
+                        exploreFilters = selections
+                        isExploreFilterSheetPresented = false
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(11)
+            }
+        }
         .animation(.easeInOut(duration: 0.2), value: isConditionSheetPresented)
+        .animation(.easeInOut(duration: 0.2), value: isExploreFilterSheetPresented)
     }
 
     @ViewBuilder
@@ -135,9 +155,11 @@ struct ContentView: View {
             ExploreView(
                 query: $exploreQuery,
                 filterResetVersion: $exploreFilterResetVersion,
+                selectedFilters: $exploreFilters,
                 onOpenOpportunity: open,
                 onOpenNotifications: openNotificationCenter,
-                onOpenSearch: { navigationPath.append(.search) }
+                onOpenSearch: { navigationPath.append(.search) },
+                onOpenFilters: presentExploreFilterSheet
             )
         case .path:
             APathView(
@@ -187,6 +209,16 @@ struct ContentView: View {
 
     private func openNotificationCenter() {
         navigationPath.append(.notifications)
+    }
+
+    private func presentExploreFilterSheet() {
+        if didOpenExploreFilterSheet {
+            exploreFilterDraft = FINDRExploreFilterLogic.allSelections.merging(exploreFilters) { _, applied in applied }
+        } else {
+            exploreFilterDraft = FINDRExploreFilterLogic.figmaSelections
+            didOpenExploreFilterSheet = true
+        }
+        isExploreFilterSheetPresented = true
     }
 
     private var completedAPathActions: Set<APathActionID> {
