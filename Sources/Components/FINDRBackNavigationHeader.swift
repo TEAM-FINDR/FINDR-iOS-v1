@@ -30,7 +30,7 @@ struct FINDRBackNavigationHeader: View {
                         iconName: trailingIconName,
                         accessibilityLabel: trailingAccessibilityLabel,
                         action: onTrailing,
-                        size: 22,
+                        size: 24,
                         tint: FINDRColor.primaryText
                     )
                 }

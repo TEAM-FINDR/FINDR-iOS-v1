@@ -155,7 +155,7 @@ enum FINDRAssetName {
     static let graduation = "Figma_00e68"
     static let award = "Figma_03d6b"
     static let check = "Figma_5eead"
-    static let back = "Figma_4a022"
+    static let back = "Figma_fd617"
     static let bookmark = "Figma_b6aa8"
     static let share = "Figma_23dbf"
     static let building = "Figma_150c8"

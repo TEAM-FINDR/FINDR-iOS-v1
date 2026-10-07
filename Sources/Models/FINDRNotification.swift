@@ -22,13 +22,22 @@ enum FINDRNotificationKind: Hashable {
     var iconName: String {
         switch self {
         case .opportunityOpened, .pathRecommendation:
-            FINDRAssetName.unlock
+            FINDRAssetName.notificationUnlock
         case .deadline:
-            FINDRAssetName.clock
+            FINDRAssetName.notificationClock
         case .eligibilityUpdated:
             FINDRAssetName.notificationSparkles
         case .announcementUpdated:
             FINDRAssetName.notificationEdit
+        }
+    }
+
+    var iconUsesTemplate: Bool {
+        switch self {
+        case .opportunityOpened, .pathRecommendation:
+            false
+        case .deadline, .eligibilityUpdated, .announcementUpdated:
+            true
         }
     }
 

@@ -36,7 +36,7 @@ struct NotificationCenterView: View {
         FINDRBackNavigationHeader(
             title: "알림",
             onBack: { dismiss() },
-            trailingIconName: FINDRAssetName.settings,
+            trailingIconName: FINDRAssetName.notificationSettings,
             trailingAccessibilityLabel: "알림 설정",
             onTrailing: onOpenSettings
         )
@@ -92,7 +92,12 @@ struct NotificationCenterView: View {
             onSelectDestination(notification.destination)
         } label: {
             HStack(alignment: .top, spacing: FINDRSpacing.medium) {
-                FINDRIcon(name: notification.kind.iconName, size: 20, tint: notification.kind.iconTint)
+                FINDRIcon(
+                    name: notification.kind.iconName,
+                    size: 20,
+                    tint: notification.kind.iconTint,
+                    usesTemplate: notification.kind.iconUsesTemplate
+                )
                     .frame(width: 40, height: 40)
                     .background(notification.kind.iconBackground, in: Circle())
 
@@ -117,13 +122,16 @@ struct NotificationCenterView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                Circle()
-                    .fill(notification.isUnread ? FINDRColor.brandButton : .clear)
-                    .frame(width: 6, height: 6)
-                    .accessibilityHidden(true)
+                if notification.isUnread {
+                    Circle()
+                        .fill(FINDRColor.brandButton)
+                        .frame(width: 6, height: 6)
+                        .accessibilityHidden(true)
+                }
             }
             .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.vertical, FINDRSpacing.large)
+            // Match the 90pt Figma row height with the native Noto Sans KR line metrics.
+            .padding(.vertical, 13)
             .background(notification.isUnread ? FINDRColor.brandTint : FINDRColor.surface)
             .contentShape(Rectangle())
         }
