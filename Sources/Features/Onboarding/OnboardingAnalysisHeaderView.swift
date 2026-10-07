@@ -7,7 +7,7 @@ struct FINDROnboardingAnalysisHeaderView: View {
                 .fill(FINDRColor.brandSubtle)
                 .frame(width: 96, height: 96)
                 .overlay {
-                    FINDRIcon(name: FINDRAssetName.sparkles, size: 40, tint: FINDRColor.brandButton)
+                    FINDRIcon(name: FINDRAssetName.onboardingAnalysisSparkles, size: 40, usesTemplate: false)
                 }
 
             VStack(spacing: FINDRSpacing.small) {
