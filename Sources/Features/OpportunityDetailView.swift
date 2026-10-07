@@ -8,7 +8,8 @@ struct OpportunityDetailView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var selectedSection = "상세 정보"
-    @State private var showApplyNotice = false
+    @State private var showExternalSiteDialog = false
+    @State private var showApplyLinkUnavailableAlert = false
     @State private var showContactUnavailableAlert = false
     @State private var isSaveToastPresented = false
 
@@ -47,12 +48,20 @@ struct OpportunityDetailView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .overlay {
+            if showExternalSiteDialog {
+                externalSiteDialog
+                    .transition(.opacity)
+                    .zIndex(1)
+            }
+        }
         .animation(.easeInOut(duration: 0.2), value: isSaveToastPresented)
+        .animation(.easeInOut(duration: 0.2), value: showExternalSiteDialog)
         .toolbar(.hidden, for: .navigationBar)
-        .alert("지원 페이지", isPresented: $showApplyNotice) {
+        .alert("지원 링크가 없어요", isPresented: $showApplyLinkUnavailableAlert) {
             Button("확인", role: .cancel) {}
         } message: {
-            Text("지원 링크가 연결되면 여기에서 이동할 수 있어요.")
+            Text("현재 공고에는 신청 URL이 등록되지 않았어요. 기관의 공식 채널에서 확인해 주세요.")
         }
     }
 
@@ -383,7 +392,7 @@ struct OpportunityDetailView: View {
                 .frame(height: 55)
                 .frame(maxWidth: 116)
                 FINDRButton(title: isMissing ? "A-Path에서 준비하기" : "신청하러 가기", kind: isMissing ? .primary : .inverse) {
-                    if isMissing { onPrepareWithPath() } else { showApplyNotice = true }
+                    if isMissing { onPrepareWithPath() } else { showExternalSiteDialog = true }
                 }
                 .frame(height: 53)
             }
@@ -396,6 +405,62 @@ struct OpportunityDetailView: View {
         .padding(.bottom, 8)
         .background(FINDRColor.surface.overlay(alignment: .top) { FINDRColor.divider.frame(height: 1) }.ignoresSafeArea(edges: .bottom))
         .ignoresSafeArea(edges: .bottom)
+    }
+
+    private var externalSiteDialog: some View {
+        ZStack {
+            Button {
+                showExternalSiteDialog = false
+            } label: {
+                FINDRColor.scrim.opacity(0.45)
+                    .ignoresSafeArea()
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("외부 사이트 안내 닫기")
+
+            VStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(FINDRColor.brandSubtle)
+                        .frame(width: 48, height: 48)
+                    FINDRIcon(name: FINDRAssetName.externalSiteGlobe, size: 24, usesTemplate: false)
+                }
+
+                VStack(spacing: 4) {
+                    Text("외부 사이트로 이동해요")
+                        .font(FINDRFont.bold(17))
+                        .kerning(-0.34)
+                        .foregroundStyle(FINDRColor.primaryText)
+                        .frame(maxWidth: .infinity)
+
+                    Text("\(opportunity.organization) 신청 페이지에서 지원을 완료해주\u{200B}세요. 지원 여부는 A에 자동 반영되지 않아요.")
+                        .font(FINDRFont.regular(13))
+                        .kerning(-0.26)
+                        .foregroundStyle(FINDRColor.secondaryText)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity)
+                }
+
+                HStack(spacing: 8) {
+                    FINDRButton(title: "취소", kind: .outline, height: 53) {
+                        showExternalSiteDialog = false
+                    }
+                    FINDRButton(title: "이동하기", kind: .accent, height: 53) {
+                        showExternalSiteDialog = false
+                        showApplyLinkUnavailableAlert = true
+                    }
+                }
+            }
+            .padding(24)
+            .frame(width: 320)
+            .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .shadow(color: Color(hex: 0x0F1733).opacity(0.1), radius: 40, x: 0, y: 16)
+            .accessibilityElement(children: .contain)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea()
     }
 
     private func toggleSaved() {
