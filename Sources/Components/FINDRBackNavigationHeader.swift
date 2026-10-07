@@ -33,6 +33,8 @@ struct FINDRBackNavigationHeader: View {
                         size: 24,
                         tint: FINDRColor.primaryText
                     )
+                } else {
+                    Color.clear.frame(width: 64, height: 24)
                 }
             }
             .frame(width: 64, height: 24, alignment: .trailing)
