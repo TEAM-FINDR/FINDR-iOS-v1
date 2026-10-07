@@ -106,6 +106,7 @@ enum FINDRAssetName {
     static let onboardingResultCheckCircle = "OnboardingResultCheckCircle"
     static let onboardingResultClock = "OnboardingResultClock"
     static let onboardingResultUnlock = "OnboardingResultUnlock"
+    static let onboardingNotificationBell = "OnboardingNotificationBell"
     static let notificationSparkles = "FINDRNotificationSparkles"
     static let notificationEdit = "FINDRNotificationEdit"
     static let notificationMail = "FINDRNotificationMail"
