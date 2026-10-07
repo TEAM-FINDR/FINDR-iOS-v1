@@ -22,6 +22,10 @@ struct HomeView: View {
         return matches.first ?? opportunities[0]
     }
 
+    private var featuredCategoryLabels: [String] {
+        featuredOpportunity.id == "gwangju-ai-camp" ? ["교육", "광주", "청소년"] : featuredOpportunity.categories
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 18) {
@@ -41,7 +45,7 @@ struct HomeView: View {
                 .frame(height: 34)
 
                 VStack(alignment: .leading, spacing: 24) {
-                    FeaturedOpportunityCard(opportunity: featuredOpportunity) {
+                    FeaturedOpportunityCard(opportunity: featuredOpportunity, categoryLabels: featuredCategoryLabels) {
                         onOpenOpportunity(featuredOpportunity)
                     }
                     .padding(.horizontal, FINDRSpacing.screen)
@@ -62,10 +66,10 @@ struct HomeView: View {
                                 CompactOpportunityCard(opportunity: opportunities[2]) { onOpenOpportunity(opportunities[2]) }
                                 CompactOpportunityCard(opportunity: opportunities[3]) { onOpenOpportunity(opportunities[3]) }
                             }
-                            .padding(.horizontal, FINDRSpacing.screen)
                         }
                         .contentMargins(.zero)
                         .frame(height: 130)
+                        .padding(.horizontal, FINDRSpacing.screen)
                     }
 
                     VStack(alignment: .leading, spacing: 24) {

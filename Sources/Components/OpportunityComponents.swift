@@ -79,6 +79,7 @@ struct OpportunityListRow: View {
 
 struct FeaturedOpportunityCard: View {
     let opportunity: Opportunity
+    var categoryLabels: [String]? = nil
     var onTap: () -> Void = {}
 
     var body: some View {
@@ -97,7 +98,7 @@ struct FeaturedOpportunityCard: View {
                             .foregroundStyle(FINDRColor.tertiaryText)
                     }
                     HStack(spacing: 4) {
-                        ForEach(opportunity.categories.prefix(3), id: \.self) { category in
+                        ForEach((categoryLabels ?? opportunity.categories).prefix(3), id: \.self) { category in
                             FINDRTag(
                                 title: category,
                                 tone: .neutral,
