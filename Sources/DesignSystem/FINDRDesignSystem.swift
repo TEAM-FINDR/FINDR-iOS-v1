@@ -174,6 +174,7 @@ enum FINDRAssetName {
     static let building = "Figma_150c8"
     static let calendar = "Figma_246db"
     static let checkCircle = "Figma_417cd"
+    static let detailCertificateAward = "Figma_4b7c1"
     static let onboardingCheckCircle = "OnboardingCheckCircle"
     static let onboardingUnlock = "OnboardingUnlock"
     static let gift = "Figma_36165"

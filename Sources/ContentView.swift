@@ -48,7 +48,10 @@ struct ContentView: View {
                 .navigationDestination(for: FINDRNavigationDestination.self) { destination in
                     switch destination {
                     case .opportunity(let opportunity):
-                        OpportunityDetailView(opportunity: opportunity, savedIDs: $savedIDs) {
+                        OpportunityDetailView(opportunity: opportunity, savedIDs: $savedIDs, onOpenSaved: {
+                            selectedTab = .saved
+                            navigationPath.removeAll()
+                        }) {
                             selectedTab = .path
                             navigationPath.removeAll()
                         }

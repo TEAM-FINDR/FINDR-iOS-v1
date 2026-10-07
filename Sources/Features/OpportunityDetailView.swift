@@ -3,12 +3,14 @@ import SwiftUI
 struct OpportunityDetailView: View {
     let opportunity: Opportunity
     @Binding var savedIDs: Set<String>
+    let onOpenSaved: () -> Void
     let onPrepareWithPath: () -> Void
 
     @Environment(\.dismiss) private var dismiss
     @State private var selectedSection = "상세 정보"
     @State private var showApplyNotice = false
     @State private var showContactUnavailableAlert = false
+    @State private var isSaveToastPresented = false
 
     private let sections = ["상세 정보", "지원 자격", "문의처"]
     private var isSaved: Bool { savedIDs.contains(opportunity.id) }
@@ -16,6 +18,9 @@ struct OpportunityDetailView: View {
     private var usesEligibilityInfoCards: Bool { !opportunity.eligibilityInfoCards.isEmpty }
     private var usesContactInfo: Bool { opportunity.contactInfo != nil }
     private var usesContactSectionSpacing: Bool { usesContactInfo && selectedSection == "문의처" }
+    private var usesExpandedDetailSpacing: Bool {
+        usesContactSectionSpacing || (isSaved && selectedSection == "상세 정보")
+    }
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -24,9 +29,9 @@ struct OpportunityDetailView: View {
                     .padding(.bottom, 12)
                 overview
                 sectionSelector
-                    .padding(.top, usesContactSectionSpacing ? 19 : (usesEligibilityInfoCards ? 10 : 15))
+                    .padding(.top, usesExpandedDetailSpacing ? 19 : (usesEligibilityInfoCards ? 10 : 15))
                 sectionContent
-                    .padding(.top, usesContactSectionSpacing ? 13 : (usesEligibilityInfoCards ? 12 : 17))
+                    .padding(.top, usesExpandedDetailSpacing ? 13 : (usesEligibilityInfoCards ? 12 : 17))
             }
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, 4)
@@ -34,6 +39,15 @@ struct OpportunityDetailView: View {
         }
         .background(FINDRColor.surface)
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomActions }
+        .overlay(alignment: .bottom) {
+            if isSaveToastPresented {
+                saveToast
+                    .padding(.horizontal, FINDRSpacing.screen)
+                    .padding(.bottom, 76)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isSaveToastPresented)
         .toolbar(.hidden, for: .navigationBar)
         .alert("지원 페이지", isPresented: $showApplyNotice) {
             Button("확인", role: .cancel) {}
@@ -53,12 +67,17 @@ struct OpportunityDetailView: View {
             )
             .frame(width: 28, height: 32, alignment: .leading)
             Spacer()
-            FINDRIconButton(
-                iconName: FINDRAssetName.bookmark,
-                accessibilityLabel: isSaved ? "저장 취소" : "저장",
-                action: toggleSaved,
-                tint: isSaved ? FINDRColor.brand : FINDRColor.primaryText
-            )
+            Button(action: toggleSaved) {
+                FINDRIcon(
+                    name: isSaved ? FINDRAssetName.savedBookmark : FINDRAssetName.bookmark,
+                    size: 22,
+                    tint: isSaved ? FINDRColor.brand : FINDRColor.primaryText,
+                    usesTemplate: !isSaved
+                )
+                .frame(width: 24, height: 32)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(isSaved ? "저장 취소" : "저장")
             ShareLink(item: opportunity.title) {
                 FINDRIcon(name: FINDRAssetName.share, size: 22, tint: FINDRColor.primaryText)
                     .frame(width: 24, height: 32)
@@ -222,7 +241,7 @@ struct OpportunityDetailView: View {
             if !isMissing {
                 HStack(spacing: 8) {
                     benefitTag(icon: FINDRAssetName.gift, title: "교육비 무료")
-                    benefitTag(icon: FINDRAssetName.award, title: "수료증 제공")
+                    benefitTag(icon: FINDRAssetName.detailCertificateAward, title: "수료증 제공")
                 }
             }
             if isMissing {
@@ -273,16 +292,16 @@ struct OpportunityDetailView: View {
         let tone = isEligible ? FINDRTagTone.success : (opportunity.status == .nearlyEligible ? FINDRTagTone.warning : .warning)
         let iconName = isEligible ? FINDRAssetName.checkCircle : FINDRAssetName.alert
         return VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 10) {
+            HStack(spacing: 12) {
                 ZStack {
                     Circle().fill(FINDRColor.surface).frame(width: 36, height: 36)
-                    FINDRIcon(name: iconName, size: 22, tint: tone.foreground)
+                    FINDRIcon(name: iconName, size: 22, tint: tone.foreground, usesTemplate: !isEligible)
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(FINDRFont.bold(15))
                         .kerning(-0.3)
-                        .foregroundStyle(tone.foreground)
+                        .foregroundStyle(isEligible ? FINDRColor.successStrong : tone.foreground)
                     Text("\(opportunity.completedConditions)/\(opportunity.totalConditions) 조건 충족 · \(Int(opportunity.progress * 100))%")
                         .font(FINDRFont.medium(13))
                         .kerning(-0.26)
@@ -292,7 +311,7 @@ struct OpportunityDetailView: View {
             FINDRProgressBar(progress: opportunity.progress, color: isEligible ? FINDRColor.successStatus : FINDRColor.warningStatus, height: 6)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 14.5)
+        .padding(.vertical, 16)
         .background(tone.background, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
@@ -325,7 +344,7 @@ struct OpportunityDetailView: View {
         }
         .padding(.horizontal, 12)
         .frame(height: 38)
-        .background(FINDRColor.subtle, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .background(FINDRColor.canvas, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
     private var unlockCallout: some View {
@@ -358,8 +377,8 @@ struct OpportunityDetailView: View {
     private var bottomActions: some View {
         VStack(spacing: 18) {
             HStack(spacing: 10) {
-                FINDRButton(title: isSaved ? "저장됨" : "저장하기", kind: .outline) {
-                    toggleSaved()
+                FINDRButton(title: "저장하기", kind: .outline) {
+                    saveOpportunity()
                 }
                 .frame(height: 55)
                 .frame(maxWidth: 116)
@@ -380,7 +399,46 @@ struct OpportunityDetailView: View {
     }
 
     private func toggleSaved() {
-        if isSaved { savedIDs.remove(opportunity.id) }
-        else { savedIDs.insert(opportunity.id) }
+        if isSaved {
+            savedIDs.remove(opportunity.id)
+            withAnimation(.easeInOut(duration: 0.2)) { isSaveToastPresented = false }
+        } else {
+            saveOpportunity()
+        }
+    }
+
+    private func saveOpportunity() {
+        savedIDs.insert(opportunity.id)
+        guard !isSaveToastPresented else { return }
+        withAnimation(.easeInOut(duration: 0.2)) { isSaveToastPresented = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            withAnimation(.easeInOut(duration: 0.2)) { isSaveToastPresented = false }
+        }
+    }
+
+    private var saveToast: some View {
+        Button(action: onOpenSaved) {
+            HStack(spacing: 8) {
+                FINDRIcon(name: FINDRAssetName.saveToastCheck, size: 20, usesTemplate: false)
+                Text("저장했어요 · 마감 3일 전에 알려드릴게요")
+                    .font(FINDRFont.medium(13))
+                    .kerning(-0.26)
+                    .foregroundStyle(FINDRColor.surface)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text("보기")
+                    .font(FINDRFont.bold(13))
+                    .kerning(-0.26)
+                    .foregroundStyle(Color(hex: 0x7FA6FF))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(FINDRColor.inverse, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .shadow(color: Color(hex: 0x0F1733).opacity(0.1), radius: 40, x: 0, y: 16)
+            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("저장 목록 보기")
     }
 }
