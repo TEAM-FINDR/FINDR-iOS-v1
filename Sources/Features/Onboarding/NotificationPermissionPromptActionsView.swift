@@ -5,16 +5,16 @@ struct FINDRNotificationPermissionPromptActionsView: View {
     let onRequestNotifications: () -> Void
 
     var body: some View {
-        HStack(spacing: FINDRSpacing.small) {
+        HStack(spacing: 8) {
             Button(action: onLater) {
                 Text("나중에")
                     .font(FINDRFont.bold(15))
                     .foregroundStyle(FINDRColor.primaryText)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 48)
-                    .background(Color.white, in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous))
+                    .frame(height: 53)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     .overlay {
-                        RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous)
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .stroke(FINDRColor.borderStrong, lineWidth: 1)
                     }
             }
@@ -25,8 +25,8 @@ struct FINDRNotificationPermissionPromptActionsView: View {
                     .font(FINDRFont.bold(15))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 48)
-                    .background(FINDRColor.brandButton, in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous))
+                    .frame(height: 53)
+                    .background(FINDRColor.brandButton, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
             .buttonStyle(.plain)
         }
