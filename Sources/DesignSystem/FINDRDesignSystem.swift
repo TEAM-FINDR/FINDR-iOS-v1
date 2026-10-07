@@ -151,6 +151,7 @@ enum FINDRAssetName {
     static let search = "Figma_f4ee6"
     static let recentSearchRemove = "FINDRRecentSearchRemove"
     static let searchClear = "Figma_8e859"
+    static let searchEmptyState = "Figma_3bc0e"
     static let searchGraduation = "Figma_d114a"
     static let searchBulb = "Figma_9f781"
     static let searchMonitor = "Figma_c7dbd"
