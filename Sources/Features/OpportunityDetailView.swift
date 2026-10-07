@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct OpportunityDetailView: View {
     let opportunity: Opportunity
@@ -7,9 +8,11 @@ struct OpportunityDetailView: View {
     let onPrepareWithPath: () -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @State private var selectedSection = "상세 정보"
     @State private var showExternalSiteDialog = false
-    @State private var showApplyLinkUnavailableAlert = false
+    @State private var showLinkUnavailableAlert = false
+    @State private var isShareSheetPresented = false
     @State private var showContactUnavailableAlert = false
     @State private var isSaveToastPresented = false
 
@@ -20,7 +23,7 @@ struct OpportunityDetailView: View {
     private var usesContactInfo: Bool { opportunity.contactInfo != nil }
     private var usesContactSectionSpacing: Bool { usesContactInfo && selectedSection == "문의처" }
     private var usesExpandedDetailSpacing: Bool {
-        usesContactSectionSpacing || (isSaved && selectedSection == "상세 정보")
+        usesContactSectionSpacing || (usesEligibilityInfoCards && selectedSection == "상세 정보")
     }
 
     var body: some View {
@@ -55,13 +58,24 @@ struct OpportunityDetailView: View {
                     .zIndex(1)
             }
         }
+        .overlay {
+            if isShareSheetPresented {
+                FINDROpportunityShareSheetOverlay(
+                    opportunity: opportunity,
+                    onDismiss: { isShareSheetPresented = false },
+                    onCopyLink: copyShareLink
+                )
+                .zIndex(2)
+            }
+        }
         .animation(.easeInOut(duration: 0.2), value: isSaveToastPresented)
         .animation(.easeInOut(duration: 0.2), value: showExternalSiteDialog)
+        .animation(.easeInOut(duration: 0.2), value: isShareSheetPresented)
         .toolbar(.hidden, for: .navigationBar)
-        .alert("지원 링크가 없어요", isPresented: $showApplyLinkUnavailableAlert) {
+        .alert("연결된 링크가 없어요", isPresented: $showLinkUnavailableAlert) {
             Button("확인", role: .cancel) {}
         } message: {
-            Text("현재 공고에는 신청 URL이 등록되지 않았어요. 기관의 공식 채널에서 확인해 주세요.")
+            Text("현재 공고에는 신청 또는 공유 URL이 등록되지 않았어요. 기관의 공식 채널에서 확인해 주세요.")
         }
     }
 
@@ -87,10 +101,14 @@ struct OpportunityDetailView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(isSaved ? "저장 취소" : "저장")
-            ShareLink(item: opportunity.title) {
+            Button {
+                isShareSheetPresented = true
+            } label: {
                 FINDRIcon(name: FINDRAssetName.share, size: 22, tint: FINDRColor.primaryText)
                     .frame(width: 24, height: 32)
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("공유하기")
             .padding(.leading, 14)
         }
     }
@@ -448,8 +466,7 @@ struct OpportunityDetailView: View {
                         showExternalSiteDialog = false
                     }
                     FINDRButton(title: "이동하기", kind: .accent, height: 53) {
-                        showExternalSiteDialog = false
-                        showApplyLinkUnavailableAlert = true
+                        openApplicationPage()
                     }
                 }
             }
@@ -461,6 +478,24 @@ struct OpportunityDetailView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
+    }
+
+    private func openApplicationPage() {
+        showExternalSiteDialog = false
+        guard let applicationURL = opportunity.applicationURL else {
+            showLinkUnavailableAlert = true
+            return
+        }
+        openURL(applicationURL)
+    }
+
+    private func copyShareLink(_ shareURL: URL?) {
+        isShareSheetPresented = false
+        guard let shareURL else {
+            showLinkUnavailableAlert = true
+            return
+        }
+        UIPasteboard.general.url = shareURL
     }
 
     private func toggleSaved() {

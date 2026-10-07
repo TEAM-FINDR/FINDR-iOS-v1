@@ -136,6 +136,8 @@ struct Opportunity: Identifiable, Hashable {
     let totalConditions: Int
     let conditionNames: [String]
     let missingCondition: String?
+    var applicationURL: URL? = nil
+    var shareURL: URL? = nil
 
     var progress: Double {
         guard totalConditions > 0 else { return 0 }
