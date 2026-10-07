@@ -149,6 +149,7 @@ enum FINDRAssetName {
     static let folder = "Figma_3ded9"
     static let arrowRight = "Figma_30ec3"
     static let search = "Figma_f4ee6"
+    static let recentSearchRemove = "FINDRRecentSearchRemove"
     static let chevronDown = "Figma_76c68"
     static let sliders = "Figma_55e31"
     static let bulb = "Figma_1bfa5"
