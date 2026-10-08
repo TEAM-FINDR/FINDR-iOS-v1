@@ -6,6 +6,7 @@ struct SavedView: View {
     let onOpenNotifications: () -> Void
     let onOpenActions: (Opportunity) -> Void
     let isRemovalToastVisible: Bool
+    let pendingRemoval: Opportunity?
     let onExplore: () -> Void
 
     @State private var selectedFilter = "전체"
@@ -29,7 +30,7 @@ struct SavedView: View {
         ZStack {
             if savedIDs.isEmpty {
                 VStack(spacing: 0) {
-                    header.padding(.horizontal, 20).padding(.top, 8)
+                    header.padding(.horizontal, 20).padding(.top, 12)
                     FINDREmptyState(
                         icon: "Figma_c2801",
                         title: "아직 저장한 기회가 없어요",
@@ -38,7 +39,7 @@ struct SavedView: View {
                         action: onExplore
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.bottom, 100)
+                    .padding(.bottom, 106)
                 }
             } else {
             ScrollView(showsIndicators: false) {
@@ -69,6 +70,7 @@ struct SavedView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    .frame(height: 18)
                     ScrollView(showsIndicators: false) {
                         LazyVStack(spacing: 10) {
                             ForEach(savedOpportunities) { opportunity in
@@ -105,10 +107,13 @@ struct SavedView: View {
     private var filterBar: some View {
         HStack(spacing: 8) {
             ForEach(filters, id: \.self) { filter in
+                let reminderIDs = pendingRemoval.map { savedIDs.union([$0.id]) } ?? savedIDs
                 let count: Int = switch filter {
                 case "전체": savedIDs.count
                 case "지원 가능": Opportunity.samples.filter { savedIDs.contains($0.id) && $0.status == .eligible }.count
-                default: Opportunity.samples.filter { savedIDs.contains($0.id) && (Int($0.deadline.dropFirst(2)) ?? 99) <= 7 }.count
+                default:
+                    // The F3 design retains deadline reminders while undo is available.
+                    Opportunity.samples.filter { reminderIDs.contains($0.id) && (Int($0.deadline.dropFirst(2)) ?? 99) <= 7 }.count
                 }
                 FINDRPill(title: "\(filter) \(count)", isSelected: selectedFilter == filter) {
                     selectedFilter = filter

@@ -328,6 +328,7 @@ struct ContentView: View {
                 onOpenNotifications: openNotificationCenter,
                 onOpenActions: { selectedSavedOpportunityForActions = $0 },
                 isRemovalToastVisible: savedRemovalToastOpportunity != nil,
+                pendingRemoval: savedRemovalToastOpportunity,
                 onExplore: { selectedTab = .explore }
             )
         case .my:
