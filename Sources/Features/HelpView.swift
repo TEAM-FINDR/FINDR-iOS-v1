@@ -23,28 +23,27 @@ struct HelpView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Button { expanded = expanded == index ? nil : index } label: {
                                     HStack(spacing: 8) {
-                                        Text("Q").font(FINDRFont.bold(14)).foregroundStyle(FINDRColor.brand)
+                                        Text("Q").font(FINDRFont.bold(14)).kerning(-0.28).foregroundStyle(FINDRColor.brand).frame(width: 11, height: 19)
                                         Text(questions[index]).font(FINDRFont.medium(14)).kerning(-0.28).foregroundStyle(FINDRColor.primaryText)
                                         Spacer(minLength: 0)
                                         Image(expanded == index ? "Figma_9d2ee" : "Figma_e20f9").resizable().frame(width: 16, height: 16)
                                     }.frame(height: 20)
                                 }.buttonStyle(.plain)
                                 if expanded == index {
-                                    Text(answers[index]).font(FINDRFont.regular(13)).kerning(-0.26)
-                                        .foregroundStyle(FINDRColor.secondaryText).fixedSize(horizontal: false, vertical: true)
+                                    FINDRParagraph(text: answers[index])
                                         .frame(maxWidth: .infinity, alignment: .leading).padding(12)
                                         .background(FINDRColor.canvas, in: RoundedRectangle(cornerRadius: 12))
                                 }
-                            }.padding(.vertical, 16)
+                            }.padding(.vertical, 16).padding(.bottom, 1)
                                 .overlay(alignment: .bottom) { FINDRColor.divider.frame(height: 1) }
                         }
                     }
                     VStack(alignment: .center, spacing: 8) {
-                        Text("원하는 답을 찾지 못했나요?").font(FINDRFont.bold(14)).kerning(-0.28)
-                        Text("평일 10:00–18:00 · 1일 이내 답변").font(FINDRFont.regular(12)).foregroundStyle(FINDRColor.tertiaryText)
+                        Text("원하는 답을 찾지 못했나요?").font(FINDRFont.bold(14)).kerning(-0.28).frame(height: 19)
+                        Text("평일 10:00–18:00 · 1일 이내 답변").font(FINDRFont.regular(12)).kerning(-0.24).foregroundStyle(FINDRColor.tertiaryText).frame(height: 17)
                         Button { contactUnavailable = true } label: {
                             Text("1:1 문의하기").font(FINDRFont.bold(15)).foregroundStyle(FINDRColor.primaryText)
-                                .frame(maxWidth: .infinity).frame(height: 54)
+                                .frame(maxWidth: .infinity).frame(height: 55)
                                 .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 12))
                                 .overlay { RoundedRectangle(cornerRadius: 12).stroke(FINDRColor.borderStrong, lineWidth: 1) }
                         }.buttonStyle(.plain)
