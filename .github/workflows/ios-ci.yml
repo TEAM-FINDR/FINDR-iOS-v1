@@ -1,0 +1,65 @@
+name: iOS CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Install pinned Tuist
+        uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3
+
+      - name: Report toolchain
+        run: |
+          tuist version
+          xcodebuild -version
+
+      - name: Install Tuist dependencies
+        run: tuist install
+
+      - name: Generate Xcode project
+        run: tuist generate --no-open
+
+      - name: Build for iOS Simulator
+        run: >-
+          xcodebuild build
+          -project FINDR.xcodeproj
+          -scheme FINDR
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath "$RUNNER_TEMP/DerivedData"
+          CODE_SIGNING_ALLOWED=NO
+
+      - name: Run XCTest
+        run: >-
+          xcodebuild test
+          -project FINDR.xcodeproj
+          -scheme FINDR
+          -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
+          -derivedDataPath "$RUNNER_TEMP/DerivedData"
+          -resultBundlePath "$RUNNER_TEMP/FINDR.xcresult"
+          CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload XCTest result bundle on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: FINDR-xctest-results
+          path: ${{ runner.temp }}/FINDR.xcresult
+          if-no-files-found: ignore
+          retention-days: 7

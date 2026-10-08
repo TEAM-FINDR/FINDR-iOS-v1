@@ -40,7 +40,7 @@ enum FINDRExploreFilterLogic {
                 || opportunity.organization.localizedCaseInsensitiveContains(query)
             let matchesCategory = category == "전체" || opportunity.categories.contains(category)
             let matchesRegion = activeSelections["지역"].map { opportunity.location == $0 } ?? true
-            let matchesTarget = activeSelections["대상"].map { matchesTarget($0, opportunity: opportunity) } ?? true
+            let matchesTargetFilter = activeSelections["대상"].map { matchesTarget($0, opportunity: opportunity) } ?? true
             let matchesDeadline = activeSelections["마감일"].map { deadline in
                 let daysRemaining = deadlineDays(for: opportunity)
                 return deadline == "7일 이내" ? daysRemaining <= 7 : daysRemaining <= 30
@@ -49,7 +49,7 @@ enum FINDRExploreFilterLogic {
                 mode == "온라인" ? opportunity.location == "온라인" : opportunity.location != "온라인"
             } ?? true
 
-            return matchesQuery && matchesCategory && matchesRegion && matchesTarget && matchesDeadline && matchesMode
+            return matchesQuery && matchesCategory && matchesRegion && matchesTargetFilter && matchesDeadline && matchesMode
         }.count
     }
 
