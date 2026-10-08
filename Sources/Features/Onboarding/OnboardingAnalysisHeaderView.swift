@@ -7,10 +7,11 @@ struct FINDROnboardingAnalysisHeaderView: View {
                 .fill(FINDRColor.brandSubtle)
                 .frame(width: 96, height: 96)
                 .overlay {
-                    FINDRIcon(name: FINDRAssetName.sparkles, size: 40, tint: FINDRColor.brandButton)
+                    FINDRIcon(name: FINDRAssetName.onboardingAnalysisSparkles, size: 40, usesTemplate: false)
                 }
+                .offset(y: 3)
 
-            VStack(spacing: FINDRSpacing.small) {
+            VStack(spacing: FINDRSpacing.large) {
                 Text("조건을 분석하고 있어요")
                     .font(FINDRFont.title)
                     .tracking(-0.44)

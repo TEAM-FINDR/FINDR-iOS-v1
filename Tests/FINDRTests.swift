@@ -1,7 +1,21 @@
 import XCTest
+import UIKit
 @testable import FINDR
 
 final class FINDRTests: XCTestCase {
+    func testNotoSansKRRegularMediumAndBoldFacesAreRegistered() {
+        let registeredNotoFaces = UIFont.familyNames
+            .filter { $0.localizedCaseInsensitiveContains("noto") }
+            .flatMap(UIFont.fontNames(forFamilyName:))
+            .sorted()
+
+        for postScriptName in ["NotoSansKR-Thin_Regular", "NotoSansKR-Thin_Medium", "NotoSansKR-Thin_Bold"] {
+            let font = UIFont(name: postScriptName, size: 16)
+            XCTAssertNotNil(font, "Missing registered font face: \(postScriptName). Found: \(registeredNotoFaces)")
+            XCTAssertEqual(font?.fontName, postScriptName, "Found: \(registeredNotoFaces)")
+        }
+    }
+
     func testProfileStartsWithFigmaDefaults() {
         let profile = FINDROnboardingProfile()
 

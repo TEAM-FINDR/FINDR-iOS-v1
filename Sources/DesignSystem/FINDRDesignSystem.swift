@@ -4,8 +4,10 @@ import UIKit
 enum FINDRColor {
     static let canvas = dynamic(light: 0xF6F7FB, dark: 0x0B1020)
     static let surface = dynamic(light: 0xFFFFFF, dark: 0x141A2C)
+    static let scrim = Color(uiColor: UIColor(rgb: 0x0B0B0F))
     static let subtle = dynamic(light: 0xF2F4F7, dark: 0x1C2338)
     static let primaryText = dynamic(light: 0x111827, dark: 0xE6E9F0)
+    static let heading = dynamic(light: 0x0E1A3A, dark: 0xE6E9F0)
     static let secondaryText = dynamic(light: 0x5B6474, dark: 0xB4BBCB)
     static let tertiaryText = dynamic(light: 0x686C75, dark: 0x7C859C)
     static let brand = dynamic(light: 0x2B62E9, dark: 0x5B8CFF)
@@ -27,7 +29,7 @@ enum FINDRColor {
     static let warningSubtle = dynamic(light: 0xFFF4E5, dark: 0x33240A)
     static let danger = dynamic(light: 0xC23742, dark: 0xF97066)
     static let dangerStatus = dynamic(light: 0xF04452, dark: 0xF97066)
-    static let dangerSubtle = dynamic(light: 0xFFEEEE, dark: 0x3A1519)
+    static let dangerSubtle = dynamic(light: 0xFFECEE, dark: 0x3A1519)
     static let accentSubtle = dynamic(light: 0xF3EEFF, dark: 0x251C47)
     static let inactiveIcon = dynamic(light: 0x98A2B3, dark: 0x7C859C)
 
@@ -36,6 +38,10 @@ enum FINDRColor {
             UIColor(rgb: traits.userInterfaceStyle == .dark ? dark : light)
         })
     }
+}
+
+enum FINDRShadow {
+    static let card = Color(uiColor: UIColor(rgb: 0x0F1733)).opacity(0.06)
 }
 
 private extension UIColor {
@@ -51,15 +57,15 @@ private extension UIColor {
 
 enum FINDRFont {
     static func regular(_ size: CGFloat) -> Font {
-        .custom("NotoSansKR-Regular", fixedSize: size)
+        .custom("NotoSansKR-Thin_Regular", fixedSize: size)
     }
 
     static func medium(_ size: CGFloat) -> Font {
-        .custom("NotoSansKR-Medium", fixedSize: size)
+        .custom("NotoSansKR-Thin_Medium", fixedSize: size)
     }
 
     static func bold(_ size: CGFloat) -> Font {
-        .custom("NotoSansKR-Bold", fixedSize: size)
+        .custom("NotoSansKR-Thin_Bold", fixedSize: size)
     }
 
     static let titleLarge = bold(26)
@@ -95,9 +101,20 @@ enum FINDRAssetName {
     static let logo = "FINDRLogo"
     static let loginLogo = "FINDRLoginLogo"
     static let sparkles = "FINDRSparkles"
+    static let onboardingAnalysisSparkles = "OnboardingAnalysisSparkles"
+    static let onboardingAnalysisCheckCircle = "OnboardingAnalysisCheckCircle"
+    static let onboardingAnalysisClock = "OnboardingAnalysisClock"
+    static let onboardingResultCheckCircle = "OnboardingResultCheckCircle"
+    static let onboardingResultClock = "OnboardingResultClock"
+    static let onboardingResultUnlock = "OnboardingResultUnlock"
+    static let onboardingNotificationBell = "OnboardingNotificationBell"
     static let notificationSparkles = "FINDRNotificationSparkles"
     static let notificationEdit = "FINDRNotificationEdit"
     static let notificationMail = "FINDRNotificationMail"
+    static let notificationSettings = "FINDRNotificationSettings"
+    static let notificationUnlock = "FINDRNotificationUnlock"
+    static let notificationClock = "FINDRNotificationClock"
+    static let notificationEmptyBell = "FINDRNotificationEmptyBell"
     static let aPathHelp = "Figma_aa157"
     static let aPathClose = "Figma_89e40"
     static let aPathToggleOn = "Figma_b42cc"
@@ -122,13 +139,29 @@ enum FINDRAssetName {
     static let aPathOpportunityAward = "Figma_04776"
     static let appleLogo = "FINDRAppleLogo"
     static let kakaoLogo = "FINDRKakaoLogo"
+    static let profileSetupBack = "Figma_fd617"
+    static let profileStatusSelectedRadio = "ProfileStatusSelectedRadio"
+    static let exploreActionBookmark = "Figma_a38b7"
+    static let exploreActionShare = "Figma_c5038"
+    static let exploreActionIgnore = "Figma_b459f"
+    static let exploreActionReport = "Figma_7a217"
+    static let savedReminder = "FINDRSavedReminder"
+    static let savedRemove = "FINDRSavedRemove"
+    static let savedRemovalAlert = "FINDRSavedRemovalAlert"
     static let unlock = "Figma_a1402"
     static let bell = "Figma_87021"
     static let cpu = "Figma_d3e89"
+    static let homeDeadlineCPU = "Figma_c55a4"
     static let chevronRight = "Figma_5eec4"
     static let folder = "Figma_3ded9"
     static let arrowRight = "Figma_30ec3"
     static let search = "Figma_f4ee6"
+    static let recentSearchRemove = "FINDRRecentSearchRemove"
+    static let searchClear = "Figma_8e859"
+    static let searchEmptyState = "Figma_3bc0e"
+    static let searchGraduation = "Figma_d114a"
+    static let searchBulb = "Figma_9f781"
+    static let searchMonitor = "Figma_c7dbd"
     static let chevronDown = "Figma_76c68"
     static let sliders = "Figma_55e31"
     static let bulb = "Figma_1bfa5"
@@ -136,12 +169,21 @@ enum FINDRAssetName {
     static let graduation = "Figma_00e68"
     static let award = "Figma_03d6b"
     static let check = "Figma_5eead"
-    static let back = "Figma_4a022"
+    static let back = "Figma_fd617"
     static let bookmark = "Figma_b6aa8"
+    static let savedBookmark = "Figma_3ceed"
+    static let saveToastCheck = "Figma_ae8dd"
+    static let externalSiteGlobe = "Figma_06e31"
+    static let detailShareLink = "Figma_54be6"
+    static let detailShareMail = "Figma_1c6c3"
+    static let detailShareMore = "Figma_54036"
     static let share = "Figma_23dbf"
     static let building = "Figma_150c8"
     static let calendar = "Figma_246db"
     static let checkCircle = "Figma_417cd"
+    static let detailCertificateAward = "Figma_4b7c1"
+    static let onboardingCheckCircle = "OnboardingCheckCircle"
+    static let onboardingUnlock = "OnboardingUnlock"
     static let gift = "Figma_36165"
     static let missing = "Figma_d04e7"
     static let alert = "Figma_635c1"
@@ -152,6 +194,11 @@ enum FINDRAssetName {
     static let more = "Figma_4aa7b"
     static let settings = "Figma_5385d"
     static let profile = "Figma_7b592"
+    static let myProfileChevron = "Figma_68411"
+    static let mySectionChevron = "Figma_806b6"
+    static let myMenuChevron = "Figma_7950b"
+    static let myNotificationSettings = "Figma_24ece"
+    static let myHelp = "Figma_c22b7"
     static let plus = "Figma_cc713"
     static let clock = "Figma_00ade"
     static let logout = "Figma_ef8b8"
@@ -160,6 +207,12 @@ enum FINDRAssetName {
     static let tabPath = "Figma_fbb8a"
     static let tabSaved = "Figma_2dbe1"
     static let tabMy = "Figma_0c7a2"
+    static let detailContactBuilding = "Figma_eb6b3"
+    static let detailContactPhone = "Figma_38835"
+    static let detailContactChevron = "Figma_6f7ff"
+    static let detailContactEmail = "Figma_431cf"
+    static let detailContactWebsite = "Figma_5e980"
+    static let detailContactNotice = "Figma_e6174"
 }
 
 struct FINDRIcon: View {
@@ -207,7 +260,7 @@ struct FINDRCard<Content: View>: View {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .stroke(FINDRColor.border, lineWidth: 1)
             }
-            .shadow(color: .black.opacity(hasShadow ? 0.06 : 0), radius: 18, x: 0, y: 4)
+            .shadow(color: hasShadow ? FINDRShadow.card : .clear, radius: 18, x: 0, y: 4)
     }
 }
 
@@ -322,6 +375,7 @@ struct FINDRStatusBadge: View {
 struct FINDRSectionHeader: View {
     let title: String
     var actionTitle: String? = nil
+    var actionIconName: String? = nil
     var action: (() -> Void)? = nil
 
     var body: some View {
@@ -332,17 +386,26 @@ struct FINDRSectionHeader: View {
                 .foregroundStyle(FINDRColor.primaryText)
             Spacer(minLength: 8)
             if let actionTitle {
-                Button(actionTitle, action: action ?? {})
-                    .font(FINDRFont.regular(12))
-                    .foregroundStyle(FINDRColor.tertiaryText)
-                    .buttonStyle(.plain)
+                Button(action: { action?() }) {
+                    HStack(spacing: 2) {
+                        Text(actionTitle)
+                            .font(FINDRFont.regular(12))
+                            .kerning(-0.24)
+                            .foregroundStyle(FINDRColor.tertiaryText)
+                        if let actionIconName {
+                            FINDRIcon(name: actionIconName, size: 14, tint: FINDRColor.tertiaryText)
+                        }
+                    }
+                }
+                .buttonStyle(.plain)
             }
         }
     }
 }
 
 enum FINDRButtonKind: Equatable {
-    case primary, secondary, outline
+    case primary, secondary, outline, accent
+    case inverse
 }
 
 struct FINDRButton: View {
@@ -372,29 +435,31 @@ struct FINDRButton: View {
 
     private var foreground: Color {
         switch kind {
-        case .primary: .white
-        case .secondary: FINDRColor.primaryText
-        case .outline: FINDRColor.primaryText
+        case .primary, .inverse, .accent: .white
+        case .secondary, .outline: FINDRColor.primaryText
         }
     }
 
     private var background: Color {
         switch kind {
         case .primary: FINDRColor.brandButton
+        case .accent: FINDRColor.brand
         case .secondary: FINDRColor.inverse
         case .outline: FINDRColor.surface
+        case .inverse: FINDRColor.inverse
         }
     }
 }
 
 struct FINDRBottomCTA: View {
     let title: String
+    var buttonKind: FINDRButtonKind = .primary
     var isEnabled = true
     let action: () -> Void
 
     var body: some View {
         VStack(spacing: FINDRSpacing.large) {
-            FINDRButton(title: title, height: 53, action: action)
+            FINDRButton(title: title, kind: buttonKind, height: 53, action: action)
                 .disabled(!isEnabled)
                 .opacity(isEnabled ? 1 : 0.45)
 

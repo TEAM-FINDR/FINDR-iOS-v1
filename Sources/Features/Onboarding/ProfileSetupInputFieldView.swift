@@ -30,7 +30,8 @@ struct FINDRProfileSetupInputFieldView: View {
 
             if let helper {
                 Text(helper)
-                    .font(FINDRFont.regular(11))
+                    .font(FINDRFont.regular(12))
+                    .tracking(-0.24)
                     .foregroundStyle(FINDRColor.tertiaryText)
             }
         }

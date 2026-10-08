@@ -29,7 +29,7 @@ final class OnboardingIntroContentTests: XCTestCase {
 
         XCTAssertEqual(content.badge, "+12개의 새로운 기회")
         XCTAssertEqual(content.title, "다음 행동이 여는\n새로운 기회")
-        XCTAssertEqual(content.description, "포트폴리오, 자격증, 교육… 무엇을 하면\n몇 개의 기회가 열리는지 보여드려요.")
+        XCTAssertEqual(content.description, "포트폴리오, 자격증, 교육…\n무엇을 하면 몇 개의 기회가 열리는지 보여드려요.")
         XCTAssertEqual(content.buttonTitle, "시작하기")
         XCTAssertEqual(content.icon, .unlock)
         XCTAssertTrue(content.usesPillBadge)

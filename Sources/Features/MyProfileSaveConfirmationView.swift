@@ -5,7 +5,8 @@ struct MyProfileSaveConfirmationView: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.45)
+            FINDRColor.scrim
+                .opacity(0.45)
                 .ignoresSafeArea()
 
             VStack(spacing: FINDRSpacing.large) {
@@ -27,6 +28,8 @@ struct MyProfileSaveConfirmationView: View {
                         .kerning(-0.26)
                         .multilineTextAlignment(.center)
                         .foregroundStyle(FINDRColor.secondaryText)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                         .frame(height: 36)
                 }
 

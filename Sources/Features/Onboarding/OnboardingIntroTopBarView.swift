@@ -14,6 +14,7 @@ struct FINDROnboardingIntroTopBarView: View {
                 .accessibilityHint("로그인 화면으로 이동합니다.")
         }
         .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.vertical, FINDRSpacing.small)
+        .padding(.top, FINDRSpacing.small + 4)
+        .padding(.bottom, FINDRSpacing.small)
     }
 }

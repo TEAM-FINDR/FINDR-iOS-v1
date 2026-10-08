@@ -4,6 +4,10 @@ struct SavedView: View {
     @Binding var savedIDs: Set<String>
     let onOpenOpportunity: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
+    let onOpenActions: (Opportunity) -> Void
+    let isRemovalToastVisible: Bool
+    let pendingRemoval: Opportunity?
+    let onExplore: () -> Void
 
     @State private var selectedFilter = "전체"
     @State private var remindersEnabled = true
@@ -23,44 +27,69 @@ struct SavedView: View {
     }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 14) {
-                header
-                filterBar
-                HStack {
-                    Menu {
-                        Button("마감 임박순") { sortByDeadline = true }
-                        Button("추천순") { sortByDeadline = false }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Text(sortByDeadline ? "마감 임박순" : "추천순")
-                                .font(FINDRFont.regular(12))
-                            FINDRIcon(name: FINDRAssetName.chevronDown, size: 13, tint: FINDRColor.secondaryText)
-                        }
-                        .foregroundStyle(FINDRColor.secondaryText)
-                    }
-                    Spacer()
-                    Button { remindersEnabled.toggle() } label: {
-                        HStack(spacing: 5) {
-                            FINDRIcon(name: FINDRAssetName.bell, size: 14, tint: FINDRColor.brand)
-                            Text(remindersEnabled ? "마감 알림 켜짐" : "마감 알림 꺼짐")
-                                .font(FINDRFont.medium(11))
-                                .foregroundStyle(FINDRColor.brand)
-                        }
-                    }
-                    .buttonStyle(.plain)
+        ZStack {
+            if savedIDs.isEmpty {
+                VStack(spacing: 0) {
+                    header.padding(.horizontal, 20).padding(.top, 12)
+                    FINDREmptyState(
+                        icon: "Figma_c2801",
+                        title: "아직 저장한 기회가 없어요",
+                        message: "관심 있는 기회를 저장하면 마감 전에 알려드릴게요.",
+                        actionTitle: "기회 둘러보기",
+                        action: onExplore
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.bottom, 106)
                 }
-                LazyVStack(spacing: 10) {
-                    ForEach(savedOpportunities) { opportunity in
-                        OpportunityListRow(opportunity: opportunity, asCard: true) {
-                            onOpenOpportunity(opportunity)
+            } else {
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 16) {
+                    header
+                    filterBar
+                    HStack {
+                        Menu {
+                            Button("마감 임박순") { sortByDeadline = true }
+                            Button("추천순") { sortByDeadline = false }
+                        } label: {
+                            HStack(spacing: 2) {
+                                Text(sortByDeadline ? "마감 임박순" : "추천순")
+                                    .font(FINDRFont.medium(13))
+                                    .kerning(-0.26)
+                                FINDRIcon(name: FINDRAssetName.chevronDown, size: 14, tint: FINDRColor.secondaryText)
+                            }
+                            .foregroundStyle(FINDRColor.secondaryText)
+                        }
+                        Spacer()
+                        Button { remindersEnabled.toggle() } label: {
+                            HStack(spacing: 4) {
+                                FINDRIcon(name: FINDRAssetName.bell, size: 14, tint: FINDRColor.brand)
+                                Text(remindersEnabled ? "마감 알림 켜짐" : "마감 알림 꺼짐")
+                                    .font(FINDRFont.medium(12))
+                                    .foregroundStyle(FINDRColor.brand)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .frame(height: 18)
+                    ScrollView(showsIndicators: false) {
+                        LazyVStack(spacing: 10) {
+                            ForEach(savedOpportunities) { opportunity in
+                                OpportunityListRow(
+                                    opportunity: opportunity,
+                                    asCard: true,
+                                    showsLocation: false,
+                                    onMore: { onOpenActions(opportunity) },
+                                    onTap: { onOpenOpportunity(opportunity) }
+                                )
+                            }
                         }
                     }
+                    .frame(height: isRemovalToastVisible ? 314 : 422)
                 }
-                .padding(.bottom, 12)
+                .padding(.horizontal, FINDRSpacing.screen)
+                .padding(.top, 30)
             }
-            .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.top, 14)
+            }
         }
         .background(FINDRColor.canvas)
     }
@@ -70,17 +99,21 @@ struct SavedView: View {
             title: "저장한 기회",
             trailingIcon: FINDRAssetName.bell,
             trailingLabel: "알림",
-            action: onOpenNotifications
+            action: onOpenNotifications,
+            titleKerning: -0.44
         )
     }
 
     private var filterBar: some View {
         HStack(spacing: 8) {
             ForEach(filters, id: \.self) { filter in
+                let reminderIDs = pendingRemoval.map { savedIDs.union([$0.id]) } ?? savedIDs
                 let count: Int = switch filter {
                 case "전체": savedIDs.count
                 case "지원 가능": Opportunity.samples.filter { savedIDs.contains($0.id) && $0.status == .eligible }.count
-                default: Opportunity.samples.filter { savedIDs.contains($0.id) && (Int($0.deadline.dropFirst(2)) ?? 99) <= 7 }.count
+                default:
+                    // The F3 design retains deadline reminders while undo is available.
+                    Opportunity.samples.filter { reminderIDs.contains($0.id) && (Int($0.deadline.dropFirst(2)) ?? 99) <= 7 }.count
                 }
                 FINDRPill(title: "\(filter) \(count)", isSelected: selectedFilter == filter) {
                     selectedFilter = filter

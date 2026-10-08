@@ -53,7 +53,7 @@ struct FINDROnboardingSocialLoginButton: View {
                     .foregroundStyle(provider.foreground)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 54)
+            .frame(height: 53)
             .background(provider.background, in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous))
             .overlay {
                 if provider == .google {

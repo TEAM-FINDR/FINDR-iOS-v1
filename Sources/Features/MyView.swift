@@ -12,10 +12,12 @@ struct MyView: View {
     @Binding var profile: FINDROnboardingProfile
     let completedAPathActions: Set<APathActionID>
     let onOpenNotificationSettings: () -> Void
-    @State private var selectedAction = ""
-    @State private var showActionNotice = false
+    let onPresentConditionSheet: () -> Void
+    let onOpenSettings: () -> Void
+    let onOpenActivityHistory: () -> Void
+    let onOpenHelp: () -> Void
+    let onLogout: () -> Void
     @State private var activeEditor: MYEditorDestination?
-    @State private var isConditionSheetPresented = false
     @State private var shouldShowProfileSaveConfirmation = false
     @State private var isProfileSaveConfirmationVisible = false
 
@@ -33,8 +35,8 @@ struct MyView: View {
     }
     private let menuItems: [(String, String)] = [
         ("활동 기록", FINDRAssetName.clock),
-        ("알림 설정", FINDRAssetName.bell),
-        ("도움말", FINDRAssetName.help),
+        ("알림 설정", FINDRAssetName.myNotificationSettings),
+        ("도움말", FINDRAssetName.myHelp),
         ("로그아웃", FINDRAssetName.logout)
     ]
 
@@ -57,16 +59,10 @@ struct MyView: View {
                     values: conditions,
                     addLabel: "추가",
                     tagTone: .neutral,
-                    onEdit: { isConditionSheetPresented = true },
-                    onAdd: { isConditionSheetPresented = true }
+                    onEdit: onPresentConditionSheet,
+                    onAdd: onPresentConditionSheet
                 )
                 menuCard
-                Text("버전 1.0.0")
-                    .font(FINDRFont.regular(10))
-                    .foregroundStyle(FINDRColor.tertiaryText)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 2)
-                    .padding(.bottom, 16)
             }
             .padding(.horizontal, FINDRSpacing.screen)
             .padding(.top, 26)
@@ -82,17 +78,6 @@ struct MyView: View {
                 }
             }
         }
-        .sheet(isPresented: $isConditionSheetPresented) {
-            MyConditionAddSheet(ownedConditions: ownedConditions) { condition in
-                profile.conditions.insert(condition)
-                FINDRProfileStore.save(profile)
-                isConditionSheetPresented = false
-            }
-            .presentationDetents([.height(343)])
-            .presentationDragIndicator(.hidden)
-            .presentationCornerRadius(20)
-            .presentationBackground(FINDRColor.surface)
-        }
         .overlay {
             if isProfileSaveConfirmationVisible {
                 MyProfileSaveConfirmationView {
@@ -103,26 +88,24 @@ struct MyView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: isProfileSaveConfirmationVisible)
-        .alert(selectedAction, isPresented: $showActionNotice) {
-            Button("확인", role: .cancel) {}
-        } message: {
-            Text("이 화면은 디자인 확인용 샘플입니다.")
-        }
+
     }
 
     private var header: some View {
         FINDRPageHeader(
             title: "MY",
             trailingIcon: FINDRAssetName.settings,
-            trailingLabel: isDarkMode ? "라이트 모드로 변경" : "다크 모드로 변경",
-            action: { isDarkMode.toggle() }
+            trailingLabel: "설정",
+            action: onOpenSettings,
+            titleKerning: -0.44
         )
+        .contextMenu { Button(isDarkMode ? "라이트 모드로 변경" : "다크 모드로 변경") { isDarkMode.toggle() } }
     }
 
     private var profileCard: some View {
-        FINDRCard(padding: 17, hasShadow: true) {
+        FINDRCard(padding: 16, hasShadow: true) {
             VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 12) {
+                HStack(spacing: 14) {
                     FINDRProfileAvatar(
                         photoPath: profile.profilePhotoPath,
                         size: 60,
@@ -144,7 +127,7 @@ struct MyView: View {
                             HStack(spacing: 3) {
                                 Text("프로필 수정")
                                     .font(FINDRFont.medium(12))
-                                FINDRIcon(name: FINDRAssetName.chevronRight, size: 14, tint: FINDRColor.brand)
+                                FINDRIcon(name: FINDRAssetName.myProfileChevron, size: 14, tint: FINDRColor.brand)
                             }
                             .foregroundStyle(FINDRColor.brand)
                             .frame(height: 17, alignment: .leading)
@@ -184,10 +167,10 @@ struct MyView: View {
         values: [String],
         addLabel: String,
         tagTone: FINDRTagTone,
-        onEdit: (() -> Void)? = nil,
-        onAdd: (() -> Void)? = nil
+        onEdit: @escaping () -> Void,
+        onAdd: @escaping () -> Void
     ) -> some View {
-        FINDRCard(padding: 17) {
+        FINDRCard(padding: 16, hasShadow: true) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text(title)
@@ -196,12 +179,12 @@ struct MyView: View {
                         .foregroundStyle(FINDRColor.primaryText)
                         .frame(height: 21, alignment: .leading)
                     Spacer()
-                    Button { (onEdit ?? { showAction("\(title) 수정") })() } label: {
+                    Button { onEdit() } label: {
                         HStack(spacing: 3) {
                             Text("수정")
                                 .font(FINDRFont.regular(12))
                                 .kerning(-0.24)
-                            FINDRIcon(name: FINDRAssetName.chevronRight, size: 14, tint: FINDRColor.tertiaryText)
+                            FINDRIcon(name: FINDRAssetName.mySectionChevron, size: 14, tint: FINDRColor.tertiaryText)
                         }
                         .foregroundStyle(FINDRColor.tertiaryText)
                         .frame(height: 17)
@@ -209,7 +192,7 @@ struct MyView: View {
                     .buttonStyle(.plain)
                 }
                 FlowTags(values: values, tone: tagTone, dashedAddLabel: addLabel) {
-                    (onAdd ?? { showAction("\(title) 추가") })()
+                    onAdd()
                 }
             }
         }
@@ -222,7 +205,11 @@ struct MyView: View {
                     if item.0 == "알림 설정" {
                         onOpenNotificationSettings()
                     } else {
-                        showAction(item.0)
+                        switch item.0 {
+                        case "활동 기록": onOpenActivityHistory()
+                        case "도움말": onOpenHelp()
+                        default: onLogout()
+                        }
                     }
                 } label: {
                     HStack(spacing: 10) {
@@ -233,8 +220,9 @@ struct MyView: View {
                             .foregroundStyle(FINDRColor.primaryText)
                             .frame(height: 20, alignment: .leading)
                         Spacer()
-                        FINDRIcon(name: FINDRAssetName.chevronRight, size: 16, tint: FINDRColor.inactiveIcon)
+                        FINDRIcon(name: FINDRAssetName.myMenuChevron, size: 16, tint: FINDRColor.inactiveIcon)
                     }
+                    .padding(.vertical, 12)
                     .frame(height: index == menuItems.count - 1 ? 44 : 45)
                     .contentShape(Rectangle())
                 }
@@ -243,13 +231,12 @@ struct MyView: View {
                     if index < menuItems.count - 1 {
                         FINDRColor.divider
                             .frame(height: 1)
-                            .padding(.leading, 28)
                     }
                 }
             }
         }
-        .padding(.horizontal, 17)
-        .padding(.vertical, 5)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 4)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(FINDRColor.surface)
         .clipShape(RoundedRectangle(cornerRadius: FINDRRadius.card, style: .continuous))
@@ -257,12 +244,7 @@ struct MyView: View {
             RoundedRectangle(cornerRadius: FINDRRadius.card, style: .continuous)
                 .stroke(FINDRColor.border, lineWidth: 1)
         }
-        .shadow(color: .black.opacity(0.06), radius: 18, x: 0, y: 4)
-    }
-
-    private func showAction(_ action: String) {
-        selectedAction = action
-        showActionNotice = true
+        .shadow(color: FINDRShadow.card, radius: 18, x: 0, y: 4)
     }
 
     private func presentSaveConfirmationIfNeeded() {
@@ -312,8 +294,8 @@ private struct FlowTags: View {
             }
             .foregroundStyle(FINDRColor.secondaryText)
             .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .frame(height: 29)
+            .padding(.vertical, 5)
+            .frame(height: 30)
             .overlay {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                     .strokeBorder(FINDRColor.borderStrong, style: StrokeStyle(lineWidth: 1, dash: [3, 2]))

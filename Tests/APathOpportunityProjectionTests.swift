@@ -57,7 +57,7 @@ final class APathOpportunityProjectionTests: XCTestCase {
     func testCompletionConfirmationCopyIsNaturalForEachAction() {
         XCTAssertEqual(
             APathActionID.portfolio.completionConfirmationTitle,
-            "포트폴리오 만들기를 완료로 표시할까요?"
+            "포트폴리오를 완료로 표시할까요?"
         )
         XCTAssertEqual(
             APathActionID.aiEducation.completionConfirmationTitle,
@@ -74,6 +74,13 @@ final class APathOpportunityProjectionTests: XCTestCase {
         XCTAssertEqual(APathActionID.dataProcessing.iconName, FINDRAssetName.aPathListMonitor)
         XCTAssertEqual(APathActionID.gtq.iconName, FINDRAssetName.aPathListCPU)
         XCTAssertEqual(APathActionID.koreanHistory.iconName, FINDRAssetName.rocket)
+    }
+
+    func testRecommendedActionRowIconsMatchFigma() {
+        XCTAssertEqual(APathActionID.portfolio.listIconName, FINDRAssetName.file)
+        XCTAssertEqual(APathActionID.computerLiteracy.listIconName, FINDRAssetName.aPathListMonitor)
+        XCTAssertEqual(APathActionID.aiEducation.listIconName, FINDRAssetName.aPathListCPU)
+        XCTAssertEqual(APathActionID.projectExperience.listIconName, FINDRAssetName.rocket)
     }
 
     func testPortfolioUnlockedSamplesAreNotReusedForOtherActions() {

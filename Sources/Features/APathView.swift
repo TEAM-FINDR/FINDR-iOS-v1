@@ -2,11 +2,11 @@ import SwiftUI
 
 struct APathView: View {
     let completedActions: Set<APathActionID>
+    let onOpenHelp: () -> Void
     let onOpenSimulator: () -> Void
     let onOpenAction: (APathActionID) -> Void
 
     @State private var selectedCategory = APathCategory.recommended.rawValue
-    @State private var showHelp = false
 
     private var selectedAPathCategory: APathCategory {
         APathCategory(rawValue: selectedCategory) ?? .recommended
@@ -41,32 +41,27 @@ struct APathView: View {
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
+            VStack(alignment: .leading, spacing: FINDRSpacing.large) {
                 header
-                whatIfCard
-                Text("지금 할 수 있는 활동이 새로운 기회를 만들어요.")
-                    .font(FINDRFont.regular(13))
-                    .kerning(-0.26)
-                    .foregroundStyle(FINDRColor.secondaryText)
-                    .padding(.top, 2)
-                categoryTabs
-                VStack(spacing: FINDRSpacing.small) {
-                    ForEach(visibleActions, id: \.self) { actionID in
-                        actionCard(actionID)
+                VStack(alignment: .leading, spacing: 20) {
+                    whatIfCard
+                    Text("지금 할 수 있는 활동이 새로운 기회를 만들어요.")
+                        .font(FINDRFont.regular(13))
+                        .kerning(-0.26)
+                        .foregroundStyle(FINDRColor.secondaryText)
+                    categoryTabs
+                    VStack(spacing: 10) {
+                        ForEach(visibleActions, id: \.self) { actionID in
+                            actionCard(actionID)
+                        }
                     }
+                    .padding(.bottom, FINDRSpacing.medium)
                 }
-                .padding(.bottom, FINDRSpacing.medium)
             }
             .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.top, 14)
+            .padding(.top, 30)
         }
-        .background(FINDRColor.canvas)
-        .sheet(isPresented: $showHelp) {
-            APathHelpSheet(onClose: { showHelp = false })
-                .presentationDetents([.height(330)])
-                .presentationDragIndicator(.hidden)
-                .presentationCornerRadius(36)
-        }
+        .background(FINDRColor.surface)
     }
 
     private var header: some View {
@@ -74,51 +69,54 @@ struct APathView: View {
             title: "A-Path",
             trailingIcon: FINDRAssetName.aPathHelp,
             trailingLabel: "A-Path 도움말",
-            action: { showHelp = true },
-            trailingSize: 21
+            action: onOpenHelp,
+            trailingSize: 22
         )
     }
 
     private var whatIfCard: some View {
         Button(action: onOpenSimulator) {
-            VStack(spacing: FINDRSpacing.medium) {
+            VStack(spacing: 12) {
                 Text("What-if")
-                    .font(FINDRFont.bold(10))
+                    .font(FINDRFont.bold(11))
                     .foregroundStyle(FINDRColor.brand)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 5)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
                     .background(FINDRColor.surface, in: Capsule())
 
                 Text(previewTitle)
-                    .font(FINDRFont.bold(16))
-                    .kerning(-0.32)
+                    .font(FINDRFont.bold(17))
+                    .kerning(-0.34)
                     .foregroundStyle(FINDRColor.primaryText)
 
-                HStack(spacing: 16) {
-                    VStack(spacing: 2) {
+                HStack(spacing: 28) {
+                    VStack(spacing: 0) {
                         Text("현재")
-                            .font(FINDRFont.regular(11))
+                            .font(FINDRFont.medium(12))
                             .foregroundStyle(FINDRColor.secondaryText)
                         Text("\(currentOpportunityCount)개")
                             .font(FINDRFont.bold(28))
+                            .kerning(-0.56)
                             .foregroundStyle(FINDRColor.primaryText)
                     }
-                    FINDRIcon(name: FINDRAssetName.pathArrow, size: 18, tint: FINDRColor.inactiveIcon)
-                    VStack(spacing: 2) {
+                    FINDRIcon(name: FINDRAssetName.pathArrow, size: 22, tint: FINDRColor.inactiveIcon)
+                    VStack(spacing: 0) {
                         Text("완료 후")
-                            .font(FINDRFont.regular(11))
+                            .font(FINDRFont.medium(12))
                             .foregroundStyle(FINDRColor.brand)
                         Text("\(projectedOpportunityCount)개")
                             .font(FINDRFont.bold(28))
+                            .kerning(-0.56)
                             .foregroundStyle(FINDRColor.brand)
                     }
                 }
 
                 Text("+\(projectedOpportunityCount - currentOpportunityCount)개의 새로운 기회")
-                    .font(FINDRFont.bold(12))
+                    .font(FINDRFont.bold(14))
+                    .kerning(-0.28)
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 7)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
                     .background(FINDRColor.brandButton, in: Capsule())
 
                 HStack(spacing: 6) {
@@ -128,8 +126,8 @@ struct APathView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, FINDRSpacing.large)
-            .background(FINDRColor.brandSubtle, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .padding(20)
+            .background(FINDRColor.brandTint, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -142,13 +140,12 @@ struct APathView: View {
     }
 
     private func breakdown(_ category: String, _ count: String) -> some View {
-        HStack(spacing: 3) {
-            Text(category).foregroundStyle(FINDRColor.secondaryText)
-            Text(count).font(FINDRFont.bold(11)).foregroundStyle(FINDRColor.brand)
+        HStack(spacing: 4) {
+            Text(category).font(FINDRFont.medium(12)).foregroundStyle(FINDRColor.secondaryText)
+            Text(count).font(FINDRFont.bold(12)).foregroundStyle(FINDRColor.brand)
         }
-        .font(FINDRFont.regular(11))
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 9)
+        .padding(.vertical, 5)
         .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .fixedSize()
     }
@@ -157,32 +154,42 @@ struct APathView: View {
         FINDRUnderlineTabs(
             titles: APathCategory.allCases.map(\.rawValue),
             selection: $selectedCategory,
-            fontSize: 13,
+            fontSize: 14,
+            selectedFont: FINDRFont.bold(14),
+            unselectedFont: FINDRFont.medium(14),
+            textKerning: -0.28,
             itemSpacing: 18,
             indicatorSpacing: 8,
             equalWidth: false,
-            unselectedTextColor: FINDRColor.secondaryText,
+            unselectedTextColor: FINDRColor.tertiaryText,
             unselectedIndicatorColor: .clear,
             showsBottomDivider: true
         )
     }
 
     private func actionCard(_ actionID: APathActionID) -> some View {
-        Button {
+        let usesCertificateFileIcon = selectedAPathCategory == .certificate && actionID == .computerLiteracy
+        let iconName = usesCertificateFileIcon ? FINDRAssetName.file : actionID.listIconName
+        let iconTint = actionID.iconTint
+        let iconBackground = usesCertificateFileIcon ? FINDRColor.brandSubtle : actionID.iconBackground
+
+        return Button {
             onOpenAction(actionID)
         } label: {
             HStack(spacing: FINDRSpacing.medium) {
-                FINDRIcon(name: actionID.iconName, size: 20, tint: actionID.iconTint)
+                FINDRIcon(name: iconName, size: 20, tint: iconTint, usesTemplate: false)
                     .frame(width: 44, height: 44)
-                    .background(actionID.iconBackground, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .background(iconBackground, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(selectedAPathCategory == .certificate ? actionID.categoryTitle : actionID.title)
-                        .font(FINDRFont.bold(14))
+                        .font(FINDRFont.bold(15))
+                        .kerning(-0.3)
                         .foregroundStyle(FINDRColor.primaryText)
                         .lineLimit(1)
                     Text(actionID.subtitle)
-                        .font(FINDRFont.regular(11))
+                        .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
                         .lineLimit(1)
                 }
@@ -196,15 +203,18 @@ struct APathView: View {
                             .foregroundStyle(FINDRColor.success)
                     } else {
                         Text("+\(actionID.opportunityCount)개")
-                            .font(FINDRFont.bold(14))
+                            .font(FINDRFont.bold(15))
+                            .kerning(-0.3)
                             .foregroundStyle(FINDRColor.brand)
                     }
                     Text("기회")
-                        .font(FINDRFont.regular(10))
+                        .font(FINDRFont.regular(11))
+                        .kerning(-0.22)
                         .foregroundStyle(FINDRColor.tertiaryText)
                 }
             }
-            .padding(14)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
             .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -214,6 +224,37 @@ struct APathView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("apath-action-\(actionID.id)")
+    }
+}
+
+struct APathHelpSheetOverlay: View {
+    let onDismiss: () -> Void
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Button(action: onDismiss) {
+                FINDRColor.scrim.opacity(0.45)
+                    .ignoresSafeArea()
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("A-Path 도움말 닫기")
+
+            APathHelpSheet(onClose: onDismiss)
+                .frame(height: 330)
+                .background(FINDRColor.surface)
+                .clipShape(UnevenRoundedRectangle(
+                    cornerRadii: RectangleCornerRadii(
+                        topLeading: 20,
+                        bottomLeading: 0,
+                        bottomTrailing: 0,
+                        topTrailing: 20
+                    ),
+                    style: .continuous
+                ))
+        }
+        .ignoresSafeArea()
+        .transition(.opacity)
     }
 }
 
@@ -227,50 +268,72 @@ private struct APathHelpSheet: View {
     ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
-            HStack {
-                Text("A-Path는 이렇게 작동해요")
-                    .font(FINDRFont.bold(17))
-                    .kerning(-0.34)
-                    .foregroundStyle(FINDRColor.primaryText)
-                Spacer()
-                Button(action: onClose) {
-                    FINDRIcon(name: FINDRAssetName.aPathClose, size: 22, tint: FINDRColor.secondaryText)
-                        .frame(width: 24, height: 24)
+        VStack(spacing: 0) {
+            VStack(spacing: 12) {
+                Capsule()
+                    .fill(FINDRColor.track)
+                    .frame(width: 36, height: 5)
+
+                HStack {
+                    Text("A-Path는 이렇게 작동해요")
+                        .font(FINDRFont.bold(17))
+                        .kerning(-0.34)
+                        .foregroundStyle(FINDRColor.primaryText)
+                    Spacer()
+                    Button(action: onClose) {
+                        FINDRIcon(name: FINDRAssetName.aPathClose, size: 22, tint: FINDRColor.secondaryText)
+                            .frame(width: 22, height: 22)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("닫기")
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("닫기")
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 12)
 
-            VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
-                ForEach(instructions.indices, id: \.self) { index in
-                    HStack(alignment: .top, spacing: FINDRSpacing.medium) {
-                        Text("\(index + 1)")
-                            .font(FINDRFont.bold(12))
-                            .foregroundStyle(FINDRColor.brand)
-                            .frame(width: 28, height: 28)
-                            .background(FINDRColor.brandSubtle, in: Circle())
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(instructions[index].0)
+            VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(instructions.indices, id: \.self) { index in
+                        HStack(alignment: .top, spacing: 12) {
+                            Text("\(index + 1)")
                                 .font(FINDRFont.bold(13))
-                                .foregroundStyle(FINDRColor.primaryText)
-                            Text(instructions[index].1)
-                                .font(FINDRFont.regular(11))
-                                .foregroundStyle(FINDRColor.secondaryText)
-                                .fixedSize(horizontal: false, vertical: true)
+                                .kerning(-0.26)
+                                .foregroundStyle(FINDRColor.brand)
+                                .frame(width: 28, height: 28)
+                                .background(FINDRColor.brandSubtle, in: Circle())
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(instructions[index].0)
+                                    .font(FINDRFont.bold(15))
+                                    .kerning(-0.3)
+                                    .foregroundStyle(FINDRColor.primaryText)
+                                    .frame(height: 21, alignment: .topLeading)
+                                Text(instructions[index].1)
+                                    .font(FINDRFont.regular(13))
+                                    .kerning(-0.26)
+                                    .foregroundStyle(FINDRColor.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .frame(height: 18.2, alignment: .topLeading)
+                            }
                         }
                     }
                 }
-            }
 
-            FINDRButton(title: "알겠어요", action: onClose)
-                .padding(.top, FINDRSpacing.xSmall)
+                Spacer(minLength: 0)
+
+                FINDRButton(title: "알겠어요", kind: .accent, height: 53, action: onClose)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 16)
+
+            Capsule()
+                .fill(FINDRColor.primaryText)
+                .frame(width: 134, height: 5)
+                .padding(.vertical, 8)
         }
-        .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.top, FINDRSpacing.large)
-        .padding(.bottom, FINDRSpacing.medium)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(FINDRColor.surface.ignoresSafeArea())
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .accessibilityElement(children: .contain)
     }
 }

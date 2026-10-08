@@ -8,7 +8,8 @@ struct FINDROnboardingResultHeaderView: View {
             Text("시우님을 위한\n기회를 찾았어요")
                 .font(FINDRFont.titleLarge)
                 .tracking(-0.52)
-                .lineSpacing(0)
+                .lineSpacing(-8)
+                .offset(y: 4)
                 .foregroundStyle(Color(hex: 0x0E1A3A))
                 .fixedSize(horizontal: false, vertical: true)
 

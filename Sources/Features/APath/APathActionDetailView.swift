@@ -27,16 +27,44 @@ struct APathActionDetailView: View {
                 APathSubpageHeader(title: "", onBack: { dismiss() })
 
                 ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: FINDRSpacing.large) {
-                        actionHeader
+                    VStack(alignment: .leading, spacing: 0) {
+                        actionIconBadge
+                            .padding(.bottom, FINDRSpacing.large - 3)
+
+                        Text(actionID.title)
+                            .font(FINDRFont.bold(26))
+                            .kerning(-0.52)
+                            .foregroundStyle(FINDRColor.heading)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.bottom, FINDRSpacing.large - 2)
+
+                        Text(actionDescription)
+                            .font(FINDRFont.regular(14))
+                            .kerning(-0.28)
+                            .foregroundStyle(FINDRColor.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.bottom, FINDRSpacing.large)
+
                         impactCard
-                        preparationGuide
+                            .padding(.bottom, FINDRSpacing.large - 3)
+
+                        Text("이렇게 준비해요")
+                            .font(FINDRFont.bold(17))
+                            .kerning(-0.34)
+                            .foregroundStyle(FINDRColor.primaryText)
+                            .padding(.bottom, FINDRSpacing.large)
+
+                        ForEach(actionID.preparationSteps.indices, id: \.self) { index in
+                            preparationStepRow(index: index)
+                                .padding(.bottom, index == actionID.preparationSteps.indices.last ? FINDRSpacing.large - 2 : FINDRSpacing.large)
+                        }
+
                         if actionID == .portfolio {
                             portfolioUpload
                         }
                     }
                     .padding(.horizontal, FINDRSpacing.screen)
-                    .padding(.top, FINDRSpacing.medium)
+                    .padding(.top, FINDRSpacing.small - 1)
                     .padding(.bottom, FINDRSpacing.large)
                 }
 
@@ -74,118 +102,93 @@ struct APathActionDetailView: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    private var actionHeader: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
-            FINDRIcon(name: actionID.iconName, size: 28, tint: FINDRColor.brand)
-                .frame(width: 56, height: 56)
-                .background(FINDRColor.brandSubtle, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+    private var actionIconBadge: some View {
+        let iconName = actionID == .portfolio ? FINDRAssetName.aPathFileBadge : actionID.iconName
 
-            VStack(alignment: .leading, spacing: FINDRSpacing.small) {
-                Text(actionID.title)
-                    .font(FINDRFont.bold(22))
-                    .kerning(-0.44)
-                    .foregroundStyle(FINDRColor.primaryText)
-
-                Text(actionDescription)
-                    .font(FINDRFont.regular(13))
-                    .kerning(-0.26)
-                    .foregroundStyle(FINDRColor.secondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
+        return FINDRIcon(name: iconName, size: 28, tint: FINDRColor.brand)
+            .frame(width: 56, height: 56)
+            .background(FINDRColor.brandSubtle, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     private var impactCard: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
+        VStack(alignment: .leading, spacing: FINDRSpacing.small) {
             HStack(spacing: FINDRSpacing.xSmall) {
                 Text("완료하면")
-                    .font(FINDRFont.regular(12))
+                    .font(FINDRFont.medium(13))
+                    .kerning(-0.26)
                     .foregroundStyle(FINDRColor.secondaryText)
                 Text("+\(actionID.opportunityCount)개 기회")
-                    .font(FINDRFont.bold(16))
+                    .font(FINDRFont.bold(17))
+                    .kerning(-0.34)
                     .foregroundStyle(FINDRColor.brand)
             }
 
-            HStack(spacing: FINDRSpacing.small) {
+            HStack(spacing: FINDRSpacing.xSmall) {
                 ForEach(actionID.breakdown) { item in
-                    HStack(spacing: 4) {
-                        Text(item.category)
-                            .foregroundStyle(FINDRColor.secondaryText)
-                        Text("+\(item.count)")
-                            .font(FINDRFont.bold(11))
-                            .foregroundStyle(FINDRColor.brand)
-                    }
-                    .font(FINDRFont.regular(11))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    Text("\(item.category) +\(item.count)")
+                        .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
+                        .foregroundStyle(FINDRColor.brand)
+                        .padding(.horizontal, FINDRSpacing.small)
+                        .padding(.vertical, FINDRSpacing.xSmall)
+                        .background(FINDRColor.brandSubtle, in: RoundedRectangle(cornerRadius: FINDRRadius.small, style: .continuous))
                 }
             }
         }
-        .padding(FINDRSpacing.medium)
+        .padding(FINDRSpacing.large)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(FINDRColor.brandSubtle, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(FINDRColor.brandTint, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
-    private var preparationGuide: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
-            Text("이렇게 준비해요")
-                .font(FINDRFont.bold(16))
-                .kerning(-0.32)
+    private func preparationStepRow(index: Int) -> some View {
+        HStack(alignment: .top, spacing: FINDRSpacing.small) {
+            Text("\(index + 1)")
+                .font(FINDRFont.bold(12))
+                .foregroundStyle(FINDRColor.secondaryText)
+                .frame(width: 22, height: 22)
+                .background(FINDRColor.subtle, in: Circle())
+
+            Text(actionID.preparationSteps[index])
+                .font(FINDRFont.regular(14))
+                .kerning(-0.28)
                 .foregroundStyle(FINDRColor.primaryText)
-
-            VStack(alignment: .leading, spacing: FINDRSpacing.small) {
-                ForEach(actionID.preparationSteps.indices, id: \.self) { index in
-                    HStack(alignment: .top, spacing: FINDRSpacing.small) {
-                        Text("\(index + 1)")
-                            .font(FINDRFont.bold(11))
-                            .foregroundStyle(FINDRColor.secondaryText)
-                            .frame(width: 22, height: 22)
-                            .background(FINDRColor.subtle, in: Circle())
-
-                        Text(actionID.preparationSteps[index])
-                            .font(FINDRFont.regular(13))
-                            .kerning(-0.26)
-                            .foregroundStyle(FINDRColor.primaryText)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-            }
+                .fixedSize(horizontal: false, vertical: true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var portfolioUpload: some View {
-        VStack(alignment: .leading, spacing: FINDRSpacing.small) {
+        VStack(alignment: .leading, spacing: FINDRSpacing.medium) {
             Text("포트폴리오 올리기")
-                .font(FINDRFont.bold(16))
-                .kerning(-0.32)
+                .font(FINDRFont.bold(17))
+                .kerning(-0.34)
                 .foregroundStyle(FINDRColor.primaryText)
 
             Button {
                 isImportingFile = true
             } label: {
                 HStack(spacing: FINDRSpacing.medium) {
-                    FINDRIcon(name: FINDRAssetName.aPathUpload, size: 24, tint: FINDRColor.brand)
+                    FINDRIcon(name: FINDRAssetName.aPathUpload, size: 22, tint: FINDRColor.primaryText)
                         .frame(width: 40, height: 40)
                         .background(FINDRColor.brandSubtle, in: Circle())
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(selectedFileName ?? "파일을 선택해 업로드하세요")
-                            .font(FINDRFont.bold(13))
+                            .font(FINDRFont.bold(14))
                             .foregroundStyle(FINDRColor.primaryText)
                             .lineLimit(1)
                         Text("PDF · PPT · 이미지, 최대 20MB")
-                            .font(FINDRFont.regular(11))
+                            .font(FINDRFont.regular(12))
                             .foregroundStyle(FINDRColor.tertiaryText)
                     }
                     Spacer(minLength: 0)
                 }
-                .padding(.horizontal, FINDRSpacing.medium)
-                .frame(maxWidth: .infinity, minHeight: 74)
-                .background(FINDRColor.subtle, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .padding(FINDRSpacing.large)
+                .frame(maxWidth: .infinity, minHeight: 75)
+                .background(FINDRColor.subtle, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .overlay {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(FINDRColor.borderStrong, style: StrokeStyle(lineWidth: 1, dash: [5, 4]))
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(FINDRColor.borderStrong, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
                 }
                 .contentShape(Rectangle())
             }
@@ -193,17 +196,21 @@ struct APathActionDetailView: View {
             .accessibilityLabel(selectedFileName.map { "선택한 파일 \($0)" } ?? "포트폴리오 파일 선택")
 
             HStack(spacing: FINDRSpacing.small) {
-                FINDRIcon(name: FINDRAssetName.aPathLink, size: 20, tint: FINDRColor.secondaryText)
-                TextField("또는 노션·깃허브 링크 붙여넣기", text: $portfolioLink)
-                    .font(FINDRFont.regular(13))
-                    .kerning(-0.26)
+                FINDRIcon(name: FINDRAssetName.aPathLink, size: 20, tint: FINDRColor.primaryText)
+                TextField(
+                    "또는 노션·깃허브 링크 붙여넣기",
+                    text: $portfolioLink,
+                    prompt: Text("또는 노션·깃허브 링크 붙여넣기").foregroundColor(FINDRColor.tertiaryText)
+                )
+                    .font(FINDRFont.regular(14))
+                    .kerning(-0.28)
                     .foregroundStyle(FINDRColor.primaryText)
                     .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .accessibilityLabel("노션 또는 깃허브 포트폴리오 링크")
             }
-            .padding(.horizontal, FINDRSpacing.medium)
+            .padding(.horizontal, FINDRSpacing.large)
             .frame(height: 50)
             .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             .overlay {
@@ -214,31 +221,40 @@ struct APathActionDetailView: View {
     }
 
     private var bottomCTA: some View {
-        HStack(spacing: FINDRSpacing.small) {
-            FINDRButton(title: "가이드 보기", kind: .outline) {
-                showGuide = true
-            }
-            .frame(width: 116)
+        VStack(spacing: FINDRSpacing.large) {
+            HStack(spacing: FINDRSpacing.small) {
+                FINDRButton(title: "가이드 보기", kind: .outline, height: 53) {
+                    showGuide = true
+                }
+                .frame(width: 116)
 
-            FINDRButton(title: isCompleted ? "완료됐어요" : "완료했어요", action: {
-                showCompletionConfirmation = true
-            })
-            .disabled(isCompleted)
-            .opacity(isCompleted ? 0.65 : 1)
+                FINDRButton(title: isCompleted ? "완료됐어요" : "완료했어요", height: 53, action: {
+                    showCompletionConfirmation = true
+                })
+                .disabled(isCompleted)
+                .opacity(isCompleted ? 0.65 : 1)
+            }
+
+            Capsule()
+                .fill(FINDRColor.primaryText)
+                .frame(width: 134, height: 5)
         }
         .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.top, FINDRSpacing.medium)
+        .padding(.top, FINDRSpacing.medium + 2)
         .padding(.bottom, FINDRSpacing.small)
+        .frame(maxWidth: .infinity)
         .background {
             FINDRColor.surface
                 .overlay(alignment: .top) { FINDRColor.divider.frame(height: 1) }
                 .ignoresSafeArea(edges: .bottom)
         }
+        .ignoresSafeArea(edges: .bottom)
     }
 
     private var completionConfirmation: some View {
         ZStack {
-            Color.black.opacity(0.45)
+            FINDRColor.scrim
+                .opacity(0.45)
                 .ignoresSafeArea()
                 .onTapGesture { showCompletionConfirmation = false }
 
@@ -249,12 +265,12 @@ struct APathActionDetailView: View {
 
                 VStack(spacing: FINDRSpacing.xSmall) {
                     Text(actionID.completionConfirmationTitle)
-                        .font(FINDRFont.bold(16))
-                        .kerning(-0.32)
+                        .font(FINDRFont.bold(17))
+                        .kerning(-0.34)
                         .foregroundStyle(FINDRColor.primaryText)
                         .multilineTextAlignment(.center)
 
-                    Text("보유 조건에 추가되고, 새로 열리는 기회를 바로 보여드려요.")
+                    Text("보유 조건에 추가되고, 새로 열리는 기회를 바로 보여\n드려요.")
                         .font(FINDRFont.regular(13))
                         .kerning(-0.26)
                         .foregroundStyle(FINDRColor.secondaryText)
@@ -272,15 +288,15 @@ struct APathActionDetailView: View {
                     }
                 }
             }
-            .padding(FINDRSpacing.large)
-            .frame(maxWidth: 320)
+            .padding(24)
+            .frame(width: 320, height: 247)
             .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .shadow(color: .black.opacity(0.12), radius: 24, x: 0, y: 12)
-            .padding(.horizontal, 36)
+            .shadow(color: Color(hex: 0x0F1733).opacity(0.1), radius: 40, x: 0, y: 16)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("apath-completion-confirmation")
         }
         .zIndex(2)
+        .ignoresSafeArea()
     }
 
     private func handleImportedFile(_ result: Result<[URL], Error>) {

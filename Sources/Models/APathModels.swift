@@ -101,7 +101,7 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
 
     var completionConfirmationTitle: String {
         switch self {
-        case .portfolio: "포트폴리오 만들기를 완료로 표시할까요?"
+        case .portfolio: "포트폴리오를 완료로 표시할까요?"
         case .computerLiteracy: "컴퓨터활용능력 2급 취득을 완료로 표시할까요?"
         case .aiEducation: "AI 관련 교육 수료를 완료로 표시할까요?"
         case .projectExperience: "프로젝트 경험 쌓기를 완료로 표시할까요?"
@@ -144,6 +144,15 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
         }
     }
 
+    var listIconName: String {
+        switch self {
+        case .portfolio: FINDRAssetName.file
+        case .computerLiteracy, .dataProcessing: FINDRAssetName.aPathListMonitor
+        case .aiEducation, .gtq: FINDRAssetName.aPathListCPU
+        case .projectExperience, .koreanHistory: FINDRAssetName.rocket
+        }
+    }
+
     var iconTint: Color {
         switch self {
         case .portfolio, .computerLiteracy, .dataProcessing, .koreanHistory:
@@ -159,8 +168,10 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
 
     var iconBackground: Color {
         switch self {
-        case .portfolio, .computerLiteracy:
+        case .portfolio:
             FINDRColor.brandSubtle
+        case .computerLiteracy:
+            FINDRColor.successSubtle
         case .aiEducation:
             FINDRColor.warningSubtle
         case .projectExperience:
@@ -199,7 +210,7 @@ enum APathActionID: String, CaseIterable, Hashable, Identifiable {
             [
                 "보여주고 싶은 프로젝트 2~3개 고르기",
                 "노션·깃허브 등에 과정과 결과 정리하기",
-                "PDF 또는 링크로 MY › 보유 조건에 등록하기"
+                "아래에 파일이나 링크를 올려 보유 조건에 등록하기"
             ]
         case .computerLiteracy:
             ["시험 일정을 확인하고 응시 과목 정하기", "기출문제로 실기와 필기 준비하기", "자격증을 취득하면 MY › 보유 조건에 등록하기"]

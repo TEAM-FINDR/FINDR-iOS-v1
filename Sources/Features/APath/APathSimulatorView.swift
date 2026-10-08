@@ -25,15 +25,15 @@ struct APathSimulatorView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: FINDRSpacing.large) {
                     Text("조건을 켜보면 새로 열리는 기회를 미리 볼 수 있어요.")
-                        .font(FINDRFont.regular(12))
-                        .kerning(-0.24)
+                        .font(FINDRFont.regular(13))
+                        .kerning(-0.26)
                         .foregroundStyle(FINDRColor.secondaryText)
 
                     projectionCard
                     conditionList
                 }
                 .padding(.horizontal, FINDRSpacing.screen)
-                .padding(.top, FINDRSpacing.small)
+                .padding(.top, FINDRSpacing.small - 1)
                 .padding(.bottom, FINDRSpacing.large)
             }
 
@@ -46,51 +46,48 @@ struct APathSimulatorView: View {
 
     private var projectionCard: some View {
         VStack(spacing: FINDRSpacing.medium) {
-            HStack(alignment: .center, spacing: 20) {
+            HStack(alignment: .center, spacing: FINDRSpacing.section) {
                 countColumn(title: "현재", count: currentCount, tint: FINDRColor.primaryText)
                 FINDRIcon(name: FINDRAssetName.aPathArrowRight, size: 22, tint: FINDRColor.inactiveIcon)
-                    .padding(.top, FINDRSpacing.large)
                 countColumn(title: "적용 시", count: projectedCount, tint: FINDRColor.brand)
             }
 
             Text("+\(projectedCount - currentCount)개의 새로운 기회")
-                .font(FINDRFont.bold(11))
-                .kerning(-0.22)
+                .font(FINDRFont.bold(13))
+                .kerning(-0.26)
                 .foregroundStyle(.white)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 6)
+                .frame(height: 18.2)
+                .padding(.horizontal, FINDRSpacing.large)
+                .padding(.vertical, FINDRSpacing.xSmall)
                 .background(FINDRColor.brandButton, in: Capsule())
                 .accessibilityIdentifier("apath-simulation-delta")
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 18)
-        .background(FINDRColor.brandSubtle, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .padding(.horizontal, FINDRSpacing.screen)
+        .padding(.vertical, FINDRSpacing.screen - 1)
+        .background(FINDRColor.brandTint, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 
     private func countColumn(title: String, count: Int, tint: Color) -> some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 0) {
             Text(title)
-                .font(FINDRFont.regular(11))
+                .font(FINDRFont.medium(12))
                 .foregroundStyle(title == "적용 시" ? FINDRColor.brand : FINDRColor.secondaryText)
+                .frame(height: 16.8)
             Text("\(count)개")
                 .font(FINDRFont.bold(28))
                 .kerning(-0.56)
                 .foregroundStyle(tint)
+                .frame(height: 39.2)
                 .contentTransition(.numericText())
                 .accessibilityIdentifier(title == "현재" ? "apath-current-count" : "apath-projected-count")
         }
-        .frame(minWidth: 58)
     }
 
     private var conditionList: some View {
         VStack(spacing: 0) {
             ForEach(APathConditionID.allCases, id: \.self) { condition in
                 conditionRow(condition)
-                if condition != .seoul {
-                    FINDRColor.divider
-                        .frame(height: 1)
-                        .padding(.leading, 52)
-                }
             }
         }
         .padding(.horizontal, FINDRSpacing.medium)
@@ -109,8 +106,8 @@ struct APathSimulatorView: View {
                 .frame(width: 20, height: 20)
 
             Text("\(condition.title) · +\(condition.opportunityCount)")
-                .font(FINDRFont.medium(13))
-                .kerning(-0.26)
+                .font(FINDRFont.medium(14))
+                .kerning(-0.28)
                 .foregroundStyle(FINDRColor.primaryText)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -128,21 +125,27 @@ struct APathSimulatorView: View {
             .accessibilityValue(isSelected ? "켜짐" : "꺼짐")
             .accessibilityIdentifier("apath-condition-\(condition.id)")
         }
-        .frame(height: 54)
+        .frame(height: 55)
     }
 
     private var bottomCTA: some View {
-        VStack(spacing: 0) {
-            FINDRButton(title: "포트폴리오부터 시작하기", action: onStartPortfolio)
+        VStack(spacing: 14) {
+            FINDRButton(title: "포트폴리오부터 시작하기", height: 53, action: onStartPortfolio)
+
+            Capsule()
+                .fill(FINDRColor.primaryText)
+                .frame(width: 134, height: 5)
         }
         .padding(.horizontal, FINDRSpacing.screen)
-        .padding(.top, FINDRSpacing.medium)
+        .padding(.top, FINDRSpacing.medium + 2)
         .padding(.bottom, FINDRSpacing.small)
+        .frame(maxWidth: .infinity)
         .background {
             FINDRColor.surface
                 .overlay(alignment: .top) { FINDRColor.divider.frame(height: 1) }
                 .ignoresSafeArea(edges: .bottom)
         }
+        .ignoresSafeArea(edges: .bottom)
     }
 
     private func toggle(_ condition: APathConditionID) {
@@ -170,8 +173,8 @@ struct APathSubpageHeader: View {
             .accessibilityLabel("뒤로")
 
             Text(title)
-                .font(FINDRFont.bold(14))
-                .kerning(-0.28)
+                .font(FINDRFont.bold(15))
+                .kerning(-0.3)
                 .foregroundStyle(FINDRColor.primaryText)
                 .frame(maxWidth: .infinity)
 
@@ -180,5 +183,6 @@ struct APathSubpageHeader: View {
         }
         .padding(.horizontal, FINDRSpacing.screen)
         .frame(height: 40)
+        .padding(.top, 6)
     }
 }

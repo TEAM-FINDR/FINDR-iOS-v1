@@ -9,7 +9,7 @@ struct FINDROnboardingLoginView: View {
 
             FINDROnboardingLoginHeaderView()
 
-            Spacer(minLength: 220)
+            Spacer(minLength: 218)
 
             VStack(spacing: FINDRSpacing.small) {
                 FINDROnboardingSocialLoginButton(provider: .apple, action: onContinue)
@@ -21,7 +21,7 @@ struct FINDROnboardingLoginView: View {
         }
         .padding(.horizontal, FINDRSpacing.screen)
         .padding(.top, 32)
-        .padding(.bottom, 16)
+        .padding(.bottom, 21)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .background(Color.white.ignoresSafeArea())
     }

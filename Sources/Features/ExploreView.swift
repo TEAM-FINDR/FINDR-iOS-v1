@@ -1,13 +1,19 @@
 import SwiftUI
 
 struct ExploreView: View {
+    @Binding var query: String
+    @Binding var filterResetVersion: Int
+    @Binding var selectedFilters: [String: String]
+    @Binding var selectedSort: FINDRExploreSort
+    @Binding var ignoredOpportunityIDs: Set<String>
     let onOpenOpportunity: (Opportunity) -> Void
+    let onOpenActions: (Opportunity) -> Void
     let onOpenNotifications: () -> Void
+    let onOpenSearch: () -> Void
+    let onOpenFilters: () -> Void
+    let onOpenSort: () -> Void
 
-    @State private var query = ""
     @State private var selectedCategory = "전체"
-    @State private var sortByRecommended = true
-    @State private var selectedFilters: [String: String] = [:]
 
     private let firstCategoryRow = ["전체", "교육", "공모전", "대외활동"]
     private let secondCategoryRow = ["장학금", "창업", "인턴", "지원사업", "행사"]
@@ -15,6 +21,7 @@ struct ExploreView: View {
 
     private var filteredOpportunities: [Opportunity] {
         let matches = opportunities
+            .filter { !ignoredOpportunityIDs.contains($0.id) }
             .filter { opportunity in
                 query.isEmpty || opportunity.title.localizedCaseInsensitiveContains(query) || opportunity.organization.localizedCaseInsensitiveContains(query)
             }
@@ -38,14 +45,7 @@ struct ExploreView: View {
                 guard let mode = selectedFilters["방식"], mode != "전체" else { return true }
                 return mode == "온라인" ? opportunity.location == "온라인" : opportunity.location != "온라인"
             }
-        guard !sortByRecommended else { return matches }
-        return matches.sorted { deadlineDays(for: $0) < deadlineDays(for: $1) }
-    }
-
-    private var hasActiveFilters: Bool {
-        !query.isEmpty || selectedCategory != "전체" || selectedFilters.values.contains { value in
-            !["전체", "전체 지역", "전체 대상"].contains(value)
-        }
+        return selectedSort.sorted(matches)
     }
 
     var body: some View {
@@ -56,16 +56,17 @@ struct ExploreView: View {
                 categoryFilters
                 detailFilters
                 HStack {
-                    Text("총 \(hasActiveFilters ? "\(filteredOpportunities.count)" : "312")개의 기회")
+                    Text("총 \(FINDRExploreFilterLogic.resultCount(opportunities: opportunities, query: query, category: selectedCategory, selections: selectedFilters))개의 기회")
                         .font(FINDRFont.regular(12))
+                        .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
                     Spacer()
                     Button {
-                        sortByRecommended.toggle()
+                        onOpenSort()
                     } label: {
                         HStack(spacing: 4) {
                             FINDRIcon(name: FINDRAssetName.sliders, size: 14, tint: FINDRColor.secondaryText)
-                            Text(sortByRecommended ? "추천순" : "마감순")
+                            Text(selectedSort.title)
                                 .font(FINDRFont.medium(11))
                                 .foregroundStyle(FINDRColor.secondaryText)
                         }
@@ -81,18 +82,27 @@ struct ExploreView: View {
                 } else {
                     LazyVStack(spacing: 0) {
                         ForEach(filteredOpportunities) { opportunity in
-                            OpportunityListRow(opportunity: opportunity) {
-                                onOpenOpportunity(opportunity)
-                            }
+                            OpportunityListRow(
+                                opportunity: opportunity,
+                                showsProgress: false,
+                                onMore: { onOpenActions(opportunity) },
+                                onTap: { onOpenOpportunity(opportunity) }
+                            )
                         }
                     }
+                    .padding(.top, 2)
                     .padding(.bottom, 12)
                 }
             }
             .padding(.horizontal, FINDRSpacing.screen)
-            .padding(.top, 14)
+            .padding(.top, 30)
         }
-        .background(FINDRColor.canvas)
+        .background(FINDRColor.surface)
+        .onChange(of: filterResetVersion) { _, _ in
+            selectedCategory = "전체"
+            selectedSort = .recommended
+            selectedFilters = [:]
+        }
     }
 
     private var header: some View {
@@ -102,12 +112,19 @@ struct ExploreView: View {
             trailingLabel: "알림",
             action: onOpenNotifications,
             titleKerning: -0.44,
+            trailingSize: 24,
             trailingTint: FINDRColor.primaryText
         )
     }
 
     private var searchField: some View {
-        FINDRSearchField(text: $query, placeholder: "공고명, 기관명, 분야로 검색해보세요")
+        Button(action: onOpenSearch) {
+            FINDRSearchField(text: $query, placeholder: "공고명, 기관명, 분야로 검색해보세요")
+                .allowsHitTesting(false)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("검색")
+        .accessibilityValue(query.isEmpty ? "공고명, 기관명, 분야로 검색해보세요" : query)
     }
 
     private var categoryFilters: some View {
@@ -129,26 +146,20 @@ struct ExploreView: View {
 
     private var detailFilters: some View {
         HStack(spacing: 6) {
-            filterMenu(key: "지역", title: "지역", options: ["전체 지역", "광주", "서울", "온라인"])
-            filterMenu(key: "대상", title: "대상", options: ["전체 대상", "중학생", "고등학생", "대학생"])
-            filterMenu(key: "마감일", title: "마감일", options: ["전체", "7일 이내", "30일 이내"])
-            filterMenu(key: "방식", title: "온/오프라인", options: ["전체", "온라인", "오프라인"])
+            filterTrigger(key: "지역", title: "지역", width: 59)
+            filterTrigger(key: "대상", title: "대상", width: 59)
+            filterTrigger(key: "마감일", title: "마감일", width: 70)
+            filterTrigger(key: "방식", title: "온/오프라인", width: 96)
         }
     }
 
-    private func filterMenu(key: String, title: String, options: [String]) -> some View {
+    private func filterTrigger(key: String, title: String, width: CGFloat) -> some View {
         FINDRFilterMenu(
             title: title,
             selectedOption: selectedFilters[key],
-            resetOption: options[0],
-            options: options
-        ) { option in
-            if option == options[0] {
-                selectedFilters.removeValue(forKey: key)
-            } else {
-                selectedFilters[key] = option
-            }
-        }
+            action: onOpenFilters,
+            width: width
+        )
     }
 
     private func matchesTarget(_ target: String, opportunity: Opportunity) -> Bool {
@@ -159,6 +170,8 @@ struct ExploreView: View {
             opportunity.categories.contains("청소년") || opportunity.conditionNames.contains { $0.contains("고등학생") || $0.contains("고등·대학생") }
         case "대학생":
             opportunity.conditionNames.contains { $0.contains("대학생") }
+        case "청년":
+            opportunity.categories.contains { $0.contains("청년") } || opportunity.conditionNames.contains { $0.contains("청년") }
         default:
             true
         }

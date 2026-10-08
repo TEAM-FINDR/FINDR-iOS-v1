@@ -4,6 +4,9 @@ struct FINDRUnderlineTabs: View {
     let titles: [String]
     @Binding var selection: String
     var fontSize: CGFloat = 14
+    var selectedFont: Font? = nil
+    var unselectedFont: Font? = nil
+    var textKerning: CGFloat = 0
     var itemSpacing: CGFloat = 0
     var indicatorSpacing: CGFloat = 9
     var equalWidth: Bool = true
@@ -21,13 +24,17 @@ struct FINDRUnderlineTabs: View {
                 } label: {
                     VStack(spacing: indicatorSpacing) {
                         Text(title)
-                            .font(selection == title ? FINDRFont.bold(fontSize) : FINDRFont.regular(fontSize))
+                            .font(selection == title
+                                  ? (selectedFont ?? FINDRFont.bold(fontSize))
+                                  : (unselectedFont ?? FINDRFont.regular(fontSize)))
+                            .kerning(textKerning)
                             .foregroundStyle(selection == title ? selectedTextColor : unselectedTextColor)
                             .frame(maxWidth: equalWidth ? .infinity : nil)
                         Rectangle()
                             .fill(selection == title ? selectedIndicatorColor : unselectedIndicatorColor)
                             .frame(height: 2)
                     }
+                    .fixedSize(horizontal: !equalWidth, vertical: false)
                 }
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(selection == title ? .isSelected : [])

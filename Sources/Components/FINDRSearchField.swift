@@ -6,7 +6,7 @@ struct FINDRSearchField: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            FINDRIcon(name: FINDRAssetName.search, size: 17, tint: FINDRColor.inactiveIcon)
+            FINDRIcon(name: FINDRAssetName.search, size: 18, tint: FINDRColor.inactiveIcon)
             TextField(placeholder, text: $text)
                 .font(FINDRFont.regular(13))
                 .foregroundStyle(FINDRColor.primaryText)

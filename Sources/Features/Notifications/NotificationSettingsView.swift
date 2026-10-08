@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct NotificationSettingsView: View {
+    private let figmaSectionSpacing: CGFloat = 21
+    private let figmaHintTopAdjustment: CGFloat = 1
     @AppStorage("FINDR.notifications.newOpportunities") private var newOpportunitiesEnabled = true
     @AppStorage("FINDR.notifications.eligibleOpportunities") private var eligibleOpportunitiesEnabled = true
     @AppStorage("FINDR.notifications.savedOpportunityChanges") private var savedOpportunityChangesEnabled = true
@@ -16,16 +18,17 @@ struct NotificationSettingsView: View {
             FINDRBackNavigationHeader(title: "알림 설정", onBack: { dismiss() })
 
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: FINDRSpacing.section) {
+                VStack(alignment: .leading, spacing: figmaSectionSpacing) {
                     opportunitySettings
                     deadlineSettings
                     otherSettings
 
                     Text("기기 설정에서 알림이 꺼져 있으면 알림을 받을 수 없어요.")
-                        .font(FINDRFont.label)
+                        .font(FINDRFont.caption)
+                        .kerning(-0.24)
                         .foregroundStyle(FINDRColor.tertiaryText)
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, -FINDRSpacing.small)
+                        .padding(.top, figmaHintTopAdjustment)
                         .padding(.bottom, FINDRSpacing.large)
                 }
                 .padding(.horizontal, FINDRSpacing.screen)
@@ -121,14 +124,22 @@ private struct NotificationSettingRow: View {
                     .foregroundStyle(FINDRColor.primaryText)
             }
             Spacer(minLength: FINDRSpacing.small)
-            Toggle("", isOn: $isEnabled)
-                .labelsHidden()
-                .tint(FINDRColor.brandButton)
-                .scaleEffect(0.84, anchor: .trailing)
-                .frame(width: 51, height: 31)
-                .accessibilityLabel(title)
-                .accessibilityValue(isEnabled ? "켜짐" : "꺼짐")
-                .accessibilityIdentifier("notification-setting-\(title)")
+            Button {
+                isEnabled.toggle()
+            } label: {
+                Image(isEnabled ? FINDRAssetName.aPathToggleOn : FINDRAssetName.aPathToggleOff)
+                    .renderingMode(.original)
+                    .resizable()
+                    .frame(width: 51, height: 31)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(title)
+            .accessibilityValue(isEnabled ? "켜짐" : "꺼짐")
+            .accessibilityRepresentation {
+                Toggle(title, isOn: $isEnabled).labelsHidden()
+            }
+            .accessibilityIdentifier("notification-setting-\(title)")
         }
         .padding(.horizontal, FINDRSpacing.large)
         .padding(.vertical, FINDRSpacing.medium)

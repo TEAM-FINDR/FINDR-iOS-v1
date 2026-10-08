@@ -9,7 +9,7 @@ struct FINDRProfileSetupProgressView: View {
                 .font(FINDRFont.bold(12))
                 .foregroundStyle(FINDRColor.brand)
 
-            FINDRProgressBar(progress: Double(page) / 4, color: FINDRColor.brandButton, height: 6)
+            FINDRProgressBar(progress: Double(page) / 4, color: FINDRColor.brand, height: 6)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("프로필 입력 진행률, \(page)/4단계")

@@ -9,15 +9,16 @@ struct FINDRProfileStatusOptionRowView: View {
         Button(action: action) {
             HStack {
                 Text(title)
-                    .font(FINDRFont.medium(14))
-                    .foregroundStyle(isSelected ? FINDRColor.brandButton : FINDRColor.primaryText)
+                    .font(FINDRFont.medium(15))
+                    .tracking(-0.3)
+                    .foregroundStyle(isSelected ? FINDRColor.brand : FINDRColor.primaryText)
                 Spacer()
                 radioIndicator
             }
             .padding(.horizontal, FINDRSpacing.large)
-            .frame(height: 56)
+            .frame(height: isSelected ? 57 : 56)
             .background(
-                isSelected ? FINDRColor.brandSubtle : Color.white,
+                isSelected ? FINDRColor.brandSubtle : FINDRColor.surface,
                 in: RoundedRectangle(cornerRadius: FINDRRadius.medium, style: .continuous)
             )
             .overlay {
@@ -29,17 +30,18 @@ struct FINDRProfileStatusOptionRowView: View {
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
+    @ViewBuilder
     private var radioIndicator: some View {
-        Circle()
-            .stroke(isSelected ? FINDRColor.brandButton : FINDRColor.borderStrong, lineWidth: isSelected ? 6 : 1.5)
-            .frame(width: 20, height: 20)
-            .overlay {
-                if isSelected {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 6, height: 6)
-                }
-            }
-            .accessibilityHidden(true)
+        if isSelected {
+            Image(FINDRAssetName.profileStatusSelectedRadio)
+                .resizable()
+                .frame(width: 22, height: 22)
+                .accessibilityHidden(true)
+        } else {
+            Circle()
+                .stroke(FINDRColor.borderStrong, lineWidth: 1.5)
+                .frame(width: 22, height: 22)
+                .accessibilityHidden(true)
+        }
     }
 }

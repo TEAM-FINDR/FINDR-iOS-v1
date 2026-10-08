@@ -11,13 +11,15 @@ struct FINDRProfileSetupView: View {
             FINDRProfileSetupNavigationBarView(onBack: onBack)
 
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: FINDRSpacing.large) {
+                VStack(alignment: .leading, spacing: 0) {
                     FINDRProfileSetupProgressView(page: page)
+                        .padding(.bottom, 13)
                     FINDRProfileSetupTitleView(title: title, subtitle: subtitle)
+                        .padding(.bottom, 15)
                     pageContent
                 }
                 .padding(.horizontal, FINDRSpacing.screen)
-                .padding(.top, FINDRSpacing.medium)
+                .padding(.top, 16)
                 .padding(.bottom, FINDRSpacing.large)
             }
             .scrollDismissesKeyboard(.interactively)
