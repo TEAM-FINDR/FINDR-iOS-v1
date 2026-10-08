@@ -27,4 +27,3 @@ struct FINDREmptyState: View {
         .padding(.horizontal, 20)
     }
 }
-
