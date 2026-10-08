@@ -35,7 +35,7 @@ struct SettingsView: View {
                             .background(FINDRColor.surface, in: RoundedRectangle(cornerRadius: 16))
                         Button("회원 탈퇴", action: onWithdraw)
                             .font(FINDRFont.regular(12)).kerning(-0.24).underline()
-                            .foregroundStyle(FINDRColor.tertiaryText).padding(.vertical, 12)
+                            .foregroundStyle(FINDRColor.tertiaryText).frame(height: 17).padding(.vertical, 12)
                     }
                 }.padding(.horizontal, 20).padding(.top, 8)
             }
