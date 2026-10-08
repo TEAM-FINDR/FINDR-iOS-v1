@@ -71,9 +71,12 @@ struct ContentView: View {
     }
 
     private var mainExperience: some View {
+        GeometryReader { geometry in
         NavigationStack(path: $navigationPath) {
             selectedScreen
+                .padding(.top, 48 - geometry.safeAreaInsets.top)
                 .navigationDestination(for: FINDRNavigationDestination.self) { destination in
+                    Group {
                     switch destination {
                     case .opportunity(let opportunity):
                         OpportunityDetailView(
@@ -158,6 +161,8 @@ struct ContentView: View {
                             }
                         )
                     }
+                    }
+                    .padding(.top, 48 - geometry.safeAreaInsets.top)
                 }
         }
         .toolbar(.hidden, for: .navigationBar)
@@ -274,6 +279,7 @@ struct ContentView: View {
         .animation(.easeInOut(duration: 0.2), value: selectedSavedOpportunityForActions)
         .animation(.easeInOut(duration: 0.2), value: savedRemovalCandidate)
         .animation(.easeInOut(duration: 0.2), value: isAPathHelpPresented)
+        }
     }
 
     private func undoSavedOpportunityRemoval() {
