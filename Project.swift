@@ -28,7 +28,8 @@ let project = Project(
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
-                    "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": ""
+                    "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": "",
+                    "EXCLUDED_SOURCE_FILE_NAMES": "*\\ 2.swift"
                 ]
             )
         ),
@@ -44,7 +45,12 @@ let project = Project(
             ],
             dependencies: [
                 .target(name: "FINDR")
-            ]
+            ],
+            settings: .settings(
+                base: [
+                    "EXCLUDED_SOURCE_FILE_NAMES": "*\\ 2.swift"
+                ]
+            )
         )
     ]
 )
